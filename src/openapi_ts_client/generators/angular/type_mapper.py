@@ -40,6 +40,18 @@ def map_openapi_type_with_imports(schema: Dict[str, Any]) -> Tuple[str, Set[str]
         imports.add(type_name)
         return type_name, imports
 
+    # Handle anyOf (commonly used for nullable types)
+    if "anyOf" in schema:
+        types = []
+        for sub_schema in schema["anyOf"]:
+            if sub_schema.get("type") == "null":
+                types.append("null")
+            else:
+                sub_type, sub_imports = map_openapi_type_with_imports(sub_schema)
+                types.append(sub_type)
+                imports.update(sub_imports)
+        return " | ".join(types), imports
+
     schema_type = schema.get("type")
 
     # Handle arrays
