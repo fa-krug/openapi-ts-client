@@ -124,30 +124,34 @@ def operation_id_to_method_name(operation_id: str) -> str:
     Convert OpenAPI operationId to TypeScript method name.
 
     Examples:
+        addPet -> addPet (preserve camelCase)
         zoo.api.endpoints.feedings_list_all -> listAll
         delete -> _delete
         list_all -> listAll
     """
     # Extract last segment if dotted path
-    # When dotted path is present, the first underscore part is a resource prefix to skip
     from_dotted_path = "." in operation_id
     if from_dotted_path:
         operation_id = operation_id.split(".")[-1]
 
-    # Convert snake_case to camelCase
-    parts = operation_id.split("_")
-    if not parts:
-        return ""
+    # If no underscores and not from dotted path, preserve as-is (already camelCase)
+    if "_" not in operation_id and not from_dotted_path:
+        method_name = operation_id
+    else:
+        # Convert snake_case to camelCase
+        parts = operation_id.split("_")
+        if not parts:
+            return ""
 
-    # If from a dotted path and there are multiple parts, skip the first part (resource prefix)
-    if from_dotted_path and len(parts) > 1:
-        parts = parts[1:]
+        # If from a dotted path and there are multiple parts, skip first (resource prefix)
+        if from_dotted_path and len(parts) > 1:
+            parts = parts[1:]
 
-    # First part lowercase, rest capitalized
-    method_name = parts[0].lower()
-    for part in parts[1:]:
-        if part:
-            method_name += part[0].upper() + part[1:].lower() if len(part) > 1 else part.upper()
+        # First part lowercase, rest capitalized
+        method_name = parts[0].lower()
+        for part in parts[1:]:
+            if part:
+                method_name += part[0].upper() + part[1:].lower() if len(part) > 1 else part.upper()
 
     # Escape reserved words
     if method_name in TYPESCRIPT_RESERVED_WORDS:
