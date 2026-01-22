@@ -1,6 +1,10 @@
 """Tests for naming utilities."""
 
-from openapi_ts_client.utils.naming import schema_to_filename, tag_to_service_name
+from openapi_ts_client.utils.naming import (
+    schema_to_filename,
+    tag_to_service_filename,
+    tag_to_service_name,
+)
 
 
 class TestSchemaToFilename:
@@ -47,3 +51,24 @@ class TestTagToServiceName:
     def test_spaces_in_tag(self):
         """Spaces are removed and words concatenated."""
         assert tag_to_service_name("Care Plans") == "CarePlansService"
+
+
+class TestTagToServiceFilename:
+    """Tests for tag_to_service_filename function."""
+
+    def test_simple_tag(self):
+        """Simple tag becomes lowercase.service.ts."""
+        assert tag_to_service_filename("Feedings") == "feedings.service.ts"
+
+    def test_multi_word_tag(self):
+        """Multi-word tag becomes camelCase.service.ts."""
+        assert tag_to_service_filename("HealthReports") == "healthReports.service.ts"
+
+    def test_acronym_tag(self):
+        """Acronym tags follow fixture pattern."""
+        # From fixture: HTTPMetrics -> hTTPMetrics.service.ts
+        assert tag_to_service_filename("HTTPMetrics") == "hTTPMetrics.service.ts"
+
+    def test_spaces_in_tag(self):
+        """Spaces removed, camelCase result."""
+        assert tag_to_service_filename("Care Plans") == "carePlans.service.ts"
