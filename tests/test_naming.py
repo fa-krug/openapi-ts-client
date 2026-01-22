@@ -1,6 +1,7 @@
 """Tests for naming utilities."""
 
 from openapi_ts_client.utils.naming import (
+    operation_id_to_method_name,
     schema_to_filename,
     tag_to_service_filename,
     tag_to_service_name,
@@ -72,3 +73,31 @@ class TestTagToServiceFilename:
     def test_spaces_in_tag(self):
         """Spaces removed, camelCase result."""
         assert tag_to_service_filename("Care Plans") == "carePlans.service.ts"
+
+
+class TestOperationIdToMethodName:
+    """Tests for operation_id_to_method_name function."""
+
+    def test_dotted_path_with_underscores(self):
+        """Extract last segment and convert to camelCase."""
+        assert operation_id_to_method_name("zoo.api.endpoints.feedings_list_all") == "listAll"
+
+    def test_simple_operation(self):
+        """Simple operation ID stays as-is."""
+        assert operation_id_to_method_name("count") == "count"
+
+    def test_snake_case(self):
+        """Snake case becomes camelCase."""
+        assert operation_id_to_method_name("list_all") == "listAll"
+
+    def test_reserved_word_delete(self):
+        """Reserved word 'delete' gets underscore prefix."""
+        assert operation_id_to_method_name("delete") == "_delete"
+
+    def test_reserved_word_in_path(self):
+        """Reserved word at end of path gets underscore prefix."""
+        assert operation_id_to_method_name("zoo.api.endpoints.delete") == "_delete"
+
+    def test_decrease_action(self):
+        """Action with underscore becomes camelCase."""
+        assert operation_id_to_method_name("zoo.api.endpoints.feedings_decrease_action") == "decreaseAction"

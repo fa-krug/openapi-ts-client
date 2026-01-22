@@ -1,5 +1,64 @@
 """Naming convention utilities for TypeScript generation."""
 
+# TypeScript reserved words that need escaping
+TYPESCRIPT_RESERVED_WORDS = {
+    "break",
+    "case",
+    "catch",
+    "class",
+    "const",
+    "continue",
+    "debugger",
+    "default",
+    "delete",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "finally",
+    "for",
+    "function",
+    "if",
+    "import",
+    "in",
+    "instanceof",
+    "new",
+    "null",
+    "return",
+    "super",
+    "switch",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeof",
+    "var",
+    "void",
+    "while",
+    "with",
+    "yield",
+    "let",
+    "static",
+    "implements",
+    "interface",
+    "package",
+    "private",
+    "protected",
+    "public",
+    "any",
+    "boolean",
+    "number",
+    "string",
+    "symbol",
+    "type",
+    "from",
+    "of",
+    "async",
+    "await",
+}
+
 
 def schema_to_filename(schema_name: str) -> str:
     """
@@ -58,3 +117,40 @@ def tag_to_service_filename(tag: str) -> str:
         result += word
 
     return f"{result}.service.ts"
+
+
+def operation_id_to_method_name(operation_id: str) -> str:
+    """
+    Convert OpenAPI operationId to TypeScript method name.
+
+    Examples:
+        zoo.api.endpoints.feedings_list_all -> listAll
+        delete -> _delete
+        list_all -> listAll
+    """
+    # Extract last segment if dotted path
+    # When dotted path is present, the first underscore part is a resource prefix to skip
+    from_dotted_path = "." in operation_id
+    if from_dotted_path:
+        operation_id = operation_id.split(".")[-1]
+
+    # Convert snake_case to camelCase
+    parts = operation_id.split("_")
+    if not parts:
+        return ""
+
+    # If from a dotted path and there are multiple parts, skip the first part (resource prefix)
+    if from_dotted_path and len(parts) > 1:
+        parts = parts[1:]
+
+    # First part lowercase, rest capitalized
+    method_name = parts[0].lower()
+    for part in parts[1:]:
+        if part:
+            method_name += part[0].upper() + part[1:].lower() if len(part) > 1 else part.upper()
+
+    # Escape reserved words
+    if method_name in TYPESCRIPT_RESERVED_WORDS:
+        method_name = f"_{method_name}"
+
+    return method_name
