@@ -7,10 +7,33 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-{% for import_name in imports %}import { {{ import_name }} } from './{{ import_name | lower_first }}';
+{% for import_name in imports %}
+import { {{ import_name }} } from './{{ import_name | lower_first }}';
 {% endfor %}
 
+
 export interface {{ interface_name }} { 
-{% for prop in properties %}    {{ prop.name }}{% if not prop.required %}?{% endif %}: {{ prop.type }};
-{% endfor %}}
+{% for prop in properties %}
+{% if prop.description %}
+    /**
+     * {{ prop.description }}
+     */
+{% endif %}
+    {{ prop.name }}{% if not prop.required %}?{% endif %}: {{ prop.type }};
+{% endfor %}
+}
+{% if enums %}
+export namespace {{ interface_name }} {
+{% for enum in enums %}
+    export const {{ enum.name }} = {
+{% for value in enum.enum_values %}
+        {{ value | capitalize }}: '{{ value }}'{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    } as const;
+    export type {{ enum.name }} = typeof {{ enum.name }}[keyof typeof {{ enum.name }}];
+{% endfor %}
+}
+{% endif %}
+
 

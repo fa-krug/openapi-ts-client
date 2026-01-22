@@ -21,6 +21,8 @@ def _create_jinja_env() -> Environment:
     env = Environment(
         loader=PackageLoader("openapi_ts_client", "templates/angular"),
         keep_trailing_newline=True,
+        trim_blocks=True,
+        lstrip_blocks=True,
     )
     env.filters["lower_first"] = _lower_first
     return env
@@ -30,6 +32,7 @@ def _get_property_info(
     prop_name: str,
     prop_schema: Dict[str, Any],
     required_props: List[str],
+    interface_name: str,
 ) -> Dict[str, Any]:
     """
     Get property information for template rendering.
@@ -38,16 +41,42 @@ def _get_property_info(
         prop_name: The property name
         prop_schema: The property schema
         required_props: List of required property names
+        interface_name: Name of the parent interface (for enum type references)
 
     Returns:
-        Dict with name, type, and required status
+        Dict with name, type, required status, and enum info
     """
+    enum_values = prop_schema.get("enum")
+    description = prop_schema.get("description", "")
+
+    if enum_values:
+        # Enum property - type references the namespace
+        enum_name = prop_name[0].upper() + prop_name[1:] + "Enum"
+        ts_type = f"{interface_name}.{enum_name}"
+        imports = set()
+
+        return {
+            "name": prop_name,
+            "type": ts_type,
+            "required": prop_name in required_props,
+            "imports": imports,
+            "description": description,
+            "is_enum": True,
+            "enum_name": enum_name,
+            "enum_values": enum_values,
+        }
+
+    # Non-enum property
     ts_type, imports = map_openapi_type_with_imports(prop_schema)
     return {
         "name": prop_name,
         "type": ts_type,
         "required": prop_name in required_props,
         "imports": imports,
+        "description": description,
+        "is_enum": False,
+        "enum_name": None,
+        "enum_values": None,
     }
 
 
@@ -79,11 +108,18 @@ def _generate_model_file(
     # Build property info list preserving schema order
     prop_infos = []
     all_imports = set()
+    enums = []
 
     for prop_name, prop_schema in properties.items():
-        info = _get_property_info(prop_name, prop_schema, required_props)
+        info = _get_property_info(prop_name, prop_schema, required_props, schema_name)
         prop_infos.append(info)
         all_imports.update(info["imports"])
+
+        if info["is_enum"]:
+            enums.append({
+                "name": info["enum_name"],
+                "enum_values": info["enum_values"],
+            })
 
     # Sort imports alphabetically
     sorted_imports = sorted(all_imports)
@@ -94,6 +130,7 @@ def _generate_model_file(
         interface_name=schema_name,
         imports=sorted_imports,
         properties=prop_infos,
+        enums=enums,
     )
 
 
