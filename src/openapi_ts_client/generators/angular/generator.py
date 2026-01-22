@@ -32,6 +32,7 @@ def generate_angular_client(
     info = resolved_spec.get("info", {})
     api_title = info.get("title", "API")
     api_description = info.get("description", "")
+    api_version = info.get("version", "")
     contact = info.get("contact", {})
     contact_email = contact.get("email", "")
 
@@ -52,13 +53,29 @@ def generate_angular_client(
     schemas = resolved_spec.get("components", {}).get("schemas", {})
     generate_all_models(schemas, output_path / "model", api_title, contact_email)
 
+    # Collect model files (includes models.ts barrel export)
+    model_files = [f.name for f in (output_path / "model").iterdir() if f.is_file()]
+
     # Generate services
     logger.info("Generating services...")
     paths = resolved_spec.get("paths", {})
     generate_all_services(paths, output_path / "api", api_title, contact_email)
 
+    # Collect service files (excludes api.ts barrel export, handled separately)
+    service_files = [f.name for f in (output_path / "api").iterdir() if f.is_file() and f.name != "api.ts"]
+
     # Generate infrastructure files
     logger.info("Generating infrastructure files...")
-    generate_infrastructure(output_path, api_title, contact_email, base_path, security_schemes)
+    generate_infrastructure(
+        output_path,
+        api_title,
+        contact_email,
+        base_path,
+        security_schemes,
+        api_description,
+        api_version,
+        model_files,
+        service_files,
+    )
 
     logger.info("Angular client generation complete")
