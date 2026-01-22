@@ -208,3 +208,6 @@ __marimo__/
 
 # Generated test output
 temp/
+
+# Git worktrees
+.worktrees/
