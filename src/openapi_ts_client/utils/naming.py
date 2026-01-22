@@ -104,6 +104,7 @@ def tag_to_service_filename(tag: str) -> str:
         Feedings -> feedings.service.ts
         HTTPMetrics -> hTTPMetrics.service.ts
         Care Plans -> carePlans.service.ts
+        Audit fields -> auditFields.service.ts
     """
     # Remove spaces and join words
     words = tag.split()
@@ -111,10 +112,11 @@ def tag_to_service_filename(tag: str) -> str:
         return ".service.ts"
 
     # First word: lowercase first char
-    # Subsequent words: keep first char case
+    # Subsequent words: capitalize first char (camelCase join)
     result = words[0][0].lower() + words[0][1:] if words[0] else ""
     for word in words[1:]:
-        result += word
+        if word:
+            result += word[0].upper() + word[1:]
 
     return f"{result}.service.ts"
 

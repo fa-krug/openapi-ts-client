@@ -143,10 +143,10 @@ def generate_models(spec: Dict[str, Any], output_dir: Path) -> None:
         output_dir: Directory to write model files to
     """
     api_title = spec.get("info", {}).get("title", "")
-    api_description = spec.get("info", {}).get("description", "")
+    contact_email = spec.get("info", {}).get("contact", {}).get("email", "")
     schemas = spec.get("components", {}).get("schemas", {})
 
-    generate_all_models(schemas, output_dir, api_title, api_description)
+    generate_all_models(schemas, output_dir, api_title, contact_email)
 
 
 def generate_all_models(
