@@ -67,7 +67,7 @@ export class {{ service_name }} extends BaseService {
 {% for param in method.query_params %}
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,
-            '{{ param.name }}',
+            '{{ param.original_name }}',
             <any>{{ param.name }},
             QueryParamStyle.Form,
             true,
@@ -120,6 +120,7 @@ export class {{ service_name }} extends BaseService {
         }
 {% endif %}
 
+{% if method.return_type != 'Blob' %}
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -131,9 +132,14 @@ export class {{ service_name }} extends BaseService {
             }
         }
 
+{% endif %}
         let localVarPath = `{{ method.path_template }}`;
         const { basePath, withCredentials } = this.configuration;
+{% if method.return_type == 'Blob' %}
+        return this.httpClient.request('{{ method.http_method }}', `${basePath}${localVarPath}`,
+{% else %}
         return this.httpClient.request<{{ method.return_type }}>('{{ method.http_method }}', `${basePath}${localVarPath}`,
+{% endif %}
             {
                 context: localVarHttpContext,
 {% if method.has_body %}
@@ -142,7 +148,11 @@ export class {{ service_name }} extends BaseService {
 {% if method.query_params %}
                 params: localVarQueryParameters.toHttpParams(),
 {% endif %}
+{% if method.return_type == 'Blob' %}
+                responseType: "blob",
+{% else %}
                 responseType: <any>responseType_,
+{% endif %}
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,

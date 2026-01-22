@@ -56,6 +56,10 @@ def map_openapi_type_with_imports(
             type_name = _lookup_extracted_type(schema, registry)
             if type_name:
                 imports.add(type_name)
+                # Check if anyOf includes null - if so, add | null to the type
+                has_null = any(s.get("type") == "null" for s in schema["anyOf"])
+                if has_null:
+                    return f"{type_name} | null", imports
                 return type_name, imports
 
         # Fall back to inline union
@@ -95,6 +99,10 @@ def map_openapi_type_with_imports(
         elif schema_type in ("integer", "number"):
             # Numeric enum - create union of number literals
             return " | ".join(str(v) for v in enum_values), imports
+
+    # Handle string with format: binary -> Blob
+    if schema_type == "string" and schema.get("format") == "binary":
+        return "Blob", imports
 
     # Basic type mapping
     type_map = {

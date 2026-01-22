@@ -13,6 +13,17 @@ from openapi_ts_client.utils.naming import (
     tag_to_service_filename,
     tag_to_service_name,
 )
+
+# Strict mode reserved words that cannot be used as variable names
+# Note: 'type' is a contextual keyword and CAN be used as a variable name
+PARAM_RESERVED_WORDS = {
+    "break", "case", "catch", "class", "const", "continue", "debugger",
+    "default", "delete", "do", "else", "enum", "export", "extends", "false",
+    "finally", "for", "function", "if", "import", "in", "instanceof", "new",
+    "null", "return", "super", "switch", "this", "throw", "true", "try",
+    "typeof", "var", "void", "while", "with", "yield", "let", "static",
+    "implements", "interface", "package", "private", "protected", "public",
+}
 from openapi_ts_client.generators.angular.type_mapper import map_openapi_type_with_imports
 
 
@@ -52,6 +63,17 @@ def _to_camel_case(name: str) -> str:
         return name
     # First part lowercase, rest title case
     return parts[0] + ''.join(word.title() for word in parts[1:])
+
+
+def _to_param_name(name: str) -> str:
+    """Convert parameter name to TypeScript-safe variable name.
+
+    Converts snake_case to camelCase and escapes reserved words.
+    """
+    camel = _to_camel_case(name)
+    if camel in PARAM_RESERVED_WORDS:
+        return f"_{camel}"
+    return camel
 
 
 def _extract_path_params(path: str) -> List[str]:
@@ -108,6 +130,12 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
             if "application/json" in content:
                 schema = content["application/json"].get("schema", {})
                 return map_openapi_type_with_imports(schema)
+
+            # Handle binary response types (e.g., application/pdf, application/octet-stream)
+            for content_type, content_info in content.items():
+                schema = content_info.get("schema", {})
+                if schema.get("type") == "string" and schema.get("format") == "binary":
+                    return "Blob", set()
 
     return "any", set()
 
@@ -313,7 +341,7 @@ def extract_service_data(
             ts_type, imports = _get_typescript_type_for_param(p)
             model_imports.update(imports)
             all_params.append({
-                "name": p["name"],
+                "name": _to_param_name(p["name"]),
                 "type": ts_type,
                 "required": p.get("required", False),
                 "description": p.get("description", ""),
@@ -338,7 +366,8 @@ def extract_service_data(
         for p in query_params:
             ts_type, _ = _get_typescript_type_for_param(p)
             query_param_data.append({
-                "name": p["name"],
+                "name": _to_param_name(p["name"]),  # TypeScript variable name
+                "original_name": p["name"],  # HTTP query parameter name
                 "type": ts_type,
             })
 
@@ -474,7 +503,7 @@ def generate_all_services(
                 "name": tag_to_service_name(tag),
                 "filename": tag_to_service_filename(tag)[:-3],  # Remove .ts
             }
-            for tag in sorted(tag_operations.keys())
+            for tag in sorted(tag_operations.keys(), key=tag_to_service_filename)
         ]
     )
     (output_path / "api.ts").write_text(api_content)

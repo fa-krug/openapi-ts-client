@@ -12,9 +12,14 @@ import { {{ import_name }} } from './{{ import_name | lower_first }}';
 {% endfor %}
 
 
+{% if description %}
+/**
+ * {{ description }}
+ */
+{% endif %}
 export interface {{ interface_name }} {{ '{ ' }}
 {% for prop in properties %}
-{% if prop.description %}
+{% if prop.is_enum and prop.description %}
     /**
      * {{ prop.description }}
      */

@@ -109,17 +109,17 @@ class TestAssignTypeNames:
         registry = assign_type_names(discoveries, existing_schemas)
         assert registry["/a"]["type_name"] == "User1"
 
-    def test_deterministic_ordering_by_path(self):
-        """Assignments are deterministic based on path sorting."""
+    def test_deterministic_ordering_by_discovery_order(self):
+        """Assignments preserve discovery order (first discovered gets base name)."""
         # Different anyOf content to ensure different type names
         discoveries = [
             {"path": "/z/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "string"}]}},
             {"path": "/a/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "number"}]}},
         ]
         registry = assign_type_names(discoveries, set())
-        # /a comes before /z alphabetically
-        assert registry["/a/prop"]["type_name"] == "Score"
-        assert registry["/z/prop"]["type_name"] == "Score1"
+        # /z was discovered first, so it gets "Score"
+        assert registry["/z/prop"]["type_name"] == "Score"
+        assert registry["/a/prop"]["type_name"] == "Score1"
 
 
 class TestCreateExtractionRegistry:

@@ -137,13 +137,17 @@ def _generate_model_file(
                 }
             )
 
-    # Sort imports alphabetically
-    sorted_imports = sorted(all_imports)
+    # Sort imports alphabetically by lowercase (case-insensitive sort)
+    sorted_imports = sorted(all_imports, key=str.lower)
+
+    # Get schema-level description (not property descriptions)
+    schema_description = schema.get("description", "")
 
     return template.render(
         api_title=api_title,
         contact_email=contact_email,
         interface_name=schema_name,
+        description=schema_description,
         imports=sorted_imports,
         properties=prop_infos,
         enums=enums,

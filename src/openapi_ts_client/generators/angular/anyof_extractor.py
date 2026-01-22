@@ -87,8 +87,8 @@ def assign_type_names(
     Returns:
         Registry mapping path -> {type_name, title, description, schema}
     """
-    # Sort by path for deterministic ordering
-    sorted_discoveries = sorted(discoveries, key=lambda d: d["path"])
+    # Preserve discovery order (matches scan traversal order)
+    sorted_discoveries = discoveries
 
     # Track used names (include existing schemas)
     used_names: set = set(existing_schemas)
