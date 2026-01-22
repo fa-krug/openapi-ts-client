@@ -5,8 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build and Development Commands
 
 ```bash
-# Install in development mode
-pip install -e .
+# Install in development mode (with dev dependencies)
+pip install -e ".[dev]"
+
+# Lint and format
+ruff check src --fix
+ruff format src
+
+# Setup pre-commit hooks
+pre-commit install
 
 # Run the package (example usage)
 python -c "from openapi_ts_client import generate_typescript_client, ClientFormat; print(generate_typescript_client({'openapi': '3.0.0', 'info': {'title': 'Test', 'version': '1.0'}, 'paths': {}}))"

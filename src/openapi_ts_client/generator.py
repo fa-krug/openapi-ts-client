@@ -123,7 +123,8 @@ def generate_typescript_client(
     paths_count = len(parsed_spec.get("paths", {}))
 
     status_message = (
-        f"TypeScript client generation initiated for '{api_title}' v{api_version}. "
+        f"TypeScript client generation initiated for '{api_title}' v{api_version} "
+        f"(OpenAPI {openapi_version}). "
         f"Format: {output_format.value}, Output: {resolved_output_path}, "
         f"Paths to process: {paths_count}. "
         f"NOTE: Generation logic not yet implemented."
@@ -173,7 +174,9 @@ def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> str:
         # Validate version format (should be like 3.0.0, 3.0.1, 3.1.0, etc.)
         if not isinstance(openapi_version, str):
             func_logger.error(f"Invalid openapi version type: {type(openapi_version)}")
-            raise ValueError(f"Invalid 'openapi' field: expected string, got {type(openapi_version).__name__}")
+            raise ValueError(
+                f"Invalid 'openapi' field: expected string, got {type(openapi_version).__name__}"
+            )
 
         if not openapi_version.startswith("3."):
             func_logger.warning(f"Unexpected OpenAPI version format: {openapi_version}")
@@ -184,12 +187,16 @@ def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> str:
 
     elif swagger_version is not None:
         # OpenAPI 2.0 (Swagger) specification
-        func_logger.info(f"Detected OpenAPI 2.0 (Swagger) specification (version: {swagger_version})")
+        func_logger.info(
+            f"Detected OpenAPI 2.0 (Swagger) specification (version: {swagger_version})"
+        )
         func_logger.debug(f"Swagger version string: {swagger_version}")
 
         if not isinstance(swagger_version, str):
             func_logger.error(f"Invalid swagger version type: {type(swagger_version)}")
-            raise ValueError(f"Invalid 'swagger' field: expected string, got {type(swagger_version).__name__}")
+            raise ValueError(
+                f"Invalid 'swagger' field: expected string, got {type(swagger_version).__name__}"
+            )
 
         if swagger_version != "2.0":
             func_logger.warning(f"Unexpected Swagger version: {swagger_version}")
@@ -240,7 +247,9 @@ def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> str:
         paths_count = len(spec["paths"])
         func_logger.info(f"Found {paths_count} path(s) in specification")
 
-    func_logger.info(f"OpenAPI specification validation completed successfully (version: {detected_version})")
+    func_logger.info(
+        f"OpenAPI specification validation completed successfully (version: {detected_version})"
+    )
     return detected_version
 
 
@@ -326,7 +335,9 @@ def _log_spec_details(spec: Dict[str, Any], func_logger) -> None:
     info = spec.get("info", {})
     func_logger.debug(f"  Title: {info.get('title', 'N/A')}")
     func_logger.debug(f"  Version: {info.get('version', 'N/A')}")
-    func_logger.debug(f"  Description: {info.get('description', 'N/A')[:100] if info.get('description') else 'N/A'}")
+    func_logger.debug(
+        f"  Description: {info.get('description', 'N/A')[:100] if info.get('description') else 'N/A'}"
+    )
 
     if is_openapi_3:
         # OpenAPI 3.x: servers
@@ -359,7 +370,11 @@ def _log_spec_details(spec: Dict[str, Any], func_logger) -> None:
         func_logger.debug("  Path endpoints:")
         for path_name, path_item in paths.items():
             if isinstance(path_item, dict):
-                methods = [m.upper() for m in path_item.keys() if m in ["get", "post", "put", "delete", "patch", "options", "head"]]
+                methods = [
+                    m.upper()
+                    for m in path_item.keys()
+                    if m in ["get", "post", "put", "delete", "patch", "options", "head"]
+                ]
                 func_logger.debug(f"    {path_name}: {', '.join(methods) if methods else 'N/A'}")
 
     if is_openapi_3:
