@@ -1,6 +1,6 @@
 """Tests for naming utilities."""
 
-from openapi_ts_client.utils.naming import schema_to_filename
+from openapi_ts_client.utils.naming import schema_to_filename, tag_to_service_name
 
 
 class TestSchemaToFilename:
@@ -27,3 +27,23 @@ class TestSchemaToFilename:
     def test_already_camelcase(self):
         """Already camelCase stays the same."""
         assert schema_to_filename("biomeTypeIn") == "biomeTypeIn.ts"
+
+
+class TestTagToServiceName:
+    """Tests for tag_to_service_name function."""
+
+    def test_simple_tag(self):
+        """Simple tag becomes ServiceName."""
+        assert tag_to_service_name("Feedings") == "FeedingsService"
+
+    def test_multi_word_tag(self):
+        """Multi-word tag preserves casing."""
+        assert tag_to_service_name("HealthReports") == "HealthReportsService"
+
+    def test_acronym_tag(self):
+        """Acronym tags preserve casing."""
+        assert tag_to_service_name("HTTPMetrics") == "HTTPMetricsService"
+
+    def test_spaces_in_tag(self):
+        """Spaces are removed and words concatenated."""
+        assert tag_to_service_name("Care Plans") == "CarePlansService"

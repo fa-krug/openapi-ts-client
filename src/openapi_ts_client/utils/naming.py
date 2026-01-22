@@ -19,3 +19,19 @@ def schema_to_filename(schema_name: str) -> str:
     )
 
     return f"{filename}.ts"
+
+
+def tag_to_service_name(tag: str) -> str:
+    """
+    Convert OpenAPI tag to Angular service class name.
+
+    Examples:
+        Feedings -> FeedingsService
+        HTTPMetrics -> HTTPMetricsService
+        Care Plans -> CarePlansService
+    """
+    # Remove spaces and ensure first letter of each word is capitalized
+    words = tag.split()
+    class_name = "".join(word[0].upper() + word[1:] if word else "" for word in words)
+
+    return f"{class_name}Service"
