@@ -1,6 +1,7 @@
 """Generate Angular infrastructure files."""
 
 from pathlib import Path
+from typing import Any, Dict
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -21,7 +22,6 @@ STATIC_FILES = [
     "index.ts.j2",
     "api.module.ts.j2",
     "provide-api.ts.j2",
-    "configuration.ts.j2",
     "variables.ts.j2",
     "encoder.ts.j2",
     "param.ts.j2",
@@ -39,6 +39,7 @@ def generate_infrastructure(
     api_title: str,
     contact_email: str,
     base_path: str = "http://localhost",
+    security_schemes: Dict[str, Any] = None,
 ) -> None:
     """
     Generate all infrastructure files for Angular client.
@@ -48,6 +49,7 @@ def generate_infrastructure(
         api_title: API title for templated files
         contact_email: Contact email for templated files
         base_path: Base path from OpenAPI servers
+        security_schemes: Security schemes from OpenAPI spec
     """
     env = get_template_env()
 
@@ -57,6 +59,11 @@ def generate_infrastructure(
         output_name = template_name[:-3]  # Remove .j2 extension
         content = template.render()
         (output_path / output_name).write_text(content)
+
+    # Generate configuration.ts with security schemes
+    config_template = env.get_template("configuration.ts.j2")
+    config_content = config_template.render(security_schemes=security_schemes or {})
+    (output_path / "configuration.ts").write_text(config_content)
 
     # Generate templated files
     for template_name in TEMPLATED_FILES:

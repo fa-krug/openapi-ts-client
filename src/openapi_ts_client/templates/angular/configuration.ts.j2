@@ -90,6 +90,27 @@ constructor({ accessToken, apiKeys, basePath, credentials, encodeParam, encoder,
         }
         this.encodeParam = encodeParam ?? (param => this.defaultEncodeParam(param));
         this.credentials = credentials ?? {};
+{% for scheme_name, scheme in security_schemes.items() %}
+
+        // init default {{ scheme_name }} credential
+        if (!this.credentials['{{ scheme_name }}']) {
+{% if scheme.type == 'oauth2' %}
+            this.credentials['{{ scheme_name }}'] = () => {
+                return typeof this.accessToken === 'function'
+                    ? this.accessToken()
+                    : this.accessToken;
+            };
+{% elif scheme.type == 'apiKey' %}
+            this.credentials['{{ scheme_name }}'] = () => {
+                if (this.apiKeys === null || this.apiKeys === undefined) {
+                    return undefined;
+                } else {
+                    return this.apiKeys['{{ scheme_name }}'] || this.apiKeys['{{ scheme.name }}'];
+                }
+            };
+{% endif %}
+        }
+{% endfor %}
     }
 
     /**
