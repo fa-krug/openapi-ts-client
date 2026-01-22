@@ -2,6 +2,7 @@
 
 import json
 import os
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -16,7 +17,7 @@ logger = setup_logging()
 def generate_typescript_client(
     openapi_spec: Union[Dict[str, Any], str],
     output_format: ClientFormat = ClientFormat.FETCH,
-    output_path: Union[str, Path] = ".",
+    output_path: Union[str, Path, None] = None,
 ) -> str:
     """
     Generate a TypeScript client from an OpenAPI specification.
@@ -35,7 +36,7 @@ def generate_typescript_client(
             - ClientFormat.REACT: React-optimized client with hooks
             - ClientFormat.ANGULAR: Angular-optimized client with services
         output_path: The directory path where the generated client will be written.
-            Defaults to the current directory (".").
+            Defaults to a temporary directory if not specified.
 
     Returns:
         A status message indicating the result of the generation process.
@@ -56,6 +57,11 @@ def generate_typescript_client(
     func_logger.info("=" * 80)
     func_logger.info("Starting TypeScript client generation")
     func_logger.info("=" * 80)
+
+    # Use temp directory if output_path not specified
+    if output_path is None:
+        output_path = Path(tempfile.mkdtemp(prefix="openapi_ts_client_"))
+        func_logger.info(f"No output path specified, using temp directory: {output_path}")
 
     # Log input parameters
     func_logger.debug(f"Input parameter 'output_format': {output_format}")
