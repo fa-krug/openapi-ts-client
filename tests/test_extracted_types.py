@@ -119,3 +119,33 @@ class TestGenerateModelsWithExtraction:
         barrel = (tmp_path / "models.ts").read_text()
         assert "export * from './score';" in barrel
         assert "export * from './testSchema';" in barrel
+
+
+class TestModelPropertyReferences:
+    """Tests for model properties referencing extracted types."""
+
+    def test_property_references_extracted_type(self, tmp_path: Path):
+        """Property with titled anyOf references the extracted type."""
+        spec = {
+            "info": {"title": "Test API"},
+            "components": {
+                "schemas": {
+                    "TestSchema": {
+                        "properties": {
+                            "score": {
+                                "anyOf": [{"type": "number"}, {"type": "string"}],
+                                "title": "Score",
+                            }
+                        }
+                    }
+                }
+            },
+        }
+
+        generate_models(spec, tmp_path)
+
+        # testSchema.ts should reference Score, not inline number | string
+        content = (tmp_path / "testSchema.ts").read_text()
+        assert "score?: Score;" in content
+        assert "import { Score } from './score';" in content
+        assert "number | string" not in content

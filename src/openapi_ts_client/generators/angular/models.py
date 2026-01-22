@@ -35,6 +35,7 @@ def _get_property_info(
     prop_schema: Dict[str, Any],
     required_props: List[str],
     interface_name: str,
+    registry: Dict[str, Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Get property information for template rendering.
@@ -44,10 +45,14 @@ def _get_property_info(
         prop_schema: The property schema
         required_props: List of required property names
         interface_name: Name of the parent interface (for enum type references)
+        registry: Extraction registry for titled anyOf schemas
 
     Returns:
         Dict with name, type, required status, and enum info
     """
+    if registry is None:
+        registry = {}
+
     enum_values = prop_schema.get("enum")
     description = prop_schema.get("description", "")
 
@@ -68,8 +73,8 @@ def _get_property_info(
             "enum_values": enum_values,
         }
 
-    # Non-enum property
-    ts_type, imports = map_openapi_type_with_imports(prop_schema)
+    # Non-enum property - pass registry for titled anyOf lookups
+    ts_type, imports = map_openapi_type_with_imports(prop_schema, registry)
     return {
         "name": prop_name,
         "type": ts_type,
@@ -88,6 +93,7 @@ def _generate_model_file(
     schema: Dict[str, Any],
     api_title: str,
     contact_email: str,
+    registry: Dict[str, Dict[str, Any]] = None,
 ) -> str:
     """
     Generate a single model file content.
@@ -98,10 +104,14 @@ def _generate_model_file(
         schema: The schema definition
         api_title: API title for the header
         contact_email: Contact email for the header
+        registry: Extraction registry for titled anyOf schemas
 
     Returns:
         Generated TypeScript content
     """
+    if registry is None:
+        registry = {}
+
     template = env.get_template("model.ts.j2")
 
     properties = schema.get("properties", {})
@@ -113,7 +123,9 @@ def _generate_model_file(
     enums = []
 
     for prop_name, prop_schema in properties.items():
-        info = _get_property_info(prop_name, prop_schema, required_props, schema_name)
+        info = _get_property_info(
+            prop_name, prop_schema, required_props, schema_name, registry
+        )
         prop_infos.append(info)
         all_imports.update(info["imports"])
 
@@ -206,7 +218,9 @@ def generate_all_models(
     # Generate schema model files
     for schema_name, schema in schemas.items():
         # Generate model file
-        content = _generate_model_file(env, schema_name, schema, api_title, contact_email)
+        content = _generate_model_file(
+            env, schema_name, schema, api_title, contact_email, registry
+        )
 
         # Get filename (without .ts extension for barrel export)
         filename = schema_to_filename(schema_name)
