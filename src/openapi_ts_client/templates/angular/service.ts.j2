@@ -80,6 +80,16 @@ export class {{ service_name }} extends BaseService {
 
 {% endif %}
         let localVarHeaders = this.defaultHeaders;
+{% for param in method.header_params %}
+        if ({{ param.name }} !== undefined && {{ param.name }} !== null) {
+            localVarHeaders = localVarHeaders.set('{{ param.header_name }}', String({{ param.name }}));
+        }
+{% endfor %}
+{% for auth in method.auth_methods %}
+
+        // authentication ({{ auth.name }}) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{ auth.name }}', '{{ auth.header_name }}', localVarHeaders{% if auth.prefix %}, '{{ auth.prefix }}'{% endif %});
+{% endfor %}
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
 {% for accept in method.accept_list %}
@@ -99,7 +109,10 @@ export class {{ service_name }} extends BaseService {
 
         // to determine the Content-Type header
         const consumes: string[] = [
-            'application/json'
+{% for ct in method.content_types %}
+            '{{ ct }}'{% if not loop.last %},{% endif %}
+
+{% endfor %}
         ];
         const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
         if (httpContentTypeSelected !== undefined) {

@@ -33,6 +33,16 @@ def get_template_env() -> Environment:
     return env
 
 
+def _to_camel_case(name: str) -> str:
+    """Convert snake_case or kebab-case to camelCase."""
+    # Split by underscore or hyphen
+    parts = re.split(r'[_-]', name)
+    if not parts:
+        return name
+    # First part lowercase, rest title case
+    return parts[0] + ''.join(word.title() for word in parts[1:])
+
+
 def _extract_path_params(path: str) -> List[str]:
     """Extract path parameter names from a path template."""
     return re.findall(r'\{(\w+)\}', path)
@@ -90,21 +100,35 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
     return "any", set()
 
 
-def _extract_request_body_type(operation: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Set[str]]:
-    """Extract request body parameter name and type."""
+def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Set[str], List[str]]:
+    """Extract request body parameter name, type, imports, and content types."""
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
 
-    if "application/json" in content:
-        schema = content["application/json"].get("schema", {})
+    # Get all content types
+    content_types = list(content.keys())
 
-        if "$ref" in schema:
-            type_name = schema["$ref"].split("/")[-1]
-            # Convert to camelCase for parameter name
-            param_name = type_name[0].lower() + type_name[1:]
-            return param_name, type_name, {type_name}
+    if not content_types:
+        return None, None, set(), []
 
-    return None, None, set()
+    # Find a schema to determine the type (prefer application/json)
+    schema = None
+    for ct in ["application/json", "application/xml", "application/x-www-form-urlencoded"]:
+        if ct in content:
+            schema = content[ct].get("schema", {})
+            break
+
+    if schema and "$ref" in schema:
+        type_name = schema["$ref"].split("/")[-1]
+        # Convert to camelCase for parameter name
+        param_name = type_name[0].lower() + type_name[1:]
+        return param_name, type_name, {type_name}, content_types
+
+    # Handle octet-stream (binary) body
+    if "application/octet-stream" in content:
+        return "body", "Blob", set(), content_types
+
+    return None, None, set(), content_types
 
 
 def _extract_accept_types(operation: Dict[str, Any]) -> List[str]:
@@ -155,6 +179,29 @@ def extract_service_data(
         parameters = operation.get("parameters", [])
         path_params = [p for p in parameters if p.get("in") == "path"]
         query_params = [p for p in parameters if p.get("in") == "query"]
+        header_params = [p for p in parameters if p.get("in") == "header"]
+
+        # Extract security requirements
+        security = operation.get("security", [])
+        auth_methods = []
+        for sec in security:
+            for scheme_name in sec.keys():
+                # Determine auth type based on scheme name (simplified)
+                if scheme_name == "api_key":
+                    auth_methods.append({
+                        "name": scheme_name,
+                        "type": "apiKey",
+                        "header_name": "api_key",
+                        "prefix": "",
+                    })
+                else:
+                    # Assume oauth2 for other schemes
+                    auth_methods.append({
+                        "name": scheme_name,
+                        "type": "oauth2",
+                        "header_name": "Authorization",
+                        "prefix": "Bearer ",
+                    })
 
         # Build required params list (path params are always required)
         required_params = []
@@ -168,7 +215,7 @@ def extract_service_data(
             })
 
         # Handle request body
-        body_param_name, body_param_type, body_imports = _extract_request_body_type(operation)
+        body_param_name, body_param_type, body_imports, content_types = _extract_request_body_info(operation)
         model_imports.update(body_imports)
 
         if body_param_name:
@@ -192,6 +239,20 @@ def extract_service_data(
         else:
             accept_types = "undefined"
 
+        # Build header params data
+        header_param_data = []
+        for p in header_params:
+            ts_type, imports = _get_typescript_type_for_param(p)
+            model_imports.update(imports)
+            param_name = _to_camel_case(p["name"])
+            header_param_data.append({
+                "name": param_name,  # camelCase for variable
+                "header_name": p["name"],  # original for HTTP header
+                "type": ts_type,
+                "required": p.get("required", False),
+                "description": p.get("description", ""),
+            })
+
         # Build parameter signatures
         all_params = []
 
@@ -199,6 +260,17 @@ def extract_service_data(
         for p in path_params:
             ts_type, _ = _get_typescript_type_for_param(p)
             all_params.append({"name": p["name"], "type": ts_type, "required": True, "description": p.get("description", "")})
+
+        # Header parameters next (optional)
+        for p in header_params:
+            ts_type, _ = _get_typescript_type_for_param(p)
+            param_name = _to_camel_case(p["name"])
+            all_params.append({
+                "name": param_name,  # camelCase for variable
+                "type": ts_type,
+                "required": p.get("required", False),
+                "description": p.get("description", ""),
+            })
 
         # Request body next
         if body_param_name:
@@ -244,8 +316,11 @@ def extract_service_data(
             "parameters": all_params,
             "required_params": required_params,
             "query_params": query_param_data,
+            "header_params": header_param_data,
+            "auth_methods": auth_methods,
             "has_body": body_param_name is not None,
             "body_param_name": body_param_name,
+            "content_types": content_types,
             "return_type": return_type,
             "accept_types": accept_types,
             "accept_list": accept_list,
