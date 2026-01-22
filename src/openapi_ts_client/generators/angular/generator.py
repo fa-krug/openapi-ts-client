@@ -1,0 +1,55 @@
+"""Angular TypeScript client generator orchestrator."""
+
+from pathlib import Path
+from typing import Any, Dict
+
+from openapi_ts_client.logging_config import get_logger
+from openapi_ts_client.utils.openapi import load_and_resolve_spec
+from .models import generate_all_models
+from .services import generate_all_services
+from .infrastructure import generate_infrastructure
+
+
+def generate_angular_client(
+    spec: Dict[str, Any],
+    output_path: Path,
+) -> None:
+    """
+    Generate complete Angular TypeScript client.
+
+    Args:
+        spec: OpenAPI specification dictionary
+        output_path: Directory to write generated files
+    """
+    logger = get_logger("angular.generator")
+
+    logger.info("Starting Angular client generation")
+
+    # Resolve all $refs
+    resolved_spec = load_and_resolve_spec(spec)
+
+    # Extract metadata
+    info = resolved_spec.get("info", {})
+    api_title = info.get("title", "API")
+    api_description = info.get("description", "")
+
+    # Create output directories
+    output_path.mkdir(parents=True, exist_ok=True)
+    (output_path / "model").mkdir(exist_ok=True)
+    (output_path / "api").mkdir(exist_ok=True)
+
+    # Generate models
+    logger.info("Generating models...")
+    schemas = resolved_spec.get("components", {}).get("schemas", {})
+    generate_all_models(schemas, output_path / "model", api_title, api_description)
+
+    # Generate services
+    logger.info("Generating services...")
+    paths = resolved_spec.get("paths", {})
+    generate_all_services(paths, output_path / "api", api_title, api_description)
+
+    # Generate infrastructure files
+    logger.info("Generating infrastructure files...")
+    generate_infrastructure(output_path, api_title, api_description)
+
+    logger.info("Angular client generation complete")

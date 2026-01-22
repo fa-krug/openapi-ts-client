@@ -105,12 +105,37 @@ def generate_models(spec: Dict[str, Any], output_dir: Path) -> None:
         spec: OpenAPI specification dict
         output_dir: Directory to write model files to
     """
-    env = _create_jinja_env()
-
     api_title = spec.get("info", {}).get("title", "")
     api_description = spec.get("info", {}).get("description", "")
-
     schemas = spec.get("components", {}).get("schemas", {})
+
+    generate_all_models(schemas, output_dir, api_title, api_description)
+
+
+def generate_all_models(
+    schemas: Dict[str, Any],
+    output_dir: Path,
+    api_title: str,
+    api_description: str,
+) -> None:
+    """
+    Generate all model files from schemas.
+
+    Args:
+        schemas: OpenAPI schemas dict
+        output_dir: Directory to write model files to
+        api_title: API title for header comments
+        api_description: API description for header comments
+    """
+    env = _create_jinja_env()
+
+    # Add the schema_to_filename_filter to the environment
+    def _schema_to_filename_filter(name: str) -> str:
+        """Jinja2 filter to convert schema name to filename without .ts extension."""
+        filename = schema_to_filename(name)
+        return filename[:-3] if filename.endswith(".ts") else filename
+
+    env.filters["schema_to_filename_filter"] = _schema_to_filename_filter
 
     model_filenames = []
 

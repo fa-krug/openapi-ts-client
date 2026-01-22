@@ -90,7 +90,8 @@ class TestGenerateTypescriptClient:
             "paths": {},
         }
         result = generate_typescript_client(spec, output_format=ClientFormat.ANGULAR)
-        assert "Format: angular" in result
+        # Angular format now actually generates, so check for success message
+        assert "Angular client generated" in result
 
     def test_custom_output_path_string(self):
         """Test generation with custom output path as string."""

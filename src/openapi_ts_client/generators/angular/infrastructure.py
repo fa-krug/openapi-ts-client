@@ -1,0 +1,67 @@
+"""Generate Angular infrastructure files."""
+
+from pathlib import Path
+
+from jinja2 import Environment, PackageLoader, select_autoescape
+
+
+def get_template_env() -> Environment:
+    """Get Jinja2 environment with templates loaded."""
+    env = Environment(
+        loader=PackageLoader("openapi_ts_client", "templates/angular"),
+        autoescape=select_autoescape(),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    return env
+
+
+# Static infrastructure files (no template variables needed)
+STATIC_FILES = [
+    "index.ts.j2",
+    "api.module.ts.j2",
+    "provide-api.ts.j2",
+    "configuration.ts.j2",
+    "variables.ts.j2",
+    "encoder.ts.j2",
+    "param.ts.j2",
+    "query.params.ts.j2",
+]
+
+# Files that need template variables
+TEMPLATED_FILES = [
+    "api.base.service.ts.j2",
+]
+
+
+def generate_infrastructure(
+    output_path: Path,
+    api_title: str,
+    api_description: str,
+) -> None:
+    """
+    Generate all infrastructure files for Angular client.
+
+    Args:
+        output_path: Directory to write infrastructure files
+        api_title: API title for templated files
+        api_description: API description for templated files
+    """
+    env = get_template_env()
+
+    # Generate static files (no variable substitution needed)
+    for template_name in STATIC_FILES:
+        template = env.get_template(template_name)
+        output_name = template_name[:-3]  # Remove .j2 extension
+        content = template.render()
+        (output_path / output_name).write_text(content)
+
+    # Generate templated files
+    for template_name in TEMPLATED_FILES:
+        template = env.get_template(template_name)
+        output_name = template_name[:-3]  # Remove .j2 extension
+        content = template.render(
+            api_title=api_title,
+            api_description=api_description or "",
+        )
+        (output_path / output_name).write_text(content)

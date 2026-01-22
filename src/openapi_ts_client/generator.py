@@ -7,6 +7,7 @@ from typing import Any, Dict, Union
 
 from .enums import ClientFormat
 from .logging_config import get_logger, setup_logging
+from .generators.angular.generator import generate_angular_client
 
 # Initialize logger with verbose output
 logger = setup_logging()
@@ -110,25 +111,32 @@ def generate_typescript_client(
     func_logger.info(f"  API Version: {parsed_spec.get('info', {}).get('version', 'Unknown')}")
     func_logger.info("-" * 60)
 
-    # Placeholder for actual generation logic
-    func_logger.warning("=" * 80)
-    func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED")
-    func_logger.warning("This is a placeholder. The actual TypeScript client generation")
-    func_logger.warning("logic needs to be implemented in this function.")
-    func_logger.warning("=" * 80)
-
     # Build status message
     api_title = parsed_spec.get("info", {}).get("title", "Unknown API")
     api_version = parsed_spec.get("info", {}).get("version", "Unknown")
     paths_count = len(parsed_spec.get("paths", {}))
 
-    status_message = (
-        f"TypeScript client generation initiated for '{api_title}' v{api_version} "
-        f"(OpenAPI {openapi_version}). "
-        f"Format: {output_format.value}, Output: {resolved_output_path}, "
-        f"Paths to process: {paths_count}. "
-        f"NOTE: Generation logic not yet implemented."
-    )
+    # Dispatch to appropriate generator based on format
+    if output_format == ClientFormat.ANGULAR:
+        func_logger.info("Dispatching to Angular generator")
+        generate_angular_client(parsed_spec, resolved_output_path)
+        status_message = (
+            f"TypeScript Angular client generated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Output: {resolved_output_path}"
+        )
+    else:
+        # Placeholder for other formats
+        func_logger.warning("=" * 80)
+        func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED FOR THIS FORMAT")
+        func_logger.warning("=" * 80)
+        status_message = (
+            f"TypeScript client generation initiated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Format: {output_format.value}, Output: {resolved_output_path}, "
+            f"Paths to process: {paths_count}. "
+            f"NOTE: Generation logic not yet implemented for this format."
+        )
 
     func_logger.info("=" * 80)
     func_logger.info("Generation process completed")
