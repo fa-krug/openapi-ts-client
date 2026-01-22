@@ -123,3 +123,34 @@ class TestMapOpenapiTypeNullable:
             ]
         }
         assert map_openapi_type(schema) == "string | number"
+
+
+class TestMapOpenapiTypeWithRegistry:
+    """Tests for type mapping with extraction registry."""
+
+    def test_titled_anyof_uses_extracted_type(self):
+        """Titled anyOf returns extracted type name from registry."""
+        schema = {
+            "anyOf": [{"type": "number"}, {"type": "string"}],
+            "title": "Score",
+        }
+        registry = {
+            "test/path": {
+                "type_name": "Score",
+                "title": "Score",
+                "description": "",
+                "schema": schema,
+            }
+        }
+        # Need to pass registry and match by schema identity
+        result, imports = map_openapi_type_with_imports(schema, registry)
+        assert result == "Score"
+        assert "Score" in imports
+
+    def test_untitled_anyof_still_inlines(self):
+        """anyOf without title still produces inline union."""
+        schema = {
+            "anyOf": [{"type": "string"}, {"type": "null"}],
+        }
+        result, imports = map_openapi_type_with_imports(schema, {})
+        assert result == "string | null"
