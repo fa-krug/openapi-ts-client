@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from jinja2 import Environment, PackageLoader
 
 from openapi_ts_client.utils import schema_to_filename
+
 from .type_mapper import map_openapi_type_with_imports
 
 
@@ -116,10 +117,12 @@ def _generate_model_file(
         all_imports.update(info["imports"])
 
         if info["is_enum"]:
-            enums.append({
-                "name": info["enum_name"],
-                "enum_values": info["enum_values"],
-            })
+            enums.append(
+                {
+                    "name": info["enum_name"],
+                    "enum_values": info["enum_values"],
+                }
+            )
 
     # Sort imports alphabetically
     sorted_imports = sorted(all_imports)
@@ -178,9 +181,7 @@ def generate_all_models(
 
     for schema_name, schema in schemas.items():
         # Generate model file
-        content = _generate_model_file(
-            env, schema_name, schema, api_title, contact_email
-        )
+        content = _generate_model_file(env, schema_name, schema, api_title, contact_email)
 
         # Get filename (without .ts extension for barrel export)
         filename = schema_to_filename(schema_name)
@@ -194,7 +195,44 @@ def generate_all_models(
 
     # Generate barrel export (models.ts)
     barrel_template = env.get_template("models.ts.j2")
-    barrel_content = barrel_template.render(
-        model_filenames=sorted(model_filenames)
-    )
+    barrel_content = barrel_template.render(model_filenames=sorted(model_filenames))
     (output_dir / "models.ts").write_text(barrel_content)
+
+
+def generate_extracted_type_file(
+    type_name: str,
+    description: str,
+    output_dir: Path,
+    api_title: str,
+    contact_email: str,
+) -> str:
+    """
+    Generate an empty interface file for an extracted anyOf type.
+
+    Args:
+        type_name: PascalCase type name (e.g., "Score", "CodeDuplication")
+        description: Optional description for JSDoc
+        output_dir: Directory to write the file
+        api_title: API title for header
+        contact_email: Contact email for header
+
+    Returns:
+        Filename without extension (for barrel export)
+    """
+    env = _create_jinja_env()
+    template = env.get_template("extracted_type.ts.j2")
+
+    content = template.render(
+        api_title=api_title,
+        contact_email=contact_email,
+        interface_name=type_name,
+        description=description,
+    )
+
+    filename = schema_to_filename(type_name)
+    filename_without_ext = filename[:-3]
+
+    output_file = output_dir / filename
+    output_file.write_text(content)
+
+    return filename_without_ext
