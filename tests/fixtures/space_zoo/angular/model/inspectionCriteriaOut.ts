@@ -21,9 +21,6 @@ export interface InspectionCriteriaOut {
     value?: string | null;
     score?: Score;
     section?: string | null;
-    /**
-     * Set to false to hide field from all views and calculations
-     */
     visible?: boolean;
 }
 

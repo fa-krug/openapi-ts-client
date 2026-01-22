@@ -17,9 +17,6 @@ export interface User {
     email?: string;
     password?: string;
     phone?: string;
-    /**
-     * User Status
-     */
     userStatus?: number;
 }
 

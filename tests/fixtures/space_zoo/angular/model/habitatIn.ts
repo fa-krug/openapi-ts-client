@@ -8,8 +8,8 @@
  * Do not edit the class manually.
  */
 import { BiomeTypeIn } from './biomeTypeIn';
-import { OriginPlanetIn } from './originPlanetIn';
 import { EnclosureIn } from './enclosureIn';
+import { OriginPlanetIn } from './originPlanetIn';
 
 
 export interface HabitatIn { 

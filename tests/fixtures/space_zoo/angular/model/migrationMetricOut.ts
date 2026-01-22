@@ -12,9 +12,6 @@ import { CodeQuality } from './codeQuality';
 
 export interface MigrationMetricOut { 
     id?: number | null;
-    /**
-     * Unique ID of the metric
-     */
     metricId?: string;
     datetime?: string | null;
     habitat_id?: number | null;

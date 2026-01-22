@@ -13,9 +13,6 @@ export interface PermitOut {
     id?: number | null;
     name: string;
     allowed?: boolean | null;
-    /**
-     * Risk score associated with the license
-     */
     riskScore?: number;
     sourceUrl?: string | null;
 }

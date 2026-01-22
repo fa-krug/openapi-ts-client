@@ -7,19 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SecurityRating } from './securityRating';
-import { ReliabilityRating } from './reliabilityRating';
 import { CodeDuplication } from './codeDuplication';
-import { SecurityReviewRating } from './securityReviewRating';
 import { MaintainabilityRating } from './maintainabilityRating';
+import { ReliabilityRating } from './reliabilityRating';
+import { SecurityRating } from './securityRating';
+import { SecurityReviewRating } from './securityReviewRating';
 import { TestCoverage } from './testCoverage';
 
 
 export interface WellnessMetricOut { 
     id?: number | null;
-    /**
-     * Unique ID of the metric
-     */
     metricId?: string;
     datetime?: string | null;
     habitat_id?: number | null;

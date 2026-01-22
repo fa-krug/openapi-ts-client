@@ -7,17 +7,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SupplyOut } from './supplyOut';
-import { FoodPackageOut } from './foodPackageOut';
-import { SupplyCategoryOut } from './supplyCategoryOut';
 import { EnclosureNames } from './enclosureNames';
-import { VulnerabilityOut } from './vulnerabilityOut';
+import { FoodPackageOut } from './foodPackageOut';
 import { HabitatNames } from './habitatNames';
 import { PermitOut } from './permitOut';
+import { SupplyCategoryOut } from './supplyCategoryOut';
+import { SupplyOut } from './supplyOut';
+import { VulnerabilityOut } from './vulnerabilityOut';
 
 
 export interface SupplyDetails { 
-    'package': FoodPackageOut;
+    package: FoodPackageOut;
     habitat: HabitatNames;
     image: EnclosureNames;
     licenses: Array<PermitOut>;
@@ -29,15 +29,9 @@ export interface SupplyDetails {
     id?: number | null;
     purl?: string | null;
     version?: string | null;
-    /**
-     * BOM reference identifier for the dependency
-     */
     bomRef: string;
     type?: string | null;
     author?: string | null;
-    /**
-     * Dependency risk score
-     */
     riskScore?: number;
     riskDetails?: string | null;
 }

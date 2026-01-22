@@ -12,7 +12,7 @@
 export interface SupplyFilter { 
     id?: string | null;
     purl?: string | null;
-    'package'?: string | null;
+    package?: string | null;
     version?: string | null;
     image?: string | null;
     bomRef?: string | null;
