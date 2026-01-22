@@ -1,5 +1,6 @@
 """Extract anyOf schemas with titles as separate type definitions."""
 
+import json
 from typing import Any, Dict, List
 
 
@@ -27,8 +28,8 @@ def _scan_for_titled_anyofs(
 ) -> None:
     """Recursively scan object for titled anyOf schemas."""
     if isinstance(obj, dict):
-        # Check if this is a titled anyOf
-        if "anyOf" in obj and "title" in obj:
+        # Check if this is a titled anyOf with complex types
+        if "anyOf" in obj and "title" in obj and _is_complex_anyof(obj["anyOf"]):
             discoveries.append({
                 "path": path,
                 "title": obj["title"],
@@ -43,11 +44,41 @@ def _scan_for_titled_anyofs(
             _scan_for_titled_anyofs(item, f"{path}[{i}]", discoveries)
 
 
+def _is_complex_anyof(anyof: List[Dict[str, Any]]) -> bool:
+    """
+    Determine if an anyOf schema is complex enough to warrant extraction.
+
+    Complex anyOf schemas include:
+    - Schemas with pattern constraints
+    - Schemas mixing different non-null primitive types (e.g., number AND string)
+
+    Simple anyOf schemas (not extracted) include:
+    - Nullable types (e.g., string | null)
+    - Single primitive types with null
+    """
+    # Check for pattern constraints
+    if any("pattern" in schema for schema in anyof):
+        return True
+
+    # Check for mixed primitive types (excluding null)
+    non_null_types = set()
+    for schema in anyof:
+        schema_type = schema.get("type")
+        if schema_type and schema_type != "null":
+            non_null_types.add(schema_type)
+
+    # If there are multiple different non-null types, it's complex
+    return len(non_null_types) > 1
+
+
 def assign_type_names(
     discoveries: List[Dict[str, Any]], existing_schemas: set
 ) -> Dict[str, Dict[str, Any]]:
     """
     Assign unique type names to discovered titled anyOf schemas.
+
+    Deduplicates by (title, anyOf content) - schemas with the same title AND
+    identical anyOf structure share the same extracted type name.
 
     Args:
         discoveries: List from discover_titled_anyofs()
@@ -63,10 +94,24 @@ def assign_type_names(
     used_names: set = set(existing_schemas)
     registry: Dict[str, Dict[str, Any]] = {}
 
+    # Track assigned type names by (title, anyof_key) for deduplication
+    type_name_cache: Dict[str, str] = {}
+
     for discovery in sorted_discoveries:
         base_name = _title_to_pascal_case(discovery["title"])
-        type_name = _get_unique_name(base_name, used_names)
-        used_names.add(type_name)
+
+        # Create a key for deduplication: title + normalized anyOf content
+        anyof_key = json.dumps(discovery["schema"].get("anyOf", []), sort_keys=True)
+        cache_key = f"{discovery['title']}:{anyof_key}"
+
+        if cache_key in type_name_cache:
+            # Reuse existing type name for identical (title, anyOf) combinations
+            type_name = type_name_cache[cache_key]
+        else:
+            # Assign new unique type name
+            type_name = _get_unique_name(base_name, used_names)
+            used_names.add(type_name)
+            type_name_cache[cache_key] = type_name
 
         registry[discovery["path"]] = {
             "type_name": type_name,

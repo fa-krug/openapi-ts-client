@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from openapi_ts_client.logging_config import get_logger
 from openapi_ts_client.utils.openapi import load_and_resolve_spec
-from .models import generate_all_models
+from .models import generate_models
 from .services import generate_all_services
 from .infrastructure import generate_infrastructure
 
@@ -50,8 +50,7 @@ def generate_angular_client(
 
     # Generate models
     logger.info("Generating models...")
-    schemas = resolved_spec.get("components", {}).get("schemas", {})
-    generate_all_models(schemas, output_path / "model", api_title, contact_email)
+    generate_models(resolved_spec, output_path / "model")
 
     # Collect model files (includes models.ts barrel export)
     model_files = [f.name for f in (output_path / "model").iterdir() if f.is_file()]
