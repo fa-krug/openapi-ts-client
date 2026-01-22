@@ -2,7 +2,10 @@
 
 from pathlib import Path
 
-from openapi_ts_client.generators.angular.models import generate_extracted_type_file
+from openapi_ts_client.generators.angular.models import (
+    generate_extracted_type_file,
+    generate_models,
+)
 
 
 class TestGenerateExtractedTypeFile:
@@ -58,3 +61,61 @@ class TestGenerateExtractedTypeFile:
         )
 
         assert result == "testCoverage"
+
+
+class TestGenerateModelsWithExtraction:
+    """Tests for model generation with anyOf extraction."""
+
+    def test_generates_extracted_type_files(self, tmp_path: Path):
+        """Generates separate files for titled anyOf schemas."""
+        spec = {
+            "info": {"title": "Test API"},
+            "components": {
+                "schemas": {
+                    "TestSchema": {
+                        "properties": {
+                            "score": {
+                                "anyOf": [{"type": "number"}, {"type": "string"}],
+                                "title": "Score",
+                                "description": "A score value",
+                            }
+                        }
+                    }
+                }
+            },
+        }
+
+        generate_models(spec, tmp_path)
+
+        # Should generate both testSchema.ts and score.ts
+        assert (tmp_path / "testSchema.ts").exists()
+        assert (tmp_path / "score.ts").exists()
+
+        # score.ts should be an empty interface with description
+        score_content = (tmp_path / "score.ts").read_text()
+        assert "export interface Score {" in score_content
+        assert "A score value" in score_content
+
+    def test_extracted_types_in_barrel_export(self, tmp_path: Path):
+        """Extracted types are included in models.ts barrel export."""
+        spec = {
+            "info": {"title": "Test API"},
+            "components": {
+                "schemas": {
+                    "TestSchema": {
+                        "properties": {
+                            "score": {
+                                "anyOf": [{"type": "number"}],
+                                "title": "Score",
+                            }
+                        }
+                    }
+                }
+            },
+        }
+
+        generate_models(spec, tmp_path)
+
+        barrel = (tmp_path / "models.ts").read_text()
+        assert "export * from './score';" in barrel
+        assert "export * from './testSchema';" in barrel

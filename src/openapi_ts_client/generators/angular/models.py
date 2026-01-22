@@ -7,6 +7,7 @@ from jinja2 import Environment, PackageLoader
 
 from openapi_ts_client.utils import schema_to_filename
 
+from .anyof_extractor import create_extraction_registry
 from .type_mapper import map_openapi_type_with_imports
 
 
@@ -149,7 +150,10 @@ def generate_models(spec: Dict[str, Any], output_dir: Path) -> None:
     contact_email = spec.get("info", {}).get("contact", {}).get("email", "")
     schemas = spec.get("components", {}).get("schemas", {})
 
-    generate_all_models(schemas, output_dir, api_title, contact_email)
+    # Create extraction registry for titled anyOf schemas
+    registry = create_extraction_registry(spec)
+
+    generate_all_models(schemas, output_dir, api_title, contact_email, registry)
 
 
 def generate_all_models(
@@ -157,6 +161,7 @@ def generate_all_models(
     output_dir: Path,
     api_title: str,
     contact_email: str,
+    registry: Dict[str, Dict[str, Any]] = None,
 ) -> None:
     """
     Generate all model files from schemas.
@@ -166,7 +171,11 @@ def generate_all_models(
         output_dir: Directory to write model files to
         api_title: API title for header comments
         contact_email: Contact email for header comments
+        registry: Extraction registry for titled anyOf schemas
     """
+    if registry is None:
+        registry = {}
+
     env = _create_jinja_env()
 
     # Add the schema_to_filename_filter to the environment
@@ -179,6 +188,22 @@ def generate_all_models(
 
     model_filenames = []
 
+    # Generate extracted type files first
+    generated_types = set()
+    for _path, info in registry.items():
+        type_name = info["type_name"]
+        if type_name not in generated_types:
+            filename = generate_extracted_type_file(
+                type_name=type_name,
+                description=info["description"],
+                output_dir=output_dir,
+                api_title=api_title,
+                contact_email=contact_email,
+            )
+            model_filenames.append(filename)
+            generated_types.add(type_name)
+
+    # Generate schema model files
     for schema_name, schema in schemas.items():
         # Generate model file
         content = _generate_model_file(env, schema_name, schema, api_title, contact_email)
