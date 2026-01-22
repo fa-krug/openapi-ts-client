@@ -136,11 +136,11 @@ export class {{ service_name }} extends BaseService {
         return this.httpClient.request<{{ method.return_type }}>('{{ method.http_method }}', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-{% if method.query_params %}
-                params: localVarQueryParameters.toHttpParams(),
-{% endif %}
 {% if method.has_body %}
                 body: {{ method.body_param_name }},
+{% endif %}
+{% if method.query_params %}
+                params: localVarQueryParameters.toHttpParams(),
 {% endif %}
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),

@@ -1,5 +1,6 @@
 """Generate Angular service classes from OpenAPI paths."""
 
+import html
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -15,6 +16,15 @@ from openapi_ts_client.utils.naming import (
 from openapi_ts_client.generators.angular.type_mapper import map_openapi_type_with_imports
 
 
+def _escape_description(text: str) -> str:
+    """Escape HTML entities in description text, matching OpenAPI Generator output."""
+    # First apply standard HTML escaping
+    escaped = html.escape(text)
+    # Also escape = as &#x3D; to match OpenAPI Generator
+    escaped = escaped.replace("=", "&#x3D;")
+    return escaped
+
+
 def _schema_to_filename_filter(name: str) -> str:
     """Jinja2 filter to convert schema name to filename without .ts extension."""
     filename = schema_to_filename(name)
@@ -28,6 +38,7 @@ def get_template_env() -> Environment:
         autoescape=select_autoescape(),
         trim_blocks=True,
         lstrip_blocks=True,
+        keep_trailing_newline=True,
     )
     env.filters["schema_to_filename_filter"] = _schema_to_filename_filter
     return env
@@ -73,10 +84,11 @@ def _build_path_template(path: str, path_params: List[Dict[str, Any]]) -> str:
 
         # Replace {name} with template expression
         placeholder = f'{{{name}}}'
+        data_format_str = f'"{data_format}"' if data_format else "undefined"
         replacement = (
             f'${{this.configuration.encodeParam({{name: "{name}", value: {name}, '
             f'in: "path", style: "simple", explode: false, '
-            f'dataType: "{data_type}", dataFormat: {repr(data_format) if data_format else "undefined"}}})}}'
+            f'dataType: "{data_type}", dataFormat: {data_format_str}}})}}'
         )
         result = result.replace(placeholder, replacement)
 
@@ -100,16 +112,18 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
     return "any", set()
 
 
-def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Set[str], List[str]]:
-    """Extract request body parameter name, type, imports, and content types."""
+def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Set[str], List[str], bool, str]:
+    """Extract request body parameter name, type, imports, content types, required flag, and description."""
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
+    is_required = request_body.get("required", False)
+    description = request_body.get("description", "")
 
     # Get all content types
     content_types = list(content.keys())
 
     if not content_types:
-        return None, None, set(), []
+        return None, None, set(), [], False, ""
 
     # Find a schema to determine the type (prefer application/json)
     schema = None
@@ -118,17 +132,28 @@ def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str]
             schema = content[ct].get("schema", {})
             break
 
-    if schema and "$ref" in schema:
-        type_name = schema["$ref"].split("/")[-1]
-        # Convert to camelCase for parameter name
-        param_name = type_name[0].lower() + type_name[1:]
-        return param_name, type_name, {type_name}, content_types
+    if schema:
+        # Handle $ref
+        if "$ref" in schema:
+            type_name = schema["$ref"].split("/")[-1]
+            # Convert to camelCase for parameter name
+            param_name = type_name[0].lower() + type_name[1:]
+            return param_name, type_name, {type_name}, content_types, is_required, description
+
+        # Handle array type
+        if schema.get("type") == "array":
+            items = schema.get("items", {})
+            if "$ref" in items:
+                item_type = items["$ref"].split("/")[-1]
+                # Use the item type name for parameter (lowercase first char)
+                param_name = item_type[0].lower() + item_type[1:]
+                return param_name, f"Array<{item_type}>", {item_type}, content_types, is_required, description
 
     # Handle octet-stream (binary) body
     if "application/octet-stream" in content:
-        return "body", "Blob", set(), content_types
+        return "body", "Blob", set(), content_types, is_required, description
 
-    return None, None, set(), content_types
+    return None, None, set(), content_types, False, ""
 
 
 def _extract_accept_types(operation: Dict[str, Any]) -> List[str]:
@@ -173,7 +198,7 @@ def extract_service_data(
         operation_id = operation.get("operationId", "")
         method_name = operation_id_to_method_name(operation_id)
         summary = operation.get("summary", "")
-        description = operation.get("description", "")
+        description = _escape_description(operation.get("description", ""))
 
         # Extract parameters
         parameters = operation.get("parameters", [])
@@ -215,15 +240,26 @@ def extract_service_data(
             })
 
         # Handle request body
-        body_param_name, body_param_type, body_imports, content_types = _extract_request_body_info(operation)
+        body_param_name, body_param_type, body_imports, content_types, body_is_required, body_description = _extract_request_body_info(operation)
         model_imports.update(body_imports)
 
-        if body_param_name:
+        if body_param_name and body_is_required:
             required_params.append({
                 "name": body_param_name,
                 "type": body_param_type,
-                "description": "",
+                "description": body_description,
             })
+
+        # Add required query params to required_params for validation
+        for p in query_params:
+            if p.get("required", False):
+                ts_type, imports = _get_typescript_type_for_param(p)
+                model_imports.update(imports)
+                required_params.append({
+                    "name": p["name"],
+                    "type": ts_type,
+                    "description": p.get("description", ""),
+                })
 
         # Extract response type
         return_type, return_imports = _extract_response_type(operation)
@@ -272,11 +308,7 @@ def extract_service_data(
                 "description": p.get("description", ""),
             })
 
-        # Request body next
-        if body_param_name:
-            all_params.append({"name": body_param_name, "type": body_param_type, "required": True, "description": ""})
-
-        # Query parameters last (optional)
+        # Query parameters next (optional)
         for p in query_params:
             ts_type, imports = _get_typescript_type_for_param(p)
             model_imports.update(imports)
@@ -286,6 +318,10 @@ def extract_service_data(
                 "required": p.get("required", False),
                 "description": p.get("description", ""),
             })
+
+        # Request body last
+        if body_param_name:
+            all_params.append({"name": body_param_name, "type": body_param_type, "required": body_is_required, "description": body_description})
 
         # Build signature strings
         sig_parts = []

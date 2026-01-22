@@ -61,6 +61,24 @@ def map_openapi_type_with_imports(schema: Dict[str, Any]) -> Tuple[str, Set[str]
         imports.update(item_imports)
         return f"Array<{item_type}>", imports
 
+    # Handle object with additionalProperties (map types)
+    if schema_type == "object" and "additionalProperties" in schema:
+        additional_props = schema["additionalProperties"]
+        if additional_props and isinstance(additional_props, dict):
+            value_type, value_imports = map_openapi_type_with_imports(additional_props)
+            imports.update(value_imports)
+            return f"{{ [key: string]: {value_type}; }}", imports
+
+    # Handle enum types (string or integer with enum values)
+    if "enum" in schema:
+        enum_values = schema["enum"]
+        if schema_type == "string":
+            # String enum - create union of string literals
+            return " | ".join(f"'{v}'" for v in enum_values), imports
+        elif schema_type in ("integer", "number"):
+            # Numeric enum - create union of number literals
+            return " | ".join(str(v) for v in enum_values), imports
+
     # Basic type mapping
     type_map = {
         "string": "string",
