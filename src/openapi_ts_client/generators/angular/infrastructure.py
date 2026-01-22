@@ -37,7 +37,7 @@ TEMPLATED_FILES = [
 def generate_infrastructure(
     output_path: Path,
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> None:
     """
     Generate all infrastructure files for Angular client.
@@ -45,7 +45,7 @@ def generate_infrastructure(
     Args:
         output_path: Directory to write infrastructure files
         api_title: API title for templated files
-        api_description: API description for templated files
+        contact_email: Contact email for templated files
     """
     env = get_template_env()
 
@@ -62,6 +62,6 @@ def generate_infrastructure(
         output_name = template_name[:-3]  # Remove .j2 extension
         content = template.render(
             api_title=api_title,
-            api_description=api_description or "",
+            contact_email=contact_email,
         )
         (output_path / output_name).write_text(content)

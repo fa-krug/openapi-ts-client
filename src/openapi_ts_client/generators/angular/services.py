@@ -124,7 +124,7 @@ def extract_service_data(
     tag: str,
     operations: List[Dict[str, Any]],
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> Dict[str, Any]:
     """
     Extract data needed to render a service template.
@@ -133,7 +133,7 @@ def extract_service_data(
         tag: The OpenAPI tag name
         operations: List of operations for this tag
         api_title: API title for header comment
-        api_description: API description for header comment
+        contact_email: Contact email for header comment
 
     Returns:
         Dictionary with template data
@@ -257,7 +257,7 @@ def extract_service_data(
 
     return {
         "api_title": api_title,
-        "api_description": api_description or "",
+        "contact_email": contact_email,
         "service_name": tag_to_service_name(tag),
         "model_imports": model_imports,
         "methods": methods,
@@ -268,7 +268,7 @@ def generate_service(
     tag: str,
     operations: List[Dict[str, Any]],
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> str:
     """
     Generate TypeScript service code for a tag.
@@ -277,7 +277,7 @@ def generate_service(
         tag: The OpenAPI tag name
         operations: List of operations for this tag
         api_title: API title for header comment
-        api_description: API description for header comment
+        contact_email: Contact email for header comment
 
     Returns:
         Generated TypeScript code as string
@@ -285,7 +285,7 @@ def generate_service(
     env = get_template_env()
     template = env.get_template("service.ts.j2")
 
-    data = extract_service_data(tag, operations, api_title, api_description)
+    data = extract_service_data(tag, operations, api_title, contact_email)
 
     return template.render(**data)
 
@@ -325,7 +325,7 @@ def generate_all_services(
     paths: Dict[str, Any],
     output_path: Path,
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> List[str]:
     """
     Generate all service files from OpenAPI paths.
@@ -334,7 +334,7 @@ def generate_all_services(
         paths: OpenAPI paths object
         output_path: Directory to write service files
         api_title: API title for header comments
-        api_description: API description for header comments
+        contact_email: Contact email for header comments
 
     Returns:
         List of generated service class names
@@ -348,7 +348,7 @@ def generate_all_services(
         service_name = tag_to_service_name(tag)
         service_names.append(service_name)
 
-        content = generate_service(tag, operations, api_title, api_description)
+        content = generate_service(tag, operations, api_title, contact_email)
         filename = tag_to_service_filename(tag)
         (output_path / filename).write_text(content)
 

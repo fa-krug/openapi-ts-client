@@ -56,7 +56,7 @@ def _generate_model_file(
     schema_name: str,
     schema: Dict[str, Any],
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> str:
     """
     Generate a single model file content.
@@ -66,7 +66,7 @@ def _generate_model_file(
         schema_name: Name of the schema (e.g., "FeedingOut")
         schema: The schema definition
         api_title: API title for the header
-        api_description: API description for the header
+        contact_email: Contact email for the header
 
     Returns:
         Generated TypeScript content
@@ -90,7 +90,7 @@ def _generate_model_file(
 
     return template.render(
         api_title=api_title,
-        api_description=api_description,
+        contact_email=contact_email,
         interface_name=schema_name,
         imports=sorted_imports,
         properties=prop_infos,
@@ -116,7 +116,7 @@ def generate_all_models(
     schemas: Dict[str, Any],
     output_dir: Path,
     api_title: str,
-    api_description: str,
+    contact_email: str,
 ) -> None:
     """
     Generate all model files from schemas.
@@ -125,7 +125,7 @@ def generate_all_models(
         schemas: OpenAPI schemas dict
         output_dir: Directory to write model files to
         api_title: API title for header comments
-        api_description: API description for header comments
+        contact_email: Contact email for header comments
     """
     env = _create_jinja_env()
 
@@ -142,7 +142,7 @@ def generate_all_models(
     for schema_name, schema in schemas.items():
         # Generate model file
         content = _generate_model_file(
-            env, schema_name, schema, api_title, api_description
+            env, schema_name, schema, api_title, contact_email
         )
 
         # Get filename (without .ts extension for barrel export)

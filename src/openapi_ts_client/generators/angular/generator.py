@@ -32,6 +32,8 @@ def generate_angular_client(
     info = resolved_spec.get("info", {})
     api_title = info.get("title", "API")
     api_description = info.get("description", "")
+    contact = info.get("contact", {})
+    contact_email = contact.get("email", "")
 
     # Create output directories
     output_path.mkdir(parents=True, exist_ok=True)
@@ -41,15 +43,15 @@ def generate_angular_client(
     # Generate models
     logger.info("Generating models...")
     schemas = resolved_spec.get("components", {}).get("schemas", {})
-    generate_all_models(schemas, output_path / "model", api_title, api_description)
+    generate_all_models(schemas, output_path / "model", api_title, contact_email)
 
     # Generate services
     logger.info("Generating services...")
     paths = resolved_spec.get("paths", {})
-    generate_all_services(paths, output_path / "api", api_title, api_description)
+    generate_all_services(paths, output_path / "api", api_title, contact_email)
 
     # Generate infrastructure files
     logger.info("Generating infrastructure files...")
-    generate_infrastructure(output_path, api_title, api_description)
+    generate_infrastructure(output_path, api_title, contact_email)
 
     logger.info("Angular client generation complete")
