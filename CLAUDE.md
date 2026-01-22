@@ -37,3 +37,7 @@ This is a Python package (`openapi-ts-client`) that generates TypeScript clients
 - Input can be dict or JSON string
 - Very verbose logging is intentional - logs every validation step, path resolution, and spec detail
 - The actual TypeScript generation is a placeholder - only validation and logging are implemented
+
+## Critical Rules
+
+- **NEVER modify files in `tests/fixtures/`** - These are the ultimate reference for expected output. Tests compare generated code against these fixtures. If tests fail, fix the generator, not the fixtures.
