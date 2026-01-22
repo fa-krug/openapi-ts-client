@@ -92,3 +92,21 @@ def _get_unique_name(base_name: str, used_names: set) -> str:
     while f"{base_name}{counter}" in used_names:
         counter += 1
     return f"{base_name}{counter}"
+
+
+def create_extraction_registry(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """
+    Main entry point: discover titled anyOf schemas and assign type names.
+
+    Args:
+        spec: OpenAPI specification dict
+
+    Returns:
+        Registry mapping JSON path -> {type_name, title, description, schema}
+    """
+    discoveries = discover_titled_anyofs(spec)
+    if not discoveries:
+        return {}
+
+    existing_schemas = set(spec.get("components", {}).get("schemas", {}).keys())
+    return assign_type_names(discoveries, existing_schemas)

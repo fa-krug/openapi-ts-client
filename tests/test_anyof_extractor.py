@@ -3,6 +3,7 @@
 from openapi_ts_client.generators.angular.anyof_extractor import (
     discover_titled_anyofs,
     assign_type_names,
+    create_extraction_registry,
 )
 
 
@@ -116,3 +117,37 @@ class TestAssignTypeNames:
         # /a comes before /z alphabetically
         assert registry["/a/prop"]["type_name"] == "Score"
         assert registry["/z/prop"]["type_name"] == "Score1"
+
+
+class TestCreateExtractionRegistry:
+    """Tests for the main entry point."""
+
+    def test_creates_registry_from_spec(self):
+        """Creates complete registry from OpenAPI spec."""
+        spec = {
+            "components": {
+                "schemas": {
+                    "ExistingSchema": {"type": "object"},
+                    "TestSchema": {
+                        "properties": {
+                            "score": {
+                                "anyOf": [{"type": "number"}],
+                                "title": "Score",
+                            }
+                        }
+                    },
+                }
+            }
+        }
+        registry = create_extraction_registry(spec)
+        # Should have one entry for the titled anyOf
+        assert len(registry) == 1
+        path = "/components/schemas/TestSchema/properties/score"
+        assert path in registry
+        assert registry[path]["type_name"] == "Score"
+
+    def test_returns_empty_for_spec_without_titled_anyofs(self):
+        """Returns empty registry when no titled anyOf schemas exist."""
+        spec = {"components": {"schemas": {}}}
+        registry = create_extraction_registry(spec)
+        assert registry == {}
