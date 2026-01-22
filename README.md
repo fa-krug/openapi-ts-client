@@ -1,6 +1,6 @@
 # openapi-ts-client
 
-Generate TypeScript clients from OpenAPI 2.0 (Swagger) specifications.
+Generate TypeScript clients from OpenAPI specifications (2.0/Swagger and 3.x).
 
 ## Installation
 
@@ -21,9 +21,9 @@ pip install -e .
 ```python
 from openapi_ts_client import generate_typescript_client, ClientFormat
 
-# Load your OpenAPI 2.0 specification
+# Load your OpenAPI specification (3.x example)
 spec = {
-    "swagger": "2.0",
+    "openapi": "3.0.0",
     "info": {
         "title": "My API",
         "version": "1.0.0"
@@ -47,14 +47,31 @@ result = generate_typescript_client(spec)
 print(result)
 ```
 
+### OpenAPI 2.0 (Swagger) Example
+
+```python
+from openapi_ts_client import generate_typescript_client
+
+# OpenAPI 2.0 specs use "swagger" instead of "openapi"
+spec = {
+    "swagger": "2.0",
+    "info": {
+        "title": "My API",
+        "version": "1.0.0"
+    },
+    "paths": {}
+}
+
+result = generate_typescript_client(spec)
+```
+
 ### Using JSON String Input
 
 ```python
-import json
 from openapi_ts_client import generate_typescript_client
 
 # Load spec from a JSON file
-with open("swagger.json", "r") as f:
+with open("openapi.json", "r") as f:
     json_string = f.read()
 
 result = generate_typescript_client(json_string)
@@ -119,11 +136,11 @@ print(result)
 
 ### `generate_typescript_client(openapi_spec, output_format=ClientFormat.FETCH, output_path=".")`
 
-Generate a TypeScript client from an OpenAPI 2.0 specification.
+Generate a TypeScript client from an OpenAPI specification.
 
 **Parameters:**
 
-- `openapi_spec` (dict | str): The OpenAPI 2.0 specification as a dictionary or JSON string
+- `openapi_spec` (dict | str): The OpenAPI specification as a dictionary or JSON string. Supports both OpenAPI 2.0 (Swagger) and OpenAPI 3.x.
 - `output_format` (ClientFormat, optional): The output client format. Defaults to `ClientFormat.FETCH`
 - `output_path` (str | Path, optional): The output directory path. Defaults to current directory `"."`
 
@@ -133,7 +150,7 @@ Generate a TypeScript client from an OpenAPI 2.0 specification.
 
 **Raises:**
 
-- `ValueError`: If the specification is not valid OpenAPI 2.0
+- `ValueError`: If the specification is not a valid OpenAPI spec
 - `TypeError`: If `openapi_spec` is neither a dict nor a string
 
 ### `ClientFormat` Enum
@@ -141,6 +158,12 @@ Generate a TypeScript client from an OpenAPI 2.0 specification.
 - `ClientFormat.FETCH` - Generate a client using the native Fetch API
 - `ClientFormat.REACT` - Generate a client optimized for React applications
 - `ClientFormat.ANGULAR` - Generate a client optimized for Angular applications
+
+## Supported OpenAPI Versions
+
+- OpenAPI 2.0 (Swagger)
+- OpenAPI 3.0.x
+- OpenAPI 3.1.x
 
 ## Requirements
 

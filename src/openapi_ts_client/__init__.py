@@ -1,16 +1,16 @@
 """
-openapi-ts-client: Generate TypeScript clients from OpenAPI 2.0 specifications.
+openapi-ts-client: Generate TypeScript clients from OpenAPI specifications.
 
 This package provides utilities to generate TypeScript API clients from
-OpenAPI 2.0 (Swagger) specifications. It supports multiple output formats
-including Fetch API, React hooks, and Angular services.
+OpenAPI specifications (both 2.0/Swagger and 3.x). It supports multiple output
+formats including Fetch API, React hooks, and Angular services.
 
 Example usage:
     >>> from openapi_ts_client import generate_typescript_client, ClientFormat
     >>>
-    >>> # Using a dictionary spec
+    >>> # Using an OpenAPI 3.x spec
     >>> spec = {
-    ...     "swagger": "2.0",
+    ...     "openapi": "3.0.0",
     ...     "info": {"title": "My API", "version": "1.0.0"},
     ...     "paths": {}
     ... }

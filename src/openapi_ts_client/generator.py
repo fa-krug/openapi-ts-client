@@ -1,4 +1,4 @@
-"""Main generator module for creating TypeScript clients from OpenAPI 2.0 specifications."""
+"""Main generator module for creating TypeScript clients from OpenAPI specifications."""
 
 import json
 import os
@@ -18,15 +18,16 @@ def generate_typescript_client(
     output_path: Union[str, Path] = ".",
 ) -> str:
     """
-    Generate a TypeScript client from an OpenAPI 2.0 specification.
+    Generate a TypeScript client from an OpenAPI specification.
 
-    This function takes an OpenAPI 2.0 (Swagger) specification and generates
+    This function takes an OpenAPI specification (2.0/Swagger or 3.x) and generates
     a TypeScript client based on the specified output format.
 
     Args:
-        openapi_spec: The OpenAPI 2.0 specification. Can be provided as:
+        openapi_spec: The OpenAPI specification. Can be provided as:
             - A dictionary containing the parsed JSON specification
             - A JSON string containing the specification
+            Supports both OpenAPI 2.0 (Swagger) and OpenAPI 3.x specifications.
         output_format: The format of the generated TypeScript client.
             Defaults to ClientFormat.FETCH. Options are:
             - ClientFormat.FETCH: Native Fetch API client
@@ -39,12 +40,13 @@ def generate_typescript_client(
         A status message indicating the result of the generation process.
 
     Raises:
-        ValueError: If the provided specification is not valid OpenAPI 2.0.
+        ValueError: If the provided specification is not a valid OpenAPI spec.
         TypeError: If the openapi_spec parameter is neither a dict nor a string.
 
     Example:
         >>> from openapi_ts_client import generate_typescript_client, ClientFormat
-        >>> spec = {"swagger": "2.0", "info": {"title": "My API", "version": "1.0"}, "paths": {}}
+        >>> # OpenAPI 3.x example
+        >>> spec = {"openapi": "3.0.0", "info": {"title": "My API", "version": "1.0"}, "paths": {}}
         >>> result = generate_typescript_client(spec, ClientFormat.REACT, "./output")
         >>> print(result)
     """
@@ -86,9 +88,9 @@ def generate_typescript_client(
             f"openapi_spec must be a dict or JSON string, got {type(openapi_spec).__name__}"
         )
 
-    # Validate OpenAPI 2.0 specification
-    func_logger.info("Validating OpenAPI 2.0 specification")
-    _validate_openapi_spec(parsed_spec, func_logger)
+    # Validate OpenAPI specification
+    func_logger.info("Validating OpenAPI specification")
+    openapi_version = _validate_openapi_spec(parsed_spec, func_logger)
 
     # Resolve and validate output path
     func_logger.info("Resolving output path")
@@ -135,54 +137,76 @@ def generate_typescript_client(
     return status_message
 
 
-def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> None:
+def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> str:
     """
-    Validate that the specification is a valid OpenAPI 2.0 document.
+    Validate that the specification is a valid OpenAPI document.
+
+    Supports both OpenAPI 2.0 (Swagger) and OpenAPI 3.x specifications.
 
     Args:
         spec: The parsed OpenAPI specification dictionary.
         func_logger: Logger instance for verbose output.
 
+    Returns:
+        The detected OpenAPI version string (e.g., "2.0", "3.0.0", "3.1.0").
+
     Raises:
-        ValueError: If the specification is not valid OpenAPI 2.0.
+        ValueError: If the specification is not a valid OpenAPI spec.
     """
-    func_logger.debug("Checking for 'swagger' field in specification")
+    func_logger.debug("Checking for OpenAPI version field in specification")
+    func_logger.debug(f"Available top-level keys: {list(spec.keys())}")
 
-    # Check for swagger version field
+    # Check for OpenAPI 3.x (openapi field) or OpenAPI 2.0 (swagger field)
+    openapi_version = spec.get("openapi")
     swagger_version = spec.get("swagger")
-    func_logger.debug(f"Found swagger version: {swagger_version}")
 
-    if swagger_version is None:
-        func_logger.error("Missing 'swagger' field in specification")
-        func_logger.error("This field is required for OpenAPI 2.0 (Swagger) specifications")
+    func_logger.debug(f"Found 'openapi' field: {openapi_version}")
+    func_logger.debug(f"Found 'swagger' field: {swagger_version}")
+
+    detected_version = None
+
+    if openapi_version is not None:
+        # OpenAPI 3.x specification
+        func_logger.info(f"Detected OpenAPI 3.x specification (version: {openapi_version})")
+        func_logger.debug(f"OpenAPI version string: {openapi_version}")
+
+        # Validate version format (should be like 3.0.0, 3.0.1, 3.1.0, etc.)
+        if not isinstance(openapi_version, str):
+            func_logger.error(f"Invalid openapi version type: {type(openapi_version)}")
+            raise ValueError(f"Invalid 'openapi' field: expected string, got {type(openapi_version).__name__}")
+
+        if not openapi_version.startswith("3."):
+            func_logger.warning(f"Unexpected OpenAPI version format: {openapi_version}")
+            func_logger.warning("Expected version starting with '3.' for OpenAPI 3.x specs")
+
+        detected_version = openapi_version
+        func_logger.info(f"OpenAPI version validated: {openapi_version}")
+
+    elif swagger_version is not None:
+        # OpenAPI 2.0 (Swagger) specification
+        func_logger.info(f"Detected OpenAPI 2.0 (Swagger) specification (version: {swagger_version})")
+        func_logger.debug(f"Swagger version string: {swagger_version}")
+
+        if not isinstance(swagger_version, str):
+            func_logger.error(f"Invalid swagger version type: {type(swagger_version)}")
+            raise ValueError(f"Invalid 'swagger' field: expected string, got {type(swagger_version).__name__}")
+
+        if swagger_version != "2.0":
+            func_logger.warning(f"Unexpected Swagger version: {swagger_version}")
+            func_logger.warning("Expected version '2.0' for Swagger specifications")
+
+        detected_version = swagger_version
+        func_logger.info(f"Swagger version validated: {swagger_version}")
+
+    else:
+        # No version field found
+        func_logger.error("Missing OpenAPI version field in specification")
+        func_logger.error("Expected either 'openapi' (for 3.x) or 'swagger' (for 2.0) field")
         func_logger.debug(f"Available top-level keys: {list(spec.keys())}")
-
-        # Check if it might be OpenAPI 3.x
-        if "openapi" in spec:
-            openapi_version = spec.get("openapi")
-            func_logger.error(f"Found 'openapi' field with version {openapi_version}")
-            func_logger.error("This appears to be an OpenAPI 3.x specification")
-            raise ValueError(
-                f"OpenAPI 3.x specifications are not supported. "
-                f"Found version: {openapi_version}. Please provide an OpenAPI 2.0 (Swagger) specification."
-            )
-
         raise ValueError(
-            "Invalid OpenAPI specification: missing 'swagger' field. "
-            "Please provide a valid OpenAPI 2.0 (Swagger) specification."
+            "Invalid OpenAPI specification: missing version field. "
+            "Expected 'openapi' field for OpenAPI 3.x or 'swagger' field for OpenAPI 2.0."
         )
-
-    # Validate swagger version is 2.0
-    func_logger.debug(f"Validating swagger version: {swagger_version}")
-    if swagger_version != "2.0":
-        func_logger.error(f"Unsupported swagger version: {swagger_version}")
-        func_logger.error("Only OpenAPI 2.0 (Swagger 2.0) is supported")
-        raise ValueError(
-            f"Unsupported swagger version: {swagger_version}. "
-            f"Only version '2.0' is supported."
-        )
-
-    func_logger.info("Swagger version validated: 2.0")
 
     # Check for required 'info' field
     func_logger.debug("Checking for required 'info' field")
@@ -216,7 +240,8 @@ def _validate_openapi_spec(spec: Dict[str, Any], func_logger) -> None:
         paths_count = len(spec["paths"])
         func_logger.info(f"Found {paths_count} path(s) in specification")
 
-    func_logger.info("OpenAPI 2.0 specification validation completed successfully")
+    func_logger.info(f"OpenAPI specification validation completed successfully (version: {detected_version})")
+    return detected_version
 
 
 def _resolve_output_path(output_path: Union[str, Path], func_logger) -> Path:
@@ -282,6 +307,8 @@ def _log_spec_details(spec: Dict[str, Any], func_logger) -> None:
     """
     Log detailed information about the OpenAPI specification.
 
+    Handles both OpenAPI 2.0 (Swagger) and OpenAPI 3.x specifications.
+
     Args:
         spec: The parsed OpenAPI specification dictionary.
         func_logger: Logger instance for verbose output.
@@ -290,25 +317,39 @@ def _log_spec_details(spec: Dict[str, Any], func_logger) -> None:
     func_logger.debug("OpenAPI Specification Details")
     func_logger.debug("-" * 40)
 
+    # Detect version
+    is_openapi_3 = "openapi" in spec
+    func_logger.debug(f"  Spec Type: {'OpenAPI 3.x' if is_openapi_3 else 'OpenAPI 2.0 (Swagger)'}")
+    func_logger.debug(f"  Spec Version: {spec.get('openapi') or spec.get('swagger', 'N/A')}")
+
     # Info section
     info = spec.get("info", {})
     func_logger.debug(f"  Title: {info.get('title', 'N/A')}")
     func_logger.debug(f"  Version: {info.get('version', 'N/A')}")
     func_logger.debug(f"  Description: {info.get('description', 'N/A')[:100] if info.get('description') else 'N/A'}")
 
-    # Host and basePath
-    func_logger.debug(f"  Host: {spec.get('host', 'N/A')}")
-    func_logger.debug(f"  Base Path: {spec.get('basePath', 'N/A')}")
+    if is_openapi_3:
+        # OpenAPI 3.x: servers
+        servers = spec.get("servers", [])
+        func_logger.debug(f"  Servers: {len(servers)}")
+        for i, server in enumerate(servers):
+            func_logger.debug(f"    Server {i + 1}: {server.get('url', 'N/A')}")
+            if server.get("description"):
+                func_logger.debug(f"      Description: {server.get('description')}")
+    else:
+        # OpenAPI 2.0: host and basePath
+        func_logger.debug(f"  Host: {spec.get('host', 'N/A')}")
+        func_logger.debug(f"  Base Path: {spec.get('basePath', 'N/A')}")
 
-    # Schemes
-    schemes = spec.get("schemes", [])
-    func_logger.debug(f"  Schemes: {', '.join(schemes) if schemes else 'N/A'}")
+        # Schemes (OpenAPI 2.0 only)
+        schemes = spec.get("schemes", [])
+        func_logger.debug(f"  Schemes: {', '.join(schemes) if schemes else 'N/A'}")
 
-    # Consumes and produces
-    consumes = spec.get("consumes", [])
-    produces = spec.get("produces", [])
-    func_logger.debug(f"  Consumes: {', '.join(consumes) if consumes else 'N/A'}")
-    func_logger.debug(f"  Produces: {', '.join(produces) if produces else 'N/A'}")
+        # Consumes and produces (OpenAPI 2.0 only)
+        consumes = spec.get("consumes", [])
+        produces = spec.get("produces", [])
+        func_logger.debug(f"  Consumes: {', '.join(consumes) if consumes else 'N/A'}")
+        func_logger.debug(f"  Produces: {', '.join(produces) if produces else 'N/A'}")
 
     # Paths summary
     paths = spec.get("paths", {})
@@ -317,25 +358,43 @@ def _log_spec_details(spec: Dict[str, Any], func_logger) -> None:
     if paths:
         func_logger.debug("  Path endpoints:")
         for path_name, path_item in paths.items():
-            methods = [m.upper() for m in path_item.keys() if m in ["get", "post", "put", "delete", "patch", "options", "head"]]
-            func_logger.debug(f"    {path_name}: {', '.join(methods)}")
+            if isinstance(path_item, dict):
+                methods = [m.upper() for m in path_item.keys() if m in ["get", "post", "put", "delete", "patch", "options", "head"]]
+                func_logger.debug(f"    {path_name}: {', '.join(methods) if methods else 'N/A'}")
 
-    # Definitions (models)
-    definitions = spec.get("definitions", {})
-    func_logger.debug(f"  Total Definitions (Models): {len(definitions)}")
-    if definitions:
-        func_logger.debug(f"  Model names: {', '.join(list(definitions.keys())[:10])}")
-        if len(definitions) > 10:
-            func_logger.debug(f"    ... and {len(definitions) - 10} more")
+    if is_openapi_3:
+        # OpenAPI 3.x: components/schemas
+        components = spec.get("components", {})
+        schemas = components.get("schemas", {})
+        func_logger.debug(f"  Total Schemas (Models): {len(schemas)}")
+        if schemas:
+            func_logger.debug(f"  Schema names: {', '.join(list(schemas.keys())[:10])}")
+            if len(schemas) > 10:
+                func_logger.debug(f"    ... and {len(schemas) - 10} more")
 
-    # Security definitions
-    security_defs = spec.get("securityDefinitions", {})
-    func_logger.debug(f"  Security Definitions: {len(security_defs)}")
-    if security_defs:
-        for sec_name, sec_def in security_defs.items():
-            func_logger.debug(f"    {sec_name}: {sec_def.get('type', 'unknown')}")
+        # Security schemes (OpenAPI 3.x)
+        security_schemes = components.get("securitySchemes", {})
+        func_logger.debug(f"  Security Schemes: {len(security_schemes)}")
+        if security_schemes:
+            for sec_name, sec_def in security_schemes.items():
+                func_logger.debug(f"    {sec_name}: {sec_def.get('type', 'unknown')}")
+    else:
+        # OpenAPI 2.0: definitions
+        definitions = spec.get("definitions", {})
+        func_logger.debug(f"  Total Definitions (Models): {len(definitions)}")
+        if definitions:
+            func_logger.debug(f"  Model names: {', '.join(list(definitions.keys())[:10])}")
+            if len(definitions) > 10:
+                func_logger.debug(f"    ... and {len(definitions) - 10} more")
 
-    # Tags
+        # Security definitions (OpenAPI 2.0)
+        security_defs = spec.get("securityDefinitions", {})
+        func_logger.debug(f"  Security Definitions: {len(security_defs)}")
+        if security_defs:
+            for sec_name, sec_def in security_defs.items():
+                func_logger.debug(f"    {sec_name}: {sec_def.get('type', 'unknown')}")
+
+    # Tags (common to both versions)
     tags = spec.get("tags", [])
     func_logger.debug(f"  Tags: {len(tags)}")
     if tags:
