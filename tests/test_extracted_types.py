@@ -105,7 +105,8 @@ class TestGenerateModelsWithExtraction:
                     "TestSchema": {
                         "properties": {
                             "score": {
-                                "anyOf": [{"type": "number"}],
+                                # Complex anyOf: mixed primitive types
+                                "anyOf": [{"type": "number"}, {"type": "string"}],
                                 "title": "Score",
                             }
                         }

@@ -61,7 +61,8 @@ class TestDiscoverTitledAnyofs:
                                 "name": "score",
                                 "in": "query",
                                 "schema": {
-                                    "anyOf": [{"type": "number"}, {"type": "null"}],
+                                    # Complex anyOf: mixed primitive types
+                                    "anyOf": [{"type": "number"}, {"type": "string"}],
                                     "title": "Score",
                                 },
                             }
@@ -87,11 +88,12 @@ class TestAssignTypeNames:
         assert registry["/a"]["type_name"] == "CodeDuplication"
 
     def test_assigns_numeric_suffix_for_duplicates(self):
-        """Second occurrence of same title gets numeric suffix."""
+        """Second occurrence of same title gets numeric suffix when schemas differ."""
+        # Different anyOf content triggers different type names
         discoveries = [
-            {"path": "/a", "title": "Score", "description": "", "schema": {}},
-            {"path": "/b", "title": "Score", "description": "", "schema": {}},
-            {"path": "/c", "title": "Score", "description": "", "schema": {}},
+            {"path": "/a", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "number"}]}},
+            {"path": "/b", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "string"}]}},
+            {"path": "/c", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "integer"}]}},
         ]
         registry = assign_type_names(discoveries, set())
         assert registry["/a"]["type_name"] == "Score"
@@ -109,9 +111,10 @@ class TestAssignTypeNames:
 
     def test_deterministic_ordering_by_path(self):
         """Assignments are deterministic based on path sorting."""
+        # Different anyOf content to ensure different type names
         discoveries = [
-            {"path": "/z/prop", "title": "Score", "description": "", "schema": {}},
-            {"path": "/a/prop", "title": "Score", "description": "", "schema": {}},
+            {"path": "/z/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "string"}]}},
+            {"path": "/a/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "number"}]}},
         ]
         registry = assign_type_names(discoveries, set())
         # /a comes before /z alphabetically
@@ -131,7 +134,8 @@ class TestCreateExtractionRegistry:
                     "TestSchema": {
                         "properties": {
                             "score": {
-                                "anyOf": [{"type": "number"}],
+                                # Complex anyOf: mixed primitive types
+                                "anyOf": [{"type": "number"}, {"type": "string"}],
                                 "title": "Score",
                             }
                         }
