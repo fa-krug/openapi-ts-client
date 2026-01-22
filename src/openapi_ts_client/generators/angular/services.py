@@ -255,6 +255,9 @@ def extract_service_data(
             "params_signature_impl": params_signature,
         })
 
+    # Sort methods alphabetically by method_name
+    methods.sort(key=lambda m: m["method_name"])
+
     return {
         "api_title": api_title,
         "contact_email": contact_email,
