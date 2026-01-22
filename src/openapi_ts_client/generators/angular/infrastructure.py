@@ -38,6 +38,7 @@ def generate_infrastructure(
     output_path: Path,
     api_title: str,
     contact_email: str,
+    base_path: str = "http://localhost",
 ) -> None:
     """
     Generate all infrastructure files for Angular client.
@@ -46,6 +47,7 @@ def generate_infrastructure(
         output_path: Directory to write infrastructure files
         api_title: API title for templated files
         contact_email: Contact email for templated files
+        base_path: Base path from OpenAPI servers
     """
     env = get_template_env()
 
@@ -63,5 +65,6 @@ def generate_infrastructure(
         content = template.render(
             api_title=api_title,
             contact_email=contact_email,
+            base_path=base_path,
         )
         (output_path / output_name).write_text(content)

@@ -35,6 +35,10 @@ def generate_angular_client(
     contact = info.get("contact", {})
     contact_email = contact.get("email", "")
 
+    # Extract base path from servers
+    servers = resolved_spec.get("servers", [])
+    base_path = servers[0].get("url", "http://localhost") if servers else "http://localhost"
+
     # Create output directories
     output_path.mkdir(parents=True, exist_ok=True)
     (output_path / "model").mkdir(exist_ok=True)
@@ -52,6 +56,6 @@ def generate_angular_client(
 
     # Generate infrastructure files
     logger.info("Generating infrastructure files...")
-    generate_infrastructure(output_path, api_title, contact_email)
+    generate_infrastructure(output_path, api_title, contact_email, base_path)
 
     logger.info("Angular client generation complete")
