@@ -11,7 +11,6 @@ from openapi_ts_client.generators.shared import (
 )
 from openapi_ts_client.utils import schema_to_type_name
 
-
 # Reserved words that need escaping in TypeScript interface property names
 INTERFACE_RESERVED_WORDS = {
     "break", "case", "catch", "class", "const", "continue", "debugger",
