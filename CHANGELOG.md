@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.1 (2026-01-23)
+
+### Bug Fixes
+
+- **packaging**: Include Jinja2 templates in installed package
+  ([`246d1ef`](https://github.com/fa-krug/openapi-ts-client/commit/246d1efce7c011f04086ed8242b1ea9740deb0c6))
+
+
 ## v1.2.0 (2026-01-23)
 
 ### Bug Fixes
