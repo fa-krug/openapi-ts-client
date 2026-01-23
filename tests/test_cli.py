@@ -357,3 +357,55 @@ class TestOutputFormatting:
         assert (
             "reading" in output or "generating" in output or "petstore" in output or "api" in output
         )
+
+
+class TestValidation:
+    """Test validation options."""
+
+    def test_no_validate_skips_validation(self, tmp_path: Path):
+        """Test that --no-validate skips spec validation."""
+        # Create an invalid spec (missing required info.title)
+        invalid_spec = {
+            "openapi": "3.0.0",
+            "info": {"version": "1.0.0"},  # missing title
+            "paths": {},
+        }
+        spec_file = tmp_path / "invalid.json"
+        spec_file.write_text(json.dumps(invalid_spec))
+
+        output_dir = tmp_path / "output"
+
+        # Without --no-validate, should fail
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                str(spec_file),
+                "-o",
+                str(output_dir),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        # Validation errors return code 1 or 2 depending on error type
+        assert result.returncode != 0
+
+        # With --no-validate, should succeed (or at least get further)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                str(spec_file),
+                "-o",
+                str(output_dir),
+                "--no-validate",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        # May still fail in generation, but not in validation
+        # Check that it didn't fail with validation error
+        if result.returncode != 0:
+            assert "info.title" not in result.stderr.lower()

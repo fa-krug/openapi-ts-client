@@ -203,7 +203,9 @@ def generate_from_config(config: dict, args, out: Output) -> int:
 
         # Generate
         client_format = get_client_format(format_str)
-        generate_typescript_client(spec, client_format, output_path)
+        generate_typescript_client(
+            spec, client_format, output_path, skip_validation=args.no_validate
+        )
 
         out.success(f"Generated to {output_path}")
 
@@ -244,7 +246,9 @@ def main(argv: list[str] | None = None) -> int:
 
             # Generate client
             client_format = get_client_format(args.format)
-            generate_typescript_client(spec, client_format, args.output)
+            generate_typescript_client(
+                spec, client_format, args.output, skip_validation=args.no_validate
+            )
 
             out.success(f"Generated to {args.output}")
 
