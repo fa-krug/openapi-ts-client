@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.2 (2026-01-23)
+
+### Bug Fixes
+
+- **packaging**: Include dotfiles (.gitignore.j2) in package
+  ([`00581e8`](https://github.com/fa-krug/openapi-ts-client/commit/00581e86739d55594b07fc9013ecba4076870626))
+
+
 ## v1.2.1 (2026-01-23)
 
 ### Bug Fixes
