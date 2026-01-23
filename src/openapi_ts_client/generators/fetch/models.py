@@ -290,11 +290,15 @@ def _build_to_json_expr(
 
 
 def _collect_type_imports(properties: List[Dict[str, Any]]) -> List[str]:
-    """Collect all type imports needed for a model."""
-    imports: Set[str] = set()
+    """Collect all type imports needed for a model, preserving property order."""
+    seen: set = set()
+    imports: List[str] = []
     for prop in properties:
-        imports.update(prop.get("type_imports", set()))
-    return sorted(imports)
+        for type_import in prop.get("type_imports", set()):
+            if type_import not in seen:
+                seen.add(type_import)
+                imports.append(type_import)
+    return imports
 
 
 def _get_api_info(spec: Dict[str, Any]) -> Dict[str, str]:
