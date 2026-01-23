@@ -121,18 +121,7 @@ def test_angular_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
             pytest.fail("TypeScript compilation errors:\n" + "\n".join(errors))
 
 
-@pytest.mark.parametrize(
-    "fixture_name",
-    [
-        "petstore",
-        pytest.param(
-            "space_zoo",
-            marks=pytest.mark.xfail(
-                reason="Space zoo fixture needs updating to match generator output"
-            ),
-        ),
-    ],
-)
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
 def test_axios_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     """Test that generated Axios client compiles with tsc."""
     spec = load_spec(fixture_name)
