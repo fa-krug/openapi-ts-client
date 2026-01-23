@@ -67,7 +67,7 @@ class TestGenerateModels:
         assert barrel_path.exists()
 
         content = barrel_path.read_text()
-        lines = [l for l in content.strip().split("\n") if l]
+        lines = [line for line in content.strip().split("\n") if line]
 
         # Check format of each line
         for line in lines:
