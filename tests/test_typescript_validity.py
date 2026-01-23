@@ -245,3 +245,30 @@ def test_fetch_typescript_runtime(fixture_name: str, tmp_path: Path, ts_parser) 
 
     assert result.returncode == 0, f"Runtime test failed:\n{result.stdout}\n{result.stderr}"
     assert "Runtime validation passed" in result.stdout
+
+
+@pytest.mark.parametrize("fixture_name", ["petstore"])
+def test_axios_typescript_runtime(fixture_name: str, tmp_path: Path, ts_parser) -> None:
+    """Test that generated Axios client runs with tsx."""
+    spec = load_spec(fixture_name)
+    generate_typescript_client(spec, ClientFormat.AXIOS, tmp_path)
+
+    # Extract structure and generate runtime test
+    structure = extract_ts_structure(tmp_path, ts_parser)
+    test_code = generate_runtime_test(structure)
+
+    test_file = tmp_path / "runtime_test.ts"
+    test_file.write_text(test_code)
+
+    write_tsconfig(tmp_path)
+
+    result = subprocess.run(
+        ["tsx", str(test_file)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        cwd=tmp_path,
+    )
+
+    assert result.returncode == 0, f"Runtime test failed:\n{result.stdout}\n{result.stderr}"
+    assert "Runtime validation passed" in result.stdout
