@@ -1,14 +1,42 @@
 """Tests for the logging_config module."""
 
 import logging
+import os
+
+import pytest
 
 from openapi_ts_client.logging_config import (
     DATE_FORMAT,
+    LOG_LEVEL_ENV_VAR,
     LOGGER_NAME,
     VERBOSE_FORMAT,
     get_logger,
     setup_logging,
 )
+
+
+@pytest.fixture(autouse=True)
+def clean_logger_state():
+    """Reset logger state before and after each test."""
+    # Save original env var
+    original_env = os.environ.get(LOG_LEVEL_ENV_VAR)
+
+    # Clear env var and logger state before test
+    if LOG_LEVEL_ENV_VAR in os.environ:
+        del os.environ[LOG_LEVEL_ENV_VAR]
+    logger = logging.getLogger(LOGGER_NAME)
+    logger.handlers.clear()
+    logger.setLevel(logging.NOTSET)
+
+    yield
+
+    # Restore original env var after test
+    if original_env is not None:
+        os.environ[LOG_LEVEL_ENV_VAR] = original_env
+    elif LOG_LEVEL_ENV_VAR in os.environ:
+        del os.environ[LOG_LEVEL_ENV_VAR]
+    # Clean up logger
+    logger.handlers.clear()
 
 
 class TestSetupLogging:
@@ -31,15 +59,8 @@ class TestSetupLogging:
 
     def test_custom_level(self):
         """Test setting a custom logging level."""
-        # Clear existing handlers first
-        logger = logging.getLogger(LOGGER_NAME)
-        logger.handlers.clear()
-
         logger = setup_logging(level=logging.INFO)
         assert logger.level == logging.INFO
-
-        # Clean up
-        logger.handlers.clear()
 
     def test_has_handler(self):
         """Test that logger has at least one handler."""

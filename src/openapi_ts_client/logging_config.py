@@ -43,10 +43,6 @@ def setup_logging(level: int = logging.DEBUG) -> logging.Logger:
     """
     logger = logging.getLogger(LOGGER_NAME)
 
-    # Avoid adding handlers multiple times
-    if logger.handlers:
-        return logger
-
     # Check for environment variable override (used by CLI)
     env_level = os.environ.get(LOG_LEVEL_ENV_VAR)
     if env_level:
@@ -54,10 +50,11 @@ def setup_logging(level: int = logging.DEBUG) -> logging.Logger:
     else:
         effective_level = level
 
+    # Always set the level
     logger.setLevel(effective_level)
 
-    # Only add handler and show initialization messages if not suppressed
-    if effective_level <= logging.INFO:
+    # Avoid adding handlers multiple times
+    if not logger.handlers:
         # Create console handler with verbose formatting
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(effective_level)
@@ -69,6 +66,8 @@ def setup_logging(level: int = logging.DEBUG) -> logging.Logger:
         # Add handler to logger
         logger.addHandler(console_handler)
 
+    # Log initialization messages only at DEBUG/INFO levels
+    if effective_level <= logging.INFO:
         logger.debug("Logger initialized with verbose output")
         logger.debug(f"Log level set to: {logging.getLevelName(effective_level)}")
         logger.debug(f"Log format: {VERBOSE_FORMAT}")
