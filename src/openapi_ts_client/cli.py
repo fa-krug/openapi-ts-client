@@ -161,6 +161,34 @@ class Output:
         print(f"Error: {message}", file=sys.stderr)
 
 
+def prompt_directory_action(path: Path, file_count: int) -> str:
+    """Prompt user for action on non-empty directory.
+
+    Args:
+        path: The output directory path.
+        file_count: Number of non-hidden files in the directory.
+
+    Returns:
+        'clean' to clear directory, 'force' to continue, or 'cancel' to abort.
+    """
+    print(f"\nOutput directory '{path}' is not empty (contains {file_count} files).")
+    print("\nHow would you like to proceed?")
+    print("  [1] Clear directory and continue")
+    print("  [2] Continue without clearing (may overwrite files)")
+    print("  [3] Cancel")
+
+    while True:
+        choice = input("\nChoice [1/2/3]: ").strip()
+        if choice == "1":
+            return "clean"
+        elif choice == "2":
+            return "force"
+        elif choice == "3":
+            return "cancel"
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+
 def load_config(config_path: str | None) -> dict | None:
     """Load config file if it exists."""
     if config_path:

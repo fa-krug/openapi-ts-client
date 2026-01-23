@@ -501,3 +501,31 @@ class TestCleanForceFlags:
         )
         assert result.returncode != 0
         assert "not empty" in result.stderr.lower() or "error" in result.stderr.lower()
+
+
+class TestInteractivePrompt:
+    """Test interactive TTY prompt."""
+
+    def test_prompt_function_returns_clean(self, monkeypatch):
+        """Test prompt_directory_action returns 'clean' for input '1'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "1")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "clean"
+
+    def test_prompt_function_returns_force(self, monkeypatch):
+        """Test prompt_directory_action returns 'force' for input '2'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "2")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "force"
+
+    def test_prompt_function_returns_cancel(self, monkeypatch):
+        """Test prompt_directory_action returns 'cancel' for input '3'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "3")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "cancel"
