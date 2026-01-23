@@ -28,6 +28,66 @@ cd openapi-ts-client
 pip install -e .
 ```
 
+## CLI Usage
+
+```bash
+# Generate from file
+openapi-ts-client ./openapi.json
+
+# Specify output format and directory
+openapi-ts-client ./openapi.json -f axios -o ./src/api
+
+# Generate from URL
+openapi-ts-client https://api.example.com/openapi.json
+
+# Generate from stdin
+cat openapi.json | openapi-ts-client -
+
+# Use config file
+openapi-ts-client --config ./my-config.json
+
+# Verbose output
+openapi-ts-client ./openapi.json -v
+```
+
+### Config File
+
+Create `openapi-ts-client.json` for repeated use:
+
+```json
+{
+  "clients": [
+    {
+      "input": "./specs/users-api.json",
+      "format": "fetch",
+      "output": "./src/api/users"
+    },
+    {
+      "input": "./specs/orders-api.json",
+      "format": "axios",
+      "output": "./src/api/orders"
+    }
+  ]
+}
+```
+
+Then run:
+
+```bash
+openapi-ts-client
+```
+
+### Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-f, --format` | Output format: fetch, axios, angular | fetch |
+| `-o, --output` | Output directory | ./generated |
+| `-c, --config` | Config file path | openapi-ts-client.json |
+| `--no-validate` | Skip OpenAPI spec validation | - |
+| `-q, --quiet` | Suppress all output except errors | - |
+| `-v, --verbose` | Show detailed progress | - |
+
 ## Quick Start
 
 ```python
