@@ -18,6 +18,7 @@ elif "-v" not in sys.argv and "--verbose" not in sys.argv:
     os.environ["OPENAPI_TS_CLIENT_LOG_LEVEL"] = "WARNING"
 
 from . import ClientFormat, generate_typescript_client  # noqa: E402
+from .exceptions import OutputDirectoryNotEmptyError  # noqa: E402
 
 # Read version from pyproject.toml - this is the canonical version
 __version__ = "1.1.2"
@@ -249,14 +250,43 @@ def generate_from_config(config: dict, args, out: Output) -> int:
 
         # Generate
         client_format = get_client_format(format_str)
-        generate_typescript_client(
-            spec,
-            client_format,
-            output_path,
-            skip_validation=args.no_validate,
-            clean=getattr(args, "clean", False),
-            force=getattr(args, "force", False),
-        )
+        try:
+            generate_typescript_client(
+                spec,
+                client_format,
+                output_path,
+                skip_validation=args.no_validate,
+                clean=getattr(args, "clean", False),
+                force=getattr(args, "force", False),
+            )
+        except OutputDirectoryNotEmptyError as e:
+            if sys.stdin.isatty() and not args.quiet:
+                action = prompt_directory_action(e.path, e.file_count)
+                if action == "cancel":
+                    out.info("Cancelled.")
+                    return 1
+                elif action == "clean":
+                    generate_typescript_client(
+                        spec,
+                        client_format,
+                        output_path,
+                        skip_validation=args.no_validate,
+                        clean=True,
+                    )
+                else:  # force
+                    generate_typescript_client(
+                        spec,
+                        client_format,
+                        output_path,
+                        skip_validation=args.no_validate,
+                        force=True,
+                    )
+            else:
+                out.error(str(e))
+                out.error(
+                    "  Use --clean to clear the directory first, or --force to continue anyway."
+                )
+                return 1
 
         out.success(f"Generated to {output_path}")
 
@@ -297,14 +327,43 @@ def main(argv: list[str] | None = None) -> int:
 
             # Generate client
             client_format = get_client_format(args.format)
-            generate_typescript_client(
-                spec,
-                client_format,
-                args.output,
-                skip_validation=args.no_validate,
-                clean=args.clean,
-                force=args.force,
-            )
+            try:
+                generate_typescript_client(
+                    spec,
+                    client_format,
+                    args.output,
+                    skip_validation=args.no_validate,
+                    clean=args.clean,
+                    force=args.force,
+                )
+            except OutputDirectoryNotEmptyError as e:
+                if sys.stdin.isatty() and not args.quiet:
+                    action = prompt_directory_action(e.path, e.file_count)
+                    if action == "cancel":
+                        out.info("Cancelled.")
+                        return 1
+                    elif action == "clean":
+                        generate_typescript_client(
+                            spec,
+                            client_format,
+                            args.output,
+                            skip_validation=args.no_validate,
+                            clean=True,
+                        )
+                    else:  # force
+                        generate_typescript_client(
+                            spec,
+                            client_format,
+                            args.output,
+                            skip_validation=args.no_validate,
+                            force=True,
+                        )
+                else:
+                    out.error(str(e))
+                    out.error(
+                        "  Use --clean to clear the directory first, or --force to continue anyway."
+                    )
+                    return 1
 
             out.success(f"Generated to {args.output}")
 
