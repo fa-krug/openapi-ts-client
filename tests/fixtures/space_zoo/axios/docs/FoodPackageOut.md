@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
 **allowedSpecifier** | **string** |  | [optional] [default to undefined]
 **latestVersion** | **string** |  | [optional] [default to undefined]
-**hidden** | **boolean** |  | [optional] [default to false]
+**hidden** | **boolean** |  | [optional] [default to undefined]
 **allowed** | **boolean** |  | [optional] [default to undefined]
 
 ## Example

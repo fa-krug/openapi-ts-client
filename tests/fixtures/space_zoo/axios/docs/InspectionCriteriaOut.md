@@ -5,17 +5,17 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**last** | **string** |  | [default to undefined]
+**last** | **string** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
-**text** | **string** |  | [default to undefined]
-**audit_id** | **number** |  | [default to undefined]
-**type** | **string** |  | [default to undefined]
+**text** | **string** |  | [optional] [default to undefined]
+**auditId** | **number** |  | [optional] [default to undefined]
+**type** | **string** |  | [optional] [default to undefined]
 **kwargs** | **object** |  | [optional] [default to undefined]
 **info** | **string** |  | [optional] [default to undefined]
 **value** | **string** |  | [optional] [default to undefined]
-**score** | [**Score**](Score.md) |  | [optional] [default to undefined]
+**score** | **number** |  | [optional] [default to undefined]
 **section** | **string** |  | [optional] [default to undefined]
-**visible** | **boolean** | Set to false to hide field from all views and calculations | [optional] [default to true]
+**visible** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -26,7 +26,7 @@ const instance: InspectionCriteriaOut = {
     last,
     id,
     text,
-    audit_id,
+    auditId,
     type,
     kwargs,
     info,

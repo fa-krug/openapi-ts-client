@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
-**timestamp** | **string** |  | [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
+**timestamp** | **string** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -19,7 +19,7 @@ const instance: EnclosureOut = {
     id,
     name,
     timestamp,
-    habitat_id,
+    habitatId,
 };
 ```
 

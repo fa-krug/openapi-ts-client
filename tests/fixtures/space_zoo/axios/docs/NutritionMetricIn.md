@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 **type** | **string** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
 **statement** | **string** |  | [optional] [default to undefined]
-**http_metric_id** | **number** |  | [optional] [default to undefined]
+**httpMetricId** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -29,7 +29,7 @@ const instance: NutritionMetricIn = {
     type,
     name,
     statement,
-    http_metric_id,
+    httpMetricId,
 };
 ```
 

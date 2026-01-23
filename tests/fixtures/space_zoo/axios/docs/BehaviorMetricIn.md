@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **start** | **string** |  | [optional] [default to undefined]
 **end** | **string** |  | [optional] [default to undefined]
 **timespanNs** | **number** |  | [optional] [default to undefined]
-**http_metric_id** | **number** |  | [optional] [default to undefined]
+**httpMetricId** | **number** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
 **value** | **number** |  | [optional] [default to undefined]
 **details** | **object** |  | [optional] [default to undefined]
@@ -29,7 +29,7 @@ const instance: BehaviorMetricIn = {
     start,
     end,
     timespanNs,
-    http_metric_id,
+    httpMetricId,
     name,
     value,
     details,

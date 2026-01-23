@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **priority** | **string** |  | [optional] [default to undefined]
 **start** | **string** |  | [optional] [default to undefined]
 **end** | **string** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 **administered** | **boolean** |  | [optional] [default to undefined]
 **feedingDate** | **string** |  | [optional] [default to undefined]
 
@@ -29,7 +29,7 @@ const instance: FeedingIn = {
     priority,
     start,
     end,
-    habitat_id,
+    habitatId,
     administered,
     feedingDate,
 };

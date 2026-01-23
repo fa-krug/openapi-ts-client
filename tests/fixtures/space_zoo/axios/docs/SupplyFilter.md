@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **string** |  | [optional] [default to undefined]
 **purl** | **string** |  | [optional] [default to undefined]
-**_package** | **string** |  | [optional] [default to undefined]
+**package** | **string** |  | [optional] [default to undefined]
 **version** | **string** |  | [optional] [default to undefined]
 **image** | **string** |  | [optional] [default to undefined]
 **bomRef** | **string** |  | [optional] [default to undefined]
@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **riskScore** | **string** |  | [optional] [default to undefined]
 **riskDetails** | **string** |  | [optional] [default to undefined]
 **licenses** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
-**depends_on** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
+**dependsOn** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
 **tags** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
 
 ## Example
@@ -27,7 +27,7 @@ import { SupplyFilter } from './api';
 const instance: SupplyFilter = {
     id,
     purl,
-    _package,
+    package,
     version,
     image,
     bomRef,
@@ -36,7 +36,7 @@ const instance: SupplyFilter = {
     riskScore,
     riskDetails,
     licenses,
-    depends_on,
+    dependsOn,
     tags,
 };
 ```

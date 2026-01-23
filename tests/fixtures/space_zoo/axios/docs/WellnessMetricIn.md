@@ -8,14 +8,14 @@ Name | Type | Description | Notes
 **id** | **number** |  | [optional] [default to undefined]
 **metricId** | **string** |  | [optional] [default to undefined]
 **datetime** | **string** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 **linesOfCode** | **number** |  | [optional] [default to undefined]
-**testCoverage** | [**TestCoverage**](TestCoverage.md) |  | [optional] [default to undefined]
-**codeDuplication** | [**CodeDuplication**](CodeDuplication.md) |  | [optional] [default to undefined]
-**reliabilityRating** | [**ReliabilityRating**](ReliabilityRating.md) |  | [optional] [default to undefined]
-**securityRating** | [**SecurityRating**](SecurityRating.md) |  | [optional] [default to undefined]
-**securityReviewRating** | [**SecurityReviewRating**](SecurityReviewRating.md) |  | [optional] [default to undefined]
-**maintainabilityRating** | [**MaintainabilityRating**](MaintainabilityRating.md) |  | [optional] [default to undefined]
+**testCoverage** | **number** |  | [optional] [default to undefined]
+**codeDuplication** | **number** |  | [optional] [default to undefined]
+**reliabilityRating** | **number** |  | [optional] [default to undefined]
+**securityRating** | **number** |  | [optional] [default to undefined]
+**securityReviewRating** | **number** |  | [optional] [default to undefined]
+**maintainabilityRating** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -26,7 +26,7 @@ const instance: WellnessMetricIn = {
     id,
     metricId,
     datetime,
-    habitat_id,
+    habitatId,
     linesOfCode,
     testCoverage,
     codeDuplication,

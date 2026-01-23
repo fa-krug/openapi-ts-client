@@ -6,7 +6,7 @@ Schema for OTLP traces.
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**resourceSpans** | **Array&lt;any&gt;** |  | [default to undefined]
+**resourceSpans** | **Array&lt;any&gt;** |  | [optional] [default to undefined]
 
 ## Example
 

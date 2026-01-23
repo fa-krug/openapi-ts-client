@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **string** |  | [default to undefined]
-**subsection** | **string** |  | [default to undefined]
-**score** | **number** |  | [default to undefined]
-**value** | **string** |  | [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
+**subsection** | **string** |  | [optional] [default to undefined]
+**score** | **number** |  | [optional] [default to undefined]
+**value** | **string** |  | [optional] [default to undefined]
 
 ## Example
 

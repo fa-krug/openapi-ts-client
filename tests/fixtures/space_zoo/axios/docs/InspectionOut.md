@@ -5,19 +5,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**projectName** | **string** |  | [optional] [default to '']
-**templateName** | **string** |  | [optional] [default to '']
-**last** | [**LastInspection**](LastInspection.md) |  | [default to undefined]
+**projectName** | **string** |  | [optional] [default to undefined]
+**templateName** | **string** |  | [optional] [default to undefined]
+**last** | **[LastInspection](LastInspection.md)** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
-**template_id** | **number** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
-**last_audit_id** | **number** |  | [optional] [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
+**templateId** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
+**lastAuditId** | **number** |  | [optional] [default to undefined]
 **content** | **object** |  | [optional] [default to undefined]
-**version** | **number** |  | [optional] [default to 0]
-**status** | **string** |  | [optional] [default to 'started']
-**score** | [**Score**](Score.md) |  | [optional] [default to undefined]
-**archived** | **boolean** |  | [optional] [default to false]
+**version** | **number** |  | [optional] [default to undefined]
+**status** | **string** |  | [optional] [default to undefined]
+**score** | **number** |  | [optional] [default to undefined]
+**archived** | **boolean** |  | [optional] [default to undefined]
 **start** | **string** |  | [optional] [default to undefined]
 **end** | **string** |  | [optional] [default to undefined]
 **summary** | **string** |  | [optional] [default to undefined]
@@ -33,9 +33,9 @@ const instance: InspectionOut = {
     last,
     id,
     name,
-    template_id,
-    habitat_id,
-    last_audit_id,
+    templateId,
+    habitatId,
+    lastAuditId,
     content,
     version,
     status,

@@ -5,20 +5,20 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**_package** | [**FoodPackageOut**](FoodPackageOut.md) |  | [default to undefined]
-**habitat** | [**HabitatNames**](HabitatNames.md) |  | [default to undefined]
-**image** | [**EnclosureNames**](EnclosureNames.md) |  | [default to undefined]
-**tags** | [**Array&lt;SupplyCategoryOut&gt;**](SupplyCategoryOut.md) |  | [default to undefined]
+**package** | **[FoodPackageOut](FoodPackageOut.md)** |  | [optional] [default to undefined]
+**habitat** | **[HabitatNames](HabitatNames.md)** |  | [optional] [default to undefined]
+**image** | **[EnclosureNames](EnclosureNames.md)** |  | [optional] [default to undefined]
+**tags** | **[Array&lt;SupplyCategoryOut&gt;](SupplyCategoryOut.md)** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
 **purl** | **string** |  | [optional] [default to undefined]
 **version** | **string** |  | [optional] [default to undefined]
-**bomRef** | **string** | BOM reference identifier for the dependency | [default to undefined]
+**bomRef** | **string** |  | [optional] [default to undefined]
 **type** | **string** |  | [optional] [default to undefined]
 **author** | **string** |  | [optional] [default to undefined]
-**riskScore** | **number** | Dependency risk score | [optional] [default to 0]
+**riskScore** | **number** |  | [optional] [default to undefined]
 **riskDetails** | **string** |  | [optional] [default to undefined]
-**licenses** | **Array&lt;number&gt;** |  | [default to undefined]
-**depends_on** | **Array&lt;number&gt;** |  | [default to undefined]
+**licenses** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
+**dependsOn** | **Array&lt;number&gt;** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -26,7 +26,7 @@ Name | Type | Description | Notes
 import { SupplyOut } from './api';
 
 const instance: SupplyOut = {
-    _package,
+    package,
     habitat,
     image,
     tags,
@@ -39,7 +39,7 @@ const instance: SupplyOut = {
     riskScore,
     riskDetails,
     licenses,
-    depends_on,
+    dependsOn,
 };
 ```
 

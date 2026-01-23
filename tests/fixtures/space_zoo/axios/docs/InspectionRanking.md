@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**place** | **number** |  | [default to undefined]
-**habitat** | **string** |  | [default to undefined]
-**score** | **number** |  | [default to undefined]
-**lastScore** | **number** |  | [default to undefined]
-**changes** | **string** |  | [default to undefined]
-**template** | **string** |  | [default to undefined]
+**place** | **number** |  | [optional] [default to undefined]
+**habitat** | **string** |  | [optional] [default to undefined]
+**score** | **number** |  | [optional] [default to undefined]
+**lastScore** | **number** |  | [optional] [default to undefined]
+**changes** | **string** |  | [optional] [default to undefined]
+**template** | **string** |  | [optional] [default to undefined]
 
 ## Example
 

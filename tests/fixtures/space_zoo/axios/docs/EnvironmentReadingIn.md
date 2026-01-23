@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **start** | **string** |  | [optional] [default to undefined]
 **end** | **string** |  | [optional] [default to undefined]
 **timespanNs** | **number** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 **url** | **string** |  | [optional] [default to undefined]
 **method** | **string** |  | [optional] [default to undefined]
 **version** | **string** |  | [optional] [default to undefined]
@@ -27,7 +27,7 @@ const instance: EnvironmentReadingIn = {
     start,
     end,
     timespanNs,
-    habitat_id,
+    habitatId,
     url,
     method,
     version,

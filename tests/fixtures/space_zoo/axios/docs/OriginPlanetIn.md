@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -17,7 +17,7 @@ import { OriginPlanetIn } from './api';
 const instance: OriginPlanetIn = {
     id,
     name,
-    habitat_id,
+    habitatId,
 };
 ```
 

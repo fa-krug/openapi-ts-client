@@ -5,22 +5,22 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**_package** | [**FoodPackageOut**](FoodPackageOut.md) |  | [default to undefined]
-**habitat** | [**HabitatNames**](HabitatNames.md) |  | [default to undefined]
-**image** | [**EnclosureNames**](EnclosureNames.md) |  | [default to undefined]
-**licenses** | [**Array&lt;PermitOut&gt;**](PermitOut.md) |  | [default to undefined]
-**tags** | [**Array&lt;SupplyCategoryOut&gt;**](SupplyCategoryOut.md) |  | [default to undefined]
-**vulnerabilities** | [**Array&lt;VulnerabilityOut&gt;**](VulnerabilityOut.md) |  | [default to undefined]
-**dependsOn** | [**Array&lt;SupplyOut&gt;**](SupplyOut.md) |  | [default to undefined]
-**isOutdated** | **boolean** |  | [default to undefined]
-**hasAllowedVersion** | **boolean** |  | [default to undefined]
+**package** | **[FoodPackageOut](FoodPackageOut.md)** |  | [optional] [default to undefined]
+**habitat** | **[HabitatNames](HabitatNames.md)** |  | [optional] [default to undefined]
+**image** | **[EnclosureNames](EnclosureNames.md)** |  | [optional] [default to undefined]
+**licenses** | **[Array&lt;PermitOut&gt;](PermitOut.md)** |  | [optional] [default to undefined]
+**tags** | **[Array&lt;SupplyCategoryOut&gt;](SupplyCategoryOut.md)** |  | [optional] [default to undefined]
+**vulnerabilities** | **[Array&lt;VulnerabilityOut&gt;](VulnerabilityOut.md)** |  | [optional] [default to undefined]
+**dependsOn** | **[Array&lt;SupplyOut&gt;](SupplyOut.md)** |  | [optional] [default to undefined]
+**isOutdated** | **boolean** |  | [optional] [default to undefined]
+**hasAllowedVersion** | **boolean** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
 **purl** | **string** |  | [optional] [default to undefined]
 **version** | **string** |  | [optional] [default to undefined]
-**bomRef** | **string** | BOM reference identifier for the dependency | [default to undefined]
+**bomRef** | **string** |  | [optional] [default to undefined]
 **type** | **string** |  | [optional] [default to undefined]
 **author** | **string** |  | [optional] [default to undefined]
-**riskScore** | **number** | Dependency risk score | [optional] [default to 0]
+**riskScore** | **number** |  | [optional] [default to undefined]
 **riskDetails** | **string** |  | [optional] [default to undefined]
 
 ## Example
@@ -29,7 +29,7 @@ Name | Type | Description | Notes
 import { SupplyDetails } from './api';
 
 const instance: SupplyDetails = {
-    _package,
+    package,
     habitat,
     image,
     licenses,

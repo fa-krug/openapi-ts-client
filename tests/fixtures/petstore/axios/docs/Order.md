@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **petId** | **number** |  | [optional] [default to undefined]
 **quantity** | **number** |  | [optional] [default to undefined]
 **shipDate** | **string** |  | [optional] [default to undefined]
-**status** | **string** | Order Status | [optional] [default to undefined]
+**status** | **string** |  | [optional] [default to undefined]
 **complete** | **boolean** |  | [optional] [default to undefined]
 
 ## Example

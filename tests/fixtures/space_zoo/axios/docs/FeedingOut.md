@@ -5,16 +5,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**projectName** | **string** |  | [optional] [default to '']
+**projectName** | **string** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
 **value** | **string** |  | [optional] [default to undefined]
 **keeper** | **string** |  | [optional] [default to undefined]
 **creature** | **string** |  | [optional] [default to undefined]
-**priority** | **string** |  | [optional] [default to 'low']
+**priority** | **string** |  | [optional] [default to undefined]
 **start** | **string** |  | [optional] [default to undefined]
 **end** | **string** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
-**administered** | **boolean** |  | [optional] [default to false]
+**habitatId** | **number** |  | [optional] [default to undefined]
+**administered** | **boolean** |  | [optional] [default to undefined]
 **feedingDate** | **string** |  | [optional] [default to undefined]
 
 ## Example
@@ -31,7 +31,7 @@ const instance: FeedingOut = {
     priority,
     start,
     end,
-    habitat_id,
+    habitatId,
     administered,
     feedingDate,
 };

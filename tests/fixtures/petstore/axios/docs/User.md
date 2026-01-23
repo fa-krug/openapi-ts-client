@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **email** | **string** |  | [optional] [default to undefined]
 **password** | **string** |  | [optional] [default to undefined]
 **phone** | **string** |  | [optional] [default to undefined]
-**userStatus** | **number** | User Status | [optional] [default to undefined]
+**userStatus** | **number** |  | [optional] [default to undefined]
 
 ## Example
 

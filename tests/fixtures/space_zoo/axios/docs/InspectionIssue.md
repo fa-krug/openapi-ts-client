@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**creature** | **string** |  | [default to undefined]
-**score** | **number** |  | [default to undefined]
-**value** | **string** |  | [default to undefined]
+**creature** | **string** |  | [optional] [default to undefined]
+**score** | **number** |  | [optional] [default to undefined]
+**value** | **string** |  | [optional] [default to undefined]
 
 ## Example
 

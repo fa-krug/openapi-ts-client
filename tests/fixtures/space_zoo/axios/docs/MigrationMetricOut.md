@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [optional] [default to undefined]
-**metricId** | **string** | Unique ID of the metric | [optional] [default to undefined]
+**metricId** | **string** |  | [optional] [default to undefined]
 **datetime** | **string** |  | [optional] [default to undefined]
-**habitat_id** | **number** |  | [optional] [default to undefined]
+**habitatId** | **number** |  | [optional] [default to undefined]
 **lastCommit** | **string** |  | [optional] [default to undefined]
 **commits** | **number** |  | [optional] [default to undefined]
 **lastRelease** | **string** |  | [optional] [default to undefined]
@@ -21,7 +21,7 @@ Name | Type | Description | Notes
 **bugTtl** | **number** |  | [optional] [default to undefined]
 **doingTime** | **number** |  | [optional] [default to undefined]
 **reviewTime** | **number** |  | [optional] [default to undefined]
-**codeQuality** | [**CodeQuality**](CodeQuality.md) |  | [optional] [default to undefined]
+**codeQuality** | **number** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -32,7 +32,7 @@ const instance: MigrationMetricOut = {
     id,
     metricId,
     datetime,
-    habitat_id,
+    habitatId,
     lastCommit,
     commits,
     lastRelease,

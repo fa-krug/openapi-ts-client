@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**originPlanets** | [**Array&lt;OriginPlanetIn&gt;**](OriginPlanetIn.md) |  | [default to undefined]
-**biomeTypes** | [**Array&lt;BiomeTypeIn&gt;**](BiomeTypeIn.md) |  | [default to undefined]
-**enclosures** | [**Array&lt;EnclosureIn&gt;**](EnclosureIn.md) |  | [default to undefined]
+**originPlanets** | **[Array&lt;OriginPlanetIn&gt;](OriginPlanetIn.md)** |  | [optional] [default to undefined]
+**biomeTypes** | **[Array&lt;BiomeTypeIn&gt;](BiomeTypeIn.md)** |  | [optional] [default to undefined]
+**enclosures** | **[Array&lt;EnclosureIn&gt;](EnclosureIn.md)** |  | [optional] [default to undefined]
 **id** | **number** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
 

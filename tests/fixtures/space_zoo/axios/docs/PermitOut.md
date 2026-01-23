@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **number** |  | [optional] [default to undefined]
-**name** | **string** |  | [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
 **allowed** | **boolean** |  | [optional] [default to undefined]
-**riskScore** | **number** | Risk score associated with the license | [optional] [default to 0]
+**riskScore** | **number** |  | [optional] [default to undefined]
 **sourceUrl** | **string** |  | [optional] [default to undefined]
 
 ## Example

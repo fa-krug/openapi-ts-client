@@ -6,12 +6,12 @@ User output schema.
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**firstName** | **string** |  | [default to undefined]
-**lastName** | **string** |  | [default to undefined]
-**username** | **string** |  | [default to undefined]
-**email** | **string** |  | [default to undefined]
-**permissions** | **Array&lt;string&gt;** |  | [default to undefined]
-**isSuperuser** | **boolean** |  | [default to undefined]
+**firstName** | **string** |  | [optional] [default to undefined]
+**lastName** | **string** |  | [optional] [default to undefined]
+**username** | **string** |  | [optional] [default to undefined]
+**email** | **string** |  | [optional] [default to undefined]
+**permissions** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
+**isSuperuser** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 

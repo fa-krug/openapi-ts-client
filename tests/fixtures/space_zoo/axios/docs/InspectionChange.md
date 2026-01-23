@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**creature** | **string** |  | [default to undefined]
-**field** | **string** |  | [default to undefined]
-**lastValue** | **string** |  | [default to undefined]
-**value** | **string** |  | [default to undefined]
+**creature** | **string** |  | [optional] [default to undefined]
+**field** | **string** |  | [optional] [default to undefined]
+**lastValue** | **string** |  | [optional] [default to undefined]
+**value** | **string** |  | [optional] [default to undefined]
 
 ## Example
 

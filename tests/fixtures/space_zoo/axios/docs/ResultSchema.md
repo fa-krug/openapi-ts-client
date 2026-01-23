@@ -6,7 +6,7 @@ Schema for operation results.
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**detail** | **string** |  | [default to undefined]
+**detail** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
