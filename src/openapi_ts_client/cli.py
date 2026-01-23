@@ -116,6 +116,33 @@ def get_client_format(format_str: str) -> ClientFormat:
 DEFAULT_CONFIG_NAME = "openapi-ts-client.json"
 
 
+class Output:
+    """Handle CLI output based on verbosity settings."""
+
+    def __init__(self, quiet: bool = False, verbose: bool = False):
+        self.quiet = quiet
+        self.verbose = verbose
+
+    def info(self, message: str) -> None:
+        """Print info message (unless quiet)."""
+        if not self.quiet:
+            print(message)
+
+    def detail(self, message: str) -> None:
+        """Print detail message (only in verbose mode)."""
+        if self.verbose and not self.quiet:
+            print(f"  {message}")
+
+    def success(self, message: str) -> None:
+        """Print success message (unless quiet)."""
+        if not self.quiet:
+            print(message)
+
+    def error(self, message: str) -> None:
+        """Print error message (always shown)."""
+        print(f"Error: {message}", file=sys.stderr)
+
+
 def load_config(config_path: str | None) -> dict | None:
     """Load config file if it exists."""
     if config_path:
@@ -147,9 +174,12 @@ def validate_client_config(client: dict, index: int) -> None:
         raise ValueError(f"Config client #{index + 1} missing required 'input' field")
 
 
-def generate_from_config(config: dict, args) -> int:
+def generate_from_config(config: dict, args, out: Output) -> int:
     """Generate clients from config file."""
     clients = normalize_config(config)
+
+    if len(clients) > 1:
+        out.info(f"Generating {len(clients)} clients...")
 
     for i, client in enumerate(clients):
         validate_client_config(client, i)
@@ -158,21 +188,27 @@ def generate_from_config(config: dict, args) -> int:
         format_str = client.get("format", "fetch")
         output_path = client.get("output", "./generated")
 
+        if len(clients) > 1:
+            out.info(f"\n[{i + 1}/{len(clients)}] {format_str} -> {output_path}")
+        else:
+            out.info(f"Generating {format_str} client...")
+
         # Load spec
         if is_url(input_path):
+            out.detail(f"Fetching spec from {input_path}")
             spec = load_spec_from_url(input_path)
         else:
+            out.detail(f"Reading spec from {input_path}")
             spec = load_spec_from_file(input_path)
 
         # Generate
         client_format = get_client_format(format_str)
         generate_typescript_client(spec, client_format, output_path)
 
-        if not args.quiet:
-            if len(clients) > 1:
-                print(f"[{i + 1}/{len(clients)}] Generated {format_str} client to {output_path}")
-            else:
-                print(f"Generated {format_str} client to {output_path}")
+        out.success(f"Generated to {output_path}")
+
+    if len(clients) > 1:
+        out.info("\nDone.")
 
     return 0
 
@@ -181,44 +217,56 @@ def main(argv: list[str] | None = None) -> int:
     """Main entry point for the CLI."""
     parser = create_parser()
     args = parser.parse_args(argv)
+    out = Output(quiet=args.quiet, verbose=args.verbose)
 
     try:
         # If explicit input given, use it (ignore config)
         if args.input:
+            out.info(f"Generating {args.format} client...")
+
             # Load spec based on input type
             if args.input == "-":
+                out.detail("Reading spec from stdin")
                 spec = load_spec_from_stdin()
             elif is_url(args.input):
+                out.detail(f"Fetching spec from {args.input}")
                 spec = load_spec_from_url(args.input)
             else:
+                out.detail(f"Reading spec from {args.input}")
                 spec = load_spec_from_file(args.input)
+
+            # Log spec details in verbose mode
+            if args.verbose:
+                info = spec.get("info", {})
+                out.detail(f"API: {info.get('title', 'Unknown')} v{info.get('version', '?')}")
+                schemas = spec.get("components", {}).get("schemas", {})
+                out.detail(f"Models: {len(schemas)}")
 
             # Generate client
             client_format = get_client_format(args.format)
             generate_typescript_client(spec, client_format, args.output)
 
-            if not args.quiet:
-                print(f"Generated {args.format} client to {args.output}")
+            out.success(f"Generated to {args.output}")
 
             return 0
 
         # No input - try config file
         config = load_config(args.config)
         if config is None:
-            print("Error: No input provided and no config file found", file=sys.stderr)
+            out.error("No input provided and no config file found")
             print("  Usage: openapi-ts-client <input> [options]", file=sys.stderr)
             return 2
 
-        return generate_from_config(config, args)
+        return generate_from_config(config, args, out)
 
     except (FileNotFoundError, ConnectionError) as e:
-        print(f"Error: {e}", file=sys.stderr)
+        out.error(str(e))
         return 1
     except ValueError as e:
-        print(f"Error: {e}", file=sys.stderr)
+        out.error(str(e))
         return 2
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        out.error(str(e))
         return 1
 
 
