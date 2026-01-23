@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from openapi_ts_client.generators.shared import map_openapi_type_with_imports
+from openapi_ts_client.generators.angular.type_mapper import map_openapi_type_with_imports
 from openapi_ts_client.utils.naming import (
     operation_id_to_method_name,
     schema_to_filename,

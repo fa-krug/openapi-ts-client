@@ -75,7 +75,10 @@ def _get_property_info(
         }
 
     # Non-enum property - pass registry for titled anyOf lookups
-    ts_type, imports = map_openapi_type_with_imports(prop_schema, registry)
+    # Angular uses string for dates, not Date objects, and doesn't prefix reserved names
+    ts_type, imports = map_openapi_type_with_imports(
+        prop_schema, registry, use_date_type=False, use_model_prefix=False
+    )
     return {
         "name": prop_name,
         "type": ts_type,

@@ -6,7 +6,10 @@ from openapi_ts_client.utils import schema_to_type_name
 
 
 def map_openapi_type(
-    schema: Dict[str, Any], registry: Optional[Dict[str, Dict[str, Any]]] = None
+    schema: Dict[str, Any],
+    registry: Optional[Dict[str, Dict[str, Any]]] = None,
+    use_date_type: bool = True,
+    use_model_prefix: bool = True,
 ) -> str:
     """
     Map an OpenAPI schema to a TypeScript type string.
@@ -14,16 +17,21 @@ def map_openapi_type(
     Args:
         schema: OpenAPI schema object
         registry: Optional extraction registry for titled anyOf schemas
+        use_date_type: If True, map date/date-time to Date; if False, use string
+        use_model_prefix: If True, add Model prefix for reserved names (Fetch style)
 
     Returns:
         TypeScript type string
     """
-    result, _ = map_openapi_type_with_imports(schema, registry)
+    result, _ = map_openapi_type_with_imports(schema, registry, use_date_type, use_model_prefix)
     return result
 
 
 def map_openapi_type_with_imports(
-    schema: Dict[str, Any], registry: Optional[Dict[str, Dict[str, Any]]] = None
+    schema: Dict[str, Any],
+    registry: Optional[Dict[str, Dict[str, Any]]] = None,
+    use_date_type: bool = True,
+    use_model_prefix: bool = True,
 ) -> Tuple[str, Set[str]]:
     """
     Map an OpenAPI schema to a TypeScript type string, tracking imports.
@@ -31,6 +39,8 @@ def map_openapi_type_with_imports(
     Args:
         schema: OpenAPI schema object
         registry: Optional extraction registry for titled anyOf schemas
+        use_date_type: If True, map date/date-time to Date; if False, use string
+        use_model_prefix: If True, add Model prefix for reserved names (Fetch style)
 
     Returns:
         Tuple of (TypeScript type string, set of required imports)
@@ -49,7 +59,10 @@ def map_openapi_type_with_imports(
         # Extract schema name from "#/components/schemas/Name"
         raw_name = ref.split("/")[-1]
         # Convert to type name (handles reserved names like ApiResponse -> ModelApiResponse)
-        type_name = schema_to_type_name(raw_name)
+        if use_model_prefix:
+            type_name = schema_to_type_name(raw_name)
+        else:
+            type_name = raw_name
         imports.add(type_name)
         return type_name, imports
 
@@ -72,7 +85,9 @@ def map_openapi_type_with_imports(
             if sub_schema.get("type") == "null":
                 types.append("null")
             else:
-                sub_type, sub_imports = map_openapi_type_with_imports(sub_schema, registry)
+                sub_type, sub_imports = map_openapi_type_with_imports(
+                    sub_schema, registry, use_date_type, use_model_prefix
+                )
                 types.append(sub_type)
                 imports.update(sub_imports)
         return " | ".join(types), imports
@@ -82,7 +97,9 @@ def map_openapi_type_with_imports(
     # Handle arrays
     if schema_type == "array":
         items = schema.get("items", {})
-        item_type, item_imports = map_openapi_type_with_imports(items, registry)
+        item_type, item_imports = map_openapi_type_with_imports(
+            items, registry, use_date_type, use_model_prefix
+        )
         imports.update(item_imports)
         return f"Array<{item_type}>", imports
 
@@ -90,7 +107,9 @@ def map_openapi_type_with_imports(
     if schema_type == "object" and "additionalProperties" in schema:
         additional_props = schema["additionalProperties"]
         if additional_props and isinstance(additional_props, dict):
-            value_type, value_imports = map_openapi_type_with_imports(additional_props, registry)
+            value_type, value_imports = map_openapi_type_with_imports(
+                additional_props, registry, use_date_type, use_model_prefix
+            )
             imports.update(value_imports)
             return f"{{ [key: string]: {value_type}; }}", imports
 
@@ -110,7 +129,8 @@ def map_openapi_type_with_imports(
         if format_val == "binary":
             return "Blob", imports
         if format_val in ("date", "date-time"):
-            return "Date", imports
+            # Use Date type for Fetch, string for Angular
+            return "Date" if use_date_type else "string", imports
 
     # Basic type mapping
     type_map = {

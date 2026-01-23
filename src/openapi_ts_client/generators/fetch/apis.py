@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from openapi_ts_client.generators.shared import map_openapi_type_with_imports
-from openapi_ts_client.utils.naming import operation_id_to_method_name
+from openapi_ts_client.utils.naming import operation_id_to_method_name, schema_to_type_name
 
 # TypeScript reserved words that need escaping as method/param names
 TYPESCRIPT_RESERVED_WORDS = {
@@ -165,14 +165,16 @@ def _schema_to_response_info(
 
     # Handle $ref
     if "$ref" in schema:
-        type_name = schema["$ref"].split("/")[-1]
+        raw_name = schema["$ref"].split("/")[-1]
+        type_name = schema_to_type_name(raw_name)
         return type_name, {type_name}, False, False, False, None, f"{type_name}FromJSON"
 
     # Handle array type
     if schema.get("type") == "array":
         items = schema.get("items", {})
         if "$ref" in items:
-            item_type = items["$ref"].split("/")[-1]
+            raw_item = items["$ref"].split("/")[-1]
+            item_type = schema_to_type_name(raw_item)
             return (
                 f"Array<{item_type}>",
                 {item_type},

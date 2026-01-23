@@ -35,9 +35,9 @@ class TestMapOpenapiTypeBasic:
         assert map_openapi_type(schema) == "object"
 
     def test_string_with_format(self):
-        """string with format still returns string."""
+        """string with date-time format returns Date."""
         schema = {"type": "string", "format": "date-time"}
-        assert map_openapi_type(schema) == "string"
+        assert map_openapi_type(schema) == "Date"
 
 
 class TestMapOpenapiTypeArrays:
