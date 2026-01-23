@@ -2,6 +2,136 @@
 
 <!-- version list -->
 
+## v1.3.0 (2026-01-23)
+
+### Bug Fixes
+
+- **logging**: Ensure logger level is always set regardless of handlers
+  ([`e0dc82d`](https://github.com/fa-krug/openapi-ts-client/commit/e0dc82dcbfaa9bf68d1903c5db1a528cd9ef7fcf))
+
+- **tests**: Update header assertion to match new branding
+  ([`6a41423`](https://github.com/fa-krug/openapi-ts-client/commit/6a41423223f91dff6270a36af14a11ed7afc17a1))
+
+- **tests**: Update header assertion to match new branding
+  ([`840bd74`](https://github.com/fa-krug/openapi-ts-client/commit/840bd7452a85cc785b34975ac338fce543cf2e16))
+
+### Chores
+
+- Rebrand Angular templates to openapi-ts-client
+  ([`795487f`](https://github.com/fa-krug/openapi-ts-client/commit/795487f7ed3d91efab3d6eef9cd13788d38ec47c))
+
+- Rebrand Angular templates to openapi-ts-client
+  ([`90e6e71`](https://github.com/fa-krug/openapi-ts-client/commit/90e6e713840fe9a100b39b31e92bc3ba6df143df))
+
+- Rebrand Axios templates to openapi-ts-client
+  ([`496addb`](https://github.com/fa-krug/openapi-ts-client/commit/496addba672b3caa28271147cd2ca69e59eed04f))
+
+- Rebrand Axios templates to openapi-ts-client
+  ([`7c1ee23`](https://github.com/fa-krug/openapi-ts-client/commit/7c1ee2351b881756555ef22ec53f17b62b1d9d44))
+
+- Rebrand Fetch templates to openapi-ts-client
+  ([`b43ddc2`](https://github.com/fa-krug/openapi-ts-client/commit/b43ddc2e2d9ce11d06324dcaeb3df72bbdc4e08f))
+
+- Rebrand Fetch templates to openapi-ts-client
+  ([`07f146f`](https://github.com/fa-krug/openapi-ts-client/commit/07f146f44fa1bbc14df1e7bd1d270e624b9e0838))
+
+- Regenerate petstore fixtures with openapi-ts-client branding
+  ([`4d3be7f`](https://github.com/fa-krug/openapi-ts-client/commit/4d3be7fbb032ca732c2f9b3a7bc494c9eaf3467a))
+
+- Regenerate petstore fixtures with openapi-ts-client branding
+  ([`222797c`](https://github.com/fa-krug/openapi-ts-client/commit/222797ccb4cc70f92efb89e441529a1864e739ba))
+
+- Regenerate space_zoo fixtures with openapi-ts-client branding
+  ([`62b8ee5`](https://github.com/fa-krug/openapi-ts-client/commit/62b8ee52114de817e751e3ac768a43c5ebba5ffb))
+
+- Regenerate space_zoo fixtures with openapi-ts-client branding
+  ([`3cd040b`](https://github.com/fa-krug/openapi-ts-client/commit/3cd040b9fe0a0dab429a055756a18b50d5edde0a))
+
+- Remove openapi-generator artifact templates
+  ([`f973a42`](https://github.com/fa-krug/openapi-ts-client/commit/f973a4216e1414e59dda385f19569fa5e113b0f3))
+
+- Remove openapi-generator artifact templates
+  ([`4229f39`](https://github.com/fa-krug/openapi-ts-client/commit/4229f394415a44ebc226cbaad618154676969fc0))
+
+- Remove openapi-generator artifacts from petstore fixtures
+  ([`a063a41`](https://github.com/fa-krug/openapi-ts-client/commit/a063a4127a529eb947428f7c7bc6b9edec0b98c5))
+
+- Remove openapi-generator artifacts from petstore fixtures
+  ([`0b45cd7`](https://github.com/fa-krug/openapi-ts-client/commit/0b45cd750142ae1172ec48b0c435c1dddd1b03f1))
+
+- Remove openapi-generator artifacts from space_zoo fixtures
+  ([`9f9a6b3`](https://github.com/fa-krug/openapi-ts-client/commit/9f9a6b3d2930f46084026e4ed49f8cf00f7f2a55))
+
+- Remove openapi-generator artifacts from space_zoo fixtures
+  ([`0ece04a`](https://github.com/fa-krug/openapi-ts-client/commit/0ece04af3032c3ab594763e3d216cbe00c2512f0))
+
+- Remove openapitools.json config file
+  ([`b00056f`](https://github.com/fa-krug/openapi-ts-client/commit/b00056fd6c68f61c4575be61fdd82fd98aad301c))
+
+- Remove openapitools.json config file
+  ([`804863b`](https://github.com/fa-krug/openapi-ts-client/commit/804863b41668f07424eae309be5be1962c86ed48))
+
+### Documentation
+
+- Add design for destination folder cleanup behavior
+  ([`55eceff`](https://github.com/fa-krug/openapi-ts-client/commit/55eceffb62a2727448177acafd5328d8d0a59e12))
+
+- Add design for destination folder cleanup behavior
+  ([`31c333d`](https://github.com/fa-krug/openapi-ts-client/commit/31c333de8c616bbfdd357f98b5bb40f560347c71))
+
+- Add design for removing openapi-generator traces
+  ([`c5db8d9`](https://github.com/fa-krug/openapi-ts-client/commit/c5db8d96695087f7b6a86534c541b0af23e39586))
+
+- Add design for removing openapi-generator traces
+  ([`000f822`](https://github.com/fa-krug/openapi-ts-client/commit/000f8221077e6d40fad977ca642667a07c3e7c6a))
+
+- Add implementation plan for folder cleanup feature
+  ([`6dc2d8a`](https://github.com/fa-krug/openapi-ts-client/commit/6dc2d8a59feab9aee132197813a504862486b032))
+
+- Add implementation plan for removing openapi-generator traces
+  ([`df62cf5`](https://github.com/fa-krug/openapi-ts-client/commit/df62cf57ce01206aafba6a31ac5afafd47567c54))
+
+- Add implementation plan for removing openapi-generator traces
+  ([`b228161`](https://github.com/fa-krug/openapi-ts-client/commit/b228161a656f21ed9006dde9120b2f8fb4a203f0))
+
+- Add project positioning and acknowledgements to README
+  ([`9a570cb`](https://github.com/fa-krug/openapi-ts-client/commit/9a570cbe8e38776626aa3163f6f7523791bf9f84))
+
+- Add project positioning and acknowledgements to README
+  ([`b4ebe7e`](https://github.com/fa-krug/openapi-ts-client/commit/b4ebe7ea1602cf800181e979f499bf3b37c8f9a2))
+
+### Features
+
+- Add --clean and --force CLI flags
+  ([`092bec0`](https://github.com/fa-krug/openapi-ts-client/commit/092bec045654522f51bbc515d18af5242bac3335))
+
+- Add _clear_directory helper function
+  ([`e4c37d7`](https://github.com/fa-krug/openapi-ts-client/commit/e4c37d742b083b663fdf40a202a18926258c4d71))
+
+- Add _get_non_hidden_files helper function
+  ([`70230e1`](https://github.com/fa-krug/openapi-ts-client/commit/70230e1058a01a2a59361e03f97de2fbf5dc6f05))
+
+- Add clean/force parameters to generate_typescript_client
+  ([`7f9a99b`](https://github.com/fa-krug/openapi-ts-client/commit/7f9a99bc62a2a9871b50f2fc9831c159e0cbfb2f))
+
+- Add OutputDirectoryNotEmptyError exception
+  ([`e6b0897`](https://github.com/fa-krug/openapi-ts-client/commit/e6b0897f88e95182191ed7bfe6be46450bcc3cdf))
+
+- Add prompt_directory_action for interactive mode
+  ([`bddfe0b`](https://github.com/fa-krug/openapi-ts-client/commit/bddfe0b4db8c6dd922acad9987533191ac8dc267))
+
+- Integrate interactive prompt for non-empty directories
+  ([`3bda057`](https://github.com/fa-krug/openapi-ts-client/commit/3bda0576f243f9c86bc25bf762f719cfca529f7d))
+
+### Refactoring
+
+- Remove openapi-generator directory creation from Angular generator
+  ([`d3298d8`](https://github.com/fa-krug/openapi-ts-client/commit/d3298d8d04184afefad4165d1036f9608cf264a6))
+
+- Remove openapi-generator directory creation from Angular generator
+  ([`881736d`](https://github.com/fa-krug/openapi-ts-client/commit/881736da2e2c8f320f4e8cc78d0842db66749e4f))
+
+
 ## v1.2.2 (2026-01-23)
 
 ### Bug Fixes
