@@ -74,7 +74,7 @@ jobs:
           echo "$OUTPUT"
           if echo "$OUTPUT" | grep -q "No release will be made"; then
             echo "released=false" >> $GITHUB_OUTPUT
-          elif echo "$OUTPUT" | grep -q "bumped"; then
+          elif echo "$OUTPUT" | grep -qE "The next version is:|bumped"; then
             echo "released=true" >> $GITHUB_OUTPUT
           else
             echo "released=false" >> $GITHUB_OUTPUT
@@ -89,7 +89,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build package
         if: steps.release.outputs.released == 'true'
-        run: python -m build
+        run: |
+          rm -rf dist/
+          python -m build
       - name: Publish to PyPI
         if: steps.release.outputs.released == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
