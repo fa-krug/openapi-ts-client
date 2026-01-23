@@ -27,9 +27,6 @@ STATIC_FILES = [
     "encoder.ts.j2",
     "param.ts.j2",
     "query.params.ts.j2",
-    ".gitignore.j2",
-    ".openapi-generator-ignore.j2",
-    "git_push.sh.j2",
 ]
 
 # Files that need template variables
@@ -100,37 +97,3 @@ def generate_infrastructure(
     )
     (output_path / "README.md").write_text(readme_content)
     generated_files.append("README.md")
-
-    # Create .openapi-generator directory
-    openapi_gen_dir = output_path / ".openapi-generator"
-    openapi_gen_dir.mkdir(exist_ok=True)
-
-    # Generate VERSION file
-    version_template = env.get_template("VERSION.j2")
-    version_content = version_template.render()
-    (openapi_gen_dir / "VERSION").write_text(version_content)
-
-    # Build FILES manifest - all files sorted alphabetically
-    all_files = []
-
-    # Add root-level files
-    for f in generated_files:
-        all_files.append(f)
-
-    # Add api/ files
-    all_files.append("api/api.ts")
-    if service_files:
-        for sf in service_files:
-            all_files.append(f"api/{sf}")
-
-    # Add model/ files
-    if model_files:
-        for mf in model_files:
-            all_files.append(f"model/{mf}")
-
-    # Sort all files alphabetically
-    all_files.sort()
-
-    # Write FILES manifest
-    files_content = "\n".join(all_files) + "\n"
-    (openapi_gen_dir / "FILES").write_text(files_content)
