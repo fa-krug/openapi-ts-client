@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.1 (2026-01-23)
+
+### Bug Fixes
+
+- **ci**: Configure semantic-release for automatic version bumping
+  ([`17a8e51`](https://github.com/fa-krug/openapi-ts-client/commit/17a8e51ad287a0fe74e682ca84733731ee72b805))
+
+
 ## v1.1.0 (2026-01-23)
 
 ### Bug Fixes
