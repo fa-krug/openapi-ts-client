@@ -18,6 +18,7 @@ elif "-v" not in sys.argv and "--verbose" not in sys.argv:
     os.environ["OPENAPI_TS_CLIENT_LOG_LEVEL"] = "WARNING"
 
 from . import ClientFormat, generate_typescript_client  # noqa: E402
+from .exceptions import OutputDirectoryNotEmptyError  # noqa: E402
 
 # Read version from pyproject.toml - this is the canonical version
 __version__ = "1.1.2"
@@ -73,6 +74,16 @@ def create_parser() -> argparse.ArgumentParser:
         "--verbose",
         action="store_true",
         help="Show detailed progress",
+    )
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clear output directory before generating",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Continue even if output directory is not empty (may overwrite files)",
     )
     return parser
 
@@ -151,6 +162,34 @@ class Output:
         print(f"Error: {message}", file=sys.stderr)
 
 
+def prompt_directory_action(path: Path, file_count: int) -> str:
+    """Prompt user for action on non-empty directory.
+
+    Args:
+        path: The output directory path.
+        file_count: Number of non-hidden files in the directory.
+
+    Returns:
+        'clean' to clear directory, 'force' to continue, or 'cancel' to abort.
+    """
+    print(f"\nOutput directory '{path}' is not empty (contains {file_count} files).")
+    print("\nHow would you like to proceed?")
+    print("  [1] Clear directory and continue")
+    print("  [2] Continue without clearing (may overwrite files)")
+    print("  [3] Cancel")
+
+    while True:
+        choice = input("\nChoice [1/2/3]: ").strip()
+        if choice == "1":
+            return "clean"
+        elif choice == "2":
+            return "force"
+        elif choice == "3":
+            return "cancel"
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+
 def load_config(config_path: str | None) -> dict | None:
     """Load config file if it exists."""
     if config_path:
@@ -211,9 +250,43 @@ def generate_from_config(config: dict, args, out: Output) -> int:
 
         # Generate
         client_format = get_client_format(format_str)
-        generate_typescript_client(
-            spec, client_format, output_path, skip_validation=args.no_validate
-        )
+        try:
+            generate_typescript_client(
+                spec,
+                client_format,
+                output_path,
+                skip_validation=args.no_validate,
+                clean=getattr(args, "clean", False),
+                force=getattr(args, "force", False),
+            )
+        except OutputDirectoryNotEmptyError as e:
+            if sys.stdin.isatty() and not args.quiet:
+                action = prompt_directory_action(e.path, e.file_count)
+                if action == "cancel":
+                    out.info("Cancelled.")
+                    return 1
+                elif action == "clean":
+                    generate_typescript_client(
+                        spec,
+                        client_format,
+                        output_path,
+                        skip_validation=args.no_validate,
+                        clean=True,
+                    )
+                else:  # force
+                    generate_typescript_client(
+                        spec,
+                        client_format,
+                        output_path,
+                        skip_validation=args.no_validate,
+                        force=True,
+                    )
+            else:
+                out.error(str(e))
+                out.error(
+                    "  Use --clean to clear the directory first, or --force to continue anyway."
+                )
+                return 1
 
         out.success(f"Generated to {output_path}")
 
@@ -254,9 +327,43 @@ def main(argv: list[str] | None = None) -> int:
 
             # Generate client
             client_format = get_client_format(args.format)
-            generate_typescript_client(
-                spec, client_format, args.output, skip_validation=args.no_validate
-            )
+            try:
+                generate_typescript_client(
+                    spec,
+                    client_format,
+                    args.output,
+                    skip_validation=args.no_validate,
+                    clean=args.clean,
+                    force=args.force,
+                )
+            except OutputDirectoryNotEmptyError as e:
+                if sys.stdin.isatty() and not args.quiet:
+                    action = prompt_directory_action(e.path, e.file_count)
+                    if action == "cancel":
+                        out.info("Cancelled.")
+                        return 1
+                    elif action == "clean":
+                        generate_typescript_client(
+                            spec,
+                            client_format,
+                            args.output,
+                            skip_validation=args.no_validate,
+                            clean=True,
+                        )
+                    else:  # force
+                        generate_typescript_client(
+                            spec,
+                            client_format,
+                            args.output,
+                            skip_validation=args.no_validate,
+                            force=True,
+                        )
+                else:
+                    out.error(str(e))
+                    out.error(
+                        "  Use --clean to clear the directory first, or --force to continue anyway."
+                    )
+                    return 1
 
             out.success(f"Generated to {args.output}")
 

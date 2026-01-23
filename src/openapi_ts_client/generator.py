@@ -2,11 +2,13 @@
 
 import json
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Union
 
 from .enums import ClientFormat
+from .exceptions import OutputDirectoryNotEmptyError
 from .generators.angular.generator import generate_angular_client
 from .generators.axios.generator import generate_axios_client
 from .generators.fetch.generator import generate_fetch_client
@@ -25,11 +27,46 @@ def _get_logger():
     return _logger
 
 
+def _get_non_hidden_files(directory: Path) -> list:
+    """Return list of non-hidden files/dirs in directory.
+
+    Hidden files are those starting with a dot (e.g., .gitkeep, .gitignore).
+
+    Args:
+        directory: The directory to scan.
+
+    Returns:
+        List of Path objects for non-hidden files and directories.
+    """
+    if not directory.exists():
+        return []
+    return [p for p in directory.iterdir() if not p.name.startswith(".")]
+
+
+def _clear_directory(directory: Path) -> None:
+    """Remove all contents of directory (but not the directory itself).
+
+    Removes both hidden and non-hidden files and subdirectories.
+
+    Args:
+        directory: The directory to clear.
+    """
+    if not directory.exists():
+        return
+    for item in directory.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
 def generate_typescript_client(
     openapi_spec: Union[Dict[str, Any], str],
     output_format: ClientFormat = ClientFormat.FETCH,
     output_path: Union[str, Path, None] = None,
     skip_validation: bool = False,
+    clean: bool = False,
+    force: bool = False,
 ) -> str:
     """
     Generate a TypeScript client from an OpenAPI specification.
@@ -49,13 +86,23 @@ def generate_typescript_client(
             - ClientFormat.ANGULAR: Angular-optimized client with services
         output_path: The directory path where the generated client will be written.
             Defaults to a temporary directory if not specified.
+        skip_validation: If True, skip OpenAPI specification validation.
+            Defaults to False.
+        clean: If True, clear the output directory before generating.
+            Cannot be used together with force. Defaults to False.
+        force: If True, continue generation even if output directory is not empty.
+            Files will be overwritten but existing files not part of the generated
+            output will remain. Cannot be used together with clean. Defaults to False.
 
     Returns:
         A status message indicating the result of the generation process.
 
     Raises:
-        ValueError: If the provided specification is not a valid OpenAPI spec.
+        ValueError: If the provided specification is not a valid OpenAPI spec,
+            or if both clean and force are set to True.
         TypeError: If the openapi_spec parameter is neither a dict nor a string.
+        OutputDirectoryNotEmptyError: If the output directory is not empty and
+            neither clean nor force is set to True.
 
     Example:
         >>> from openapi_ts_client import generate_typescript_client, ClientFormat
@@ -69,6 +116,10 @@ def generate_typescript_client(
     func_logger.info("=" * 80)
     func_logger.info("Starting TypeScript client generation")
     func_logger.info("=" * 80)
+
+    # Validate clean and force are not both set
+    if clean and force:
+        raise ValueError("clean and force are mutually exclusive - use one or the other")
 
     # Use temp directory if output_path not specified
     if output_path is None:
@@ -118,6 +169,20 @@ def generate_typescript_client(
     # Resolve and validate output path
     func_logger.info("Resolving output path")
     resolved_output_path = _resolve_output_path(output_path, func_logger)
+
+    # Check for non-empty directory
+    non_hidden = _get_non_hidden_files(resolved_output_path)
+    if non_hidden:
+        if clean:
+            func_logger.info(f"Clearing output directory: {resolved_output_path}")
+            _clear_directory(resolved_output_path)
+        elif force:
+            func_logger.warning(
+                f"Output directory is not empty ({len(non_hidden)} files), "
+                f"continuing due to force=True"
+            )
+        else:
+            raise OutputDirectoryNotEmptyError(resolved_output_path, len(non_hidden))
 
     # Log specification details
     func_logger.info("Extracting specification metadata")

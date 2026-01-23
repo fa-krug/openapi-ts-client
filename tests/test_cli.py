@@ -409,3 +409,179 @@ class TestValidation:
         # Check that it didn't fail with validation error
         if result.returncode != 0:
             assert "info.title" not in result.stderr.lower()
+
+
+class TestCleanForceFlags:
+    """Test --clean and --force CLI flags."""
+
+    def test_clean_flag_clears_directory(self, tmp_path: Path):
+        """Test that --clean clears the output directory."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "old_file.ts").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--clean",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert not (output_dir / "old_file.ts").exists()
+        assert (output_dir / "index.ts").exists()
+
+    def test_force_flag_continues_without_clearing(self, tmp_path: Path):
+        """Test that --force continues without clearing."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "keep_me.txt").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--force",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert (output_dir / "keep_me.txt").exists()
+        assert (output_dir / "index.ts").exists()
+
+    def test_both_flags_error(self, tmp_path: Path):
+        """Test that --clean and --force together gives error."""
+        output_dir = tmp_path / "output"
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--clean",
+                "--force",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0
+        assert "mutually exclusive" in result.stderr.lower() or "error" in result.stderr.lower()
+
+    def test_nonempty_without_flags_error(self, tmp_path: Path):
+        """Test that non-empty directory without flags gives error."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "existing.ts").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0
+        assert "not empty" in result.stderr.lower() or "error" in result.stderr.lower()
+
+
+class TestInteractivePrompt:
+    """Test interactive TTY prompt."""
+
+    def test_prompt_function_returns_clean(self, monkeypatch):
+        """Test prompt_directory_action returns 'clean' for input '1'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "1")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "clean"
+
+    def test_prompt_function_returns_force(self, monkeypatch):
+        """Test prompt_directory_action returns 'force' for input '2'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "2")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "force"
+
+    def test_prompt_function_returns_cancel(self, monkeypatch):
+        """Test prompt_directory_action returns 'cancel' for input '3'."""
+        from openapi_ts_client import cli
+
+        monkeypatch.setattr("builtins.input", lambda _: "3")
+        result = cli.prompt_directory_action(Path("/tmp/test"), 5)
+        assert result == "cancel"
+
+    def test_interactive_cancel_exits(self, tmp_path: Path, monkeypatch):
+        """Test that cancel choice exits without generating."""
+        from openapi_ts_client import cli
+
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "existing.ts").touch()
+
+        # Mock isatty to return True
+        monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+        # Mock prompt to return cancel
+        monkeypatch.setattr(cli, "prompt_directory_action", lambda p, c: "cancel")
+
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        result = cli.main([str(spec_path), "-o", str(output_dir)])
+
+        assert result == 1  # Cancelled
+        assert (output_dir / "existing.ts").exists()  # Not cleared
+        assert not (output_dir / "index.ts").exists()  # Not generated
+
+    def test_interactive_clean_clears_and_generates(self, tmp_path: Path, monkeypatch):
+        """Test that clean choice clears directory and generates."""
+        from openapi_ts_client import cli
+
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "existing.ts").touch()
+
+        monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+        monkeypatch.setattr(cli, "prompt_directory_action", lambda p, c: "clean")
+
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        result = cli.main([str(spec_path), "-o", str(output_dir)])
+
+        assert result == 0
+        assert not (output_dir / "existing.ts").exists()  # Cleared
+        assert (output_dir / "index.ts").exists()  # Generated
+
+    def test_interactive_force_continues_without_clearing(self, tmp_path: Path, monkeypatch):
+        """Test that force choice continues without clearing the directory."""
+        from openapi_ts_client import cli
+
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "existing.ts").touch()
+
+        monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+        monkeypatch.setattr(cli, "prompt_directory_action", lambda p, c: "force")
+
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        result = cli.main([str(spec_path), "-o", str(output_dir)])
+
+        assert result == 0
+        assert (output_dir / "existing.ts").exists()  # Not cleared
+        assert (output_dir / "index.ts").exists()  # Generated
