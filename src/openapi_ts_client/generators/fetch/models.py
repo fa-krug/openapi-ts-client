@@ -12,10 +12,26 @@ from openapi_ts_client.generators.shared import (
 from openapi_ts_client.utils import schema_to_type_name
 
 
+# Reserved words that need escaping in TypeScript interface property names
+INTERFACE_RESERVED_WORDS = {
+    "break", "case", "catch", "class", "const", "continue", "debugger",
+    "default", "delete", "do", "else", "enum", "export", "extends",
+    "false", "finally", "for", "function", "if", "import", "in",
+    "instanceof", "new", "null", "return", "super", "switch", "this",
+    "throw", "true", "try", "typeof", "var", "void", "while", "with",
+    "yield", "let", "static", "implements", "interface", "package",
+    "private", "protected", "public",
+}
+
+
 def _snake_to_camel(name: str) -> str:
-    """Convert snake_case to camelCase."""
+    """Convert snake_case to camelCase and escape reserved words."""
     components = name.split("_")
-    return components[0] + "".join(x.title() for x in components[1:])
+    result = components[0] + "".join(x.title() for x in components[1:])
+    # Escape reserved words
+    if result in INTERFACE_RESERVED_WORDS:
+        return f"_{result}"
+    return result
 
 
 def _get_property_info(
@@ -202,9 +218,8 @@ def _build_from_json_expr(
     # Handle nested objects (non-array references)
     if nested_type:
         inner_expr = f"{nested_type}FromJSON({json_access})"
-        if not is_required and not is_nullable:
+        if not is_required:
             return f"{json_access} == null ? undefined : {inner_expr}"
-        # For required nullable, still call FromJSON (it handles null)
         return inner_expr
 
     # Handle dates
@@ -340,6 +355,7 @@ def generate_models(
         autoescape=select_autoescape(),
         trim_blocks=True,
         lstrip_blocks=True,
+        keep_trailing_newline=True,
     )
 
     model_template = env.get_template("model.ts.j2")

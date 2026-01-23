@@ -34,7 +34,7 @@ import {
  */
 {% else %}
 /**
- * {{ '' }}
+ * 
  * @export
  * @interface {{ model_name }}
  */
@@ -45,7 +45,7 @@ export interface {{ model_name }} {
 {% if prop.description %}
      * {{ prop.description }}
 {% else %}
-     * {{ '' }}
+     * 
 {% endif %}
      * @type {{ '{' }}{{ prop.ts_type_doc }}{{ '}' }}
      * @memberof {{ model_name }}
@@ -126,5 +126,4 @@ export function {{ model_name }}ToJSONTyped(value?: {{ model_name }} | null, ign
     return value;
 }
 {% endif %}
-
 
