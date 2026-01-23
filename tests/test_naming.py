@@ -100,4 +100,7 @@ class TestOperationIdToMethodName:
 
     def test_decrease_action(self):
         """Action with underscore becomes camelCase."""
-        assert operation_id_to_method_name("zoo.api.endpoints.feedings_decrease_action") == "decreaseAction"
+        assert (
+            operation_id_to_method_name("zoo.api.endpoints.feedings_decrease_action")
+            == "decreaseAction"
+        )

@@ -64,9 +64,9 @@ def test_fetch_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
         timeout=60,
     )
 
-    assert result.returncode == 0, (
-        f"TypeScript compilation failed:\n{result.stdout}\n{result.stderr}"
-    )
+    assert (
+        result.returncode == 0
+    ), f"TypeScript compilation failed:\n{result.stdout}\n{result.stderr}"
 
 
 @pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])

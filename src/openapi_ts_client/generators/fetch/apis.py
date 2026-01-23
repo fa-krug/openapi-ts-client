@@ -281,7 +281,15 @@ def _extract_request_body_info(
     if "$ref" in schema:
         type_name = schema["$ref"].split("/")[-1]
         param_name = type_name[0].lower() + type_name[1:]
-        return param_name, type_name, {type_name}, is_required, False, f"{type_name}ToJSON", "application/json"
+        return (
+            param_name,
+            type_name,
+            {type_name},
+            is_required,
+            False,
+            f"{type_name}ToJSON",
+            "application/json",
+        )
 
     # Handle array type
     if schema.get("type") == "array":
@@ -327,19 +335,23 @@ def _extract_security_info(
             scheme_type = scheme.get("type", "")
 
             if scheme_type == "oauth2":
-                oauth_items.append({
-                    "type": "oauth2",
-                    "name": scheme_name,
-                    "scopes": scopes,
-                })
+                oauth_items.append(
+                    {
+                        "type": "oauth2",
+                        "name": scheme_name,
+                        "scopes": scopes,
+                    }
+                )
             elif scheme_type == "apiKey":
                 in_location = scheme.get("in", "header")
                 if in_location == "header":
-                    apikey_items.append({
-                        "type": "apiKey",
-                        "name": scheme_name,
-                        "header_name": scheme.get("name", scheme_name),
-                    })
+                    apikey_items.append(
+                        {
+                            "type": "apiKey",
+                            "name": scheme_name,
+                            "header_name": scheme.get("name", scheme_name),
+                        }
+                    )
 
     # Return OAuth2 items first, then apiKey items
     return oauth_items + apikey_items
@@ -714,7 +726,13 @@ def generate_apis(spec: Dict[str, Any], output_path: Path) -> List[str]:
         api_names.append(api_class_name)
 
         content = generate_api(
-            tag, operations, api_title, api_description, api_version, contact_email, security_schemes
+            tag,
+            operations,
+            api_title,
+            api_description,
+            api_version,
+            contact_email,
+            security_schemes,
         )
         filename = f"{api_class_name}.ts"
         (apis_dir / filename).write_text(content)

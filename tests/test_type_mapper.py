@@ -84,44 +84,24 @@ class TestMapOpenapiTypeNullable:
 
     def test_anyof_string_null(self):
         """anyOf [string, null] -> string | null"""
-        schema = {
-            "anyOf": [
-                {"type": "string"},
-                {"type": "null"}
-            ]
-        }
+        schema = {"anyOf": [{"type": "string"}, {"type": "null"}]}
         assert map_openapi_type(schema) == "string | null"
 
     def test_anyof_integer_null(self):
         """anyOf [integer, null] -> number | null"""
-        schema = {
-            "anyOf": [
-                {"type": "integer"},
-                {"type": "null"}
-            ]
-        }
+        schema = {"anyOf": [{"type": "integer"}, {"type": "null"}]}
         assert map_openapi_type(schema) == "number | null"
 
     def test_anyof_ref_null(self):
         """anyOf [ref, null] -> RefType | null"""
-        schema = {
-            "anyOf": [
-                {"$ref": "#/components/schemas/Score"},
-                {"type": "null"}
-            ]
-        }
+        schema = {"anyOf": [{"$ref": "#/components/schemas/Score"}, {"type": "null"}]}
         result, imports = map_openapi_type_with_imports(schema)
         assert result == "Score | null"
         assert "Score" in imports
 
     def test_anyof_without_null(self):
         """anyOf without null becomes union."""
-        schema = {
-            "anyOf": [
-                {"type": "string"},
-                {"type": "integer"}
-            ]
-        }
+        schema = {"anyOf": [{"type": "string"}, {"type": "integer"}]}
         assert map_openapi_type(schema) == "string | number"
 
 
