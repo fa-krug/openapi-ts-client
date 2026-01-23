@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v1.3.1 (2026-01-23)
+
+### Bug Fixes
+
+- Handle integer keys in Django Ninja OpenAPI specs
+  ([`1594aaf`](https://github.com/fa-krug/openapi-ts-client/commit/1594aaf6a07dc97c566382eaa3f098c12b2ee803))
+
+### Chores
+
+- Add local editor and tool configurations
+  ([`0e9e9e3`](https://github.com/fa-krug/openapi-ts-client/commit/0e9e9e3d177bd5e4b85e6d3c1d653408761bd611))
+
+### Documentation
+
+- Add missing force, clean, and skip_validation parameter documentation
+  ([`e1c5e06`](https://github.com/fa-krug/openapi-ts-client/commit/e1c5e06ca4ba65332683734ae366ef7e4d76bf25))
+
+
 ## v1.3.0 (2026-01-23)
 
 ### Bug Fixes
