@@ -20,25 +20,25 @@ import { mapValues } from '../runtime';
  */
 export interface BiomeTypeFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BiomeTypeFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BiomeTypeFilter
      */
     biomeCode?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BiomeTypeFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BiomeTypeFilter
      */

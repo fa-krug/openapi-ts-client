@@ -26,7 +26,7 @@ export interface SupplyIn {
      */
     id?: number | null;
     /**
-     * 
+     * unique overall identifier for the dependency
      * @type {string}
      * @memberof SupplyIn
      */
@@ -50,31 +50,31 @@ export interface SupplyIn {
      */
     imageId?: number | null;
     /**
-     * 
+     * BOM reference identifier for the dependency
      * @type {string}
      * @memberof SupplyIn
      */
     bomRef?: string | null;
     /**
-     * 
+     * Type of the dependency (e.g., library, tool)
      * @type {string}
      * @memberof SupplyIn
      */
     type?: string | null;
     /**
-     * 
+     * Author or vendor of the dependency
      * @type {string}
      * @memberof SupplyIn
      */
     author?: string | null;
     /**
-     * 
+     * Dependency risk score
      * @type {number}
      * @memberof SupplyIn
      */
     riskScore?: number | null;
     /**
-     * 
+     * Details about the risk score
      * @type {string}
      * @memberof SupplyIn
      */

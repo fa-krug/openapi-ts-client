@@ -25,7 +25,7 @@ import {
     ResultSchemaToJSON,
 } from '../models/index';
 
-export interface OtlpTracesRequest {
+export interface OTLPApiOtlpTracesRequest {
     activityLogSchema: ActivityLogSchema;
 }
 
@@ -38,7 +38,7 @@ export class OTLPApi extends runtime.BaseAPI {
      * Receive and process OpenTelemetry protocol (OTLP) trace requests.
      * Otlp Traces
      */
-    async otlpTracesRaw(requestParameters: OtlpTracesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResultSchema>> {
+    async otlpTracesRaw(requestParameters: OTLPApiOtlpTracesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResultSchema>> {
         if (requestParameters['activityLogSchema'] == null) {
             throw new runtime.RequiredError(
                 'activityLogSchema',
@@ -70,7 +70,7 @@ export class OTLPApi extends runtime.BaseAPI {
      * Receive and process OpenTelemetry protocol (OTLP) trace requests.
      * Otlp Traces
      */
-    async otlpTraces(requestParameters: OtlpTracesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResultSchema> {
+    async otlpTraces(requestParameters: OTLPApiOtlpTracesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResultSchema> {
         const response = await this.otlpTracesRaw(requestParameters, initOverrides);
         return await response.value();
     }

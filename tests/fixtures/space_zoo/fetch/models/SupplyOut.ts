@@ -20,20 +20,6 @@ import {
     FoodPackageOutToJSON,
     FoodPackageOutToJSONTyped,
 } from './FoodPackageOut';
-import type { SupplyCategoryOut } from './SupplyCategoryOut';
-import {
-    SupplyCategoryOutFromJSON,
-    SupplyCategoryOutFromJSONTyped,
-    SupplyCategoryOutToJSON,
-    SupplyCategoryOutToJSONTyped,
-} from './SupplyCategoryOut';
-import type { EnclosureNames } from './EnclosureNames';
-import {
-    EnclosureNamesFromJSON,
-    EnclosureNamesFromJSONTyped,
-    EnclosureNamesToJSON,
-    EnclosureNamesToJSONTyped,
-} from './EnclosureNames';
 import type { HabitatNames } from './HabitatNames';
 import {
     HabitatNamesFromJSON,
@@ -41,6 +27,20 @@ import {
     HabitatNamesToJSON,
     HabitatNamesToJSONTyped,
 } from './HabitatNames';
+import type { EnclosureNames } from './EnclosureNames';
+import {
+    EnclosureNamesFromJSON,
+    EnclosureNamesFromJSONTyped,
+    EnclosureNamesToJSON,
+    EnclosureNamesToJSONTyped,
+} from './EnclosureNames';
+import type { SupplyCategoryOut } from './SupplyCategoryOut';
+import {
+    SupplyCategoryOutFromJSON,
+    SupplyCategoryOutFromJSONTyped,
+    SupplyCategoryOutToJSON,
+    SupplyCategoryOutToJSONTyped,
+} from './SupplyCategoryOut';
 
 /**
  * 
@@ -79,7 +79,7 @@ export interface SupplyOut {
      */
     id?: number | null;
     /**
-     * 
+     * unique overall identifier for the dependency
      * @type {string}
      * @memberof SupplyOut
      */
@@ -97,13 +97,13 @@ export interface SupplyOut {
      */
     bomRef: string;
     /**
-     * 
+     * Type of the dependency (e.g., library, tool)
      * @type {string}
      * @memberof SupplyOut
      */
     type?: string | null;
     /**
-     * 
+     * Author or vendor of the dependency
      * @type {string}
      * @memberof SupplyOut
      */
@@ -115,7 +115,7 @@ export interface SupplyOut {
      */
     riskScore?: number;
     /**
-     * 
+     * Details about the risk score
      * @type {string}
      * @memberof SupplyOut
      */

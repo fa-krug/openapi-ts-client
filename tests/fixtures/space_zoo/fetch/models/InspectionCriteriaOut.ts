@@ -58,7 +58,7 @@ export interface InspectionCriteriaOut {
      */
     type: string;
     /**
-     * 
+     * Kwargs for the field type
      * @type {object}
      * @memberof InspectionCriteriaOut
      */

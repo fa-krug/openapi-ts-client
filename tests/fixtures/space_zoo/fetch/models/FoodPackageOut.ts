@@ -50,7 +50,7 @@ export interface FoodPackageOut {
      */
     hidden?: boolean;
     /**
-     * 
+     * Whether the package is allowed (True/False) or unknown (None)
      * @type {boolean}
      * @memberof FoodPackageOut
      */

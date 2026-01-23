@@ -37,47 +37,47 @@ import {
     SubSectionToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface HealthReportsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface HealthReportsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface HealthReportsApiCreateRequest {
     healthReportIn: HealthReportIn;
 }
 
-export interface GetRequest {
+export interface HealthReportsApiGetRequest {
     pk: number;
 }
 
-export interface GetAuditRankingRequest {
+export interface HealthReportsApiGetAuditRankingRequest {
     pk: number;
 }
 
-export interface GetAuditsRequest {
+export interface HealthReportsApiGetAuditsRequest {
     pk: number;
 }
 
-export interface GetOpenActionsRequest {
+export interface HealthReportsApiGetOpenActionsRequest {
     pk: number;
 }
 
-export interface GetRecentActionsRequest {
+export interface HealthReportsApiGetRecentActionsRequest {
     pk: number;
 }
 
-export interface GetReportPdfRequest {
+export interface HealthReportsApiGetReportPdfRequest {
     pk: number;
 }
 
-export interface GetSubsectionsRequest {
+export interface HealthReportsApiGetSubsectionsRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface HealthReportsApiListAllRequest {
     id?: string | null;
     name?: string | null;
     latestAudits?: boolean | null;
@@ -92,7 +92,7 @@ export interface ListAllRequest {
     template?: Array<number> | null;
 }
 
-export interface UpdateRequest {
+export interface HealthReportsApiUpdateRequest {
     pk: number;
     healthReportIn: HealthReportIn;
 }
@@ -106,7 +106,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: HealthReportsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -136,7 +136,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: HealthReportsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -144,7 +144,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
+    async cloneRaw(requestParameters: HealthReportsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -174,7 +174,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
+    async clone(requestParameters: HealthReportsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -218,7 +218,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
+    async createRaw(requestParameters: HealthReportsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
         if (requestParameters['healthReportIn'] == null) {
             throw new runtime.RequiredError(
                 'healthReportIn',
@@ -250,7 +250,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
+    async create(requestParameters: HealthReportsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -259,7 +259,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
+    async getRaw(requestParameters: HealthReportsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -289,7 +289,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
+    async get(requestParameters: HealthReportsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -298,7 +298,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get audit ranking for a report.
      * Get Audit Ranking
      */
-    async getAuditRankingRaw(requestParameters: GetAuditRankingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionRanking>>> {
+    async getAuditRankingRaw(requestParameters: HealthReportsApiGetAuditRankingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionRanking>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -328,7 +328,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get audit ranking for a report.
      * Get Audit Ranking
      */
-    async getAuditRanking(requestParameters: GetAuditRankingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionRanking>> {
+    async getAuditRanking(requestParameters: HealthReportsApiGetAuditRankingRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionRanking>> {
         const response = await this.getAuditRankingRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -337,7 +337,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get audits for a report.
      * Get Audits
      */
-    async getAuditsRaw(requestParameters: GetAuditsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionOut>>> {
+    async getAuditsRaw(requestParameters: HealthReportsApiGetAuditsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -367,7 +367,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get audits for a report.
      * Get Audits
      */
-    async getAudits(requestParameters: GetAuditsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionOut>> {
+    async getAudits(requestParameters: HealthReportsApiGetAuditsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionOut>> {
         const response = await this.getAuditsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -376,7 +376,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get open actions for a report.
      * Get Open Actions
      */
-    async getOpenActionsRaw(requestParameters: GetOpenActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
+    async getOpenActionsRaw(requestParameters: HealthReportsApiGetOpenActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -406,7 +406,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get open actions for a report.
      * Get Open Actions
      */
-    async getOpenActions(requestParameters: GetOpenActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
+    async getOpenActions(requestParameters: HealthReportsApiGetOpenActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
         const response = await this.getOpenActionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -415,7 +415,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get recent actions for a report.
      * Get Recent Actions
      */
-    async getRecentActionsRaw(requestParameters: GetRecentActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
+    async getRecentActionsRaw(requestParameters: HealthReportsApiGetRecentActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -445,7 +445,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get recent actions for a report.
      * Get Recent Actions
      */
-    async getRecentActions(requestParameters: GetRecentActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
+    async getRecentActions(requestParameters: HealthReportsApiGetRecentActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
         const response = await this.getRecentActionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -454,7 +454,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get pdf data for a report.
      * Get Report Pdf
      */
-    async getReportPdfRaw(requestParameters: GetReportPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
+    async getReportPdfRaw(requestParameters: HealthReportsApiGetReportPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -484,7 +484,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get pdf data for a report.
      * Get Report Pdf
      */
-    async getReportPdf(requestParameters: GetReportPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Blob> {
+    async getReportPdf(requestParameters: HealthReportsApiGetReportPdfRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Blob> {
         const response = await this.getReportPdfRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -493,7 +493,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get subsections for a report.
      * Get Subsections
      */
-    async getSubsectionsRaw(requestParameters: GetSubsectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubSection>>> {
+    async getSubsectionsRaw(requestParameters: HealthReportsApiGetSubsectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubSection>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -523,7 +523,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Get subsections for a report.
      * Get Subsections
      */
-    async getSubsections(requestParameters: GetSubsectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubSection>> {
+    async getSubsections(requestParameters: HealthReportsApiGetSubsectionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubSection>> {
         const response = await this.getSubsectionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -532,7 +532,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HealthReportOut>>> {
+    async listAllRaw(requestParameters: HealthReportsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HealthReportOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -602,7 +602,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HealthReportOut>> {
+    async listAll(requestParameters: HealthReportsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HealthReportOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -611,7 +611,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
+    async updateRaw(requestParameters: HealthReportsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthReportOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -651,7 +651,7 @@ export class HealthReportsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
+    async update(requestParameters: HealthReportsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthReportOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

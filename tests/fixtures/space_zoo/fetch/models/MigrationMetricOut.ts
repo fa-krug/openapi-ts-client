@@ -40,7 +40,7 @@ export interface MigrationMetricOut {
      */
     metricId?: string;
     /**
-     * 
+     * Timestamp when the metric was collected
      * @type {Date}
      * @memberof MigrationMetricOut
      */
@@ -52,79 +52,79 @@ export interface MigrationMetricOut {
      */
     habitatId?: number | null;
     /**
-     * 
+     * Timestamp of the last commit
      * @type {Date}
      * @memberof MigrationMetricOut
      */
     lastCommit?: Date | null;
     /**
-     * 
+     * Amount of commit
      * @type {number}
      * @memberof MigrationMetricOut
      */
     commits?: number | null;
     /**
-     * 
+     * Timestamp of the last release
      * @type {Date}
      * @memberof MigrationMetricOut
      */
     lastRelease?: Date | null;
     /**
-     * 
+     * Amount of open issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     openIssues?: number | null;
     /**
-     * 
+     * Amount of closed issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     closedIssues?: number | null;
     /**
-     * 
+     * Amount of feature issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     featureIssues?: number | null;
     /**
-     * 
+     * Amount of closed feature issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     closedFeatureIssues?: number | null;
     /**
-     * 
+     * Amount of bug issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     bugIssues?: number | null;
     /**
-     * 
+     * Amount of closed bug issues
      * @type {number}
      * @memberof MigrationMetricOut
      */
     closedBugIssues?: number | null;
     /**
-     * 
+     * Median time in seconds how long bugs are alive
      * @type {number}
      * @memberof MigrationMetricOut
      */
     bugTtl?: number | null;
     /**
-     * 
+     * Median time how long issues are in doing
      * @type {number}
      * @memberof MigrationMetricOut
      */
     doingTime?: number | null;
     /**
-     * 
+     * Median time how long issues are in review
      * @type {number}
      * @memberof MigrationMetricOut
      */
     reviewTime?: number | null;
     /**
-     * 
+     * Percentage of code_quality in main branch
      * @type {CodeQuality}
      * @memberof MigrationMetricOut
      */

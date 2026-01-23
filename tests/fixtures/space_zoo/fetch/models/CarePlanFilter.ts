@@ -20,19 +20,19 @@ import { mapValues } from '../runtime';
  */
 export interface CarePlanFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof CarePlanFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof CarePlanFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof CarePlanFilter
      */

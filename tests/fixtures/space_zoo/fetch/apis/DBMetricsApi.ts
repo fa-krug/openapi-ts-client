@@ -25,23 +25,23 @@ import {
     NutritionMetricOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface DBMetricsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface DBMetricsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface DBMetricsApiCreateRequest {
     nutritionMetricIn: NutritionMetricIn;
 }
 
-export interface GetRequest {
+export interface DBMetricsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface DBMetricsApiListAllRequest {
     id?: string | null;
     spanId?: string | null;
     start?: string | null;
@@ -53,7 +53,7 @@ export interface ListAllRequest {
     httpMetric?: string | null;
 }
 
-export interface UpdateRequest {
+export interface DBMetricsApiUpdateRequest {
     pk: number;
     nutritionMetricIn: NutritionMetricIn;
 }
@@ -67,7 +67,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: DBMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -97,7 +97,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: DBMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -105,7 +105,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
+    async cloneRaw(requestParameters: DBMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -135,7 +135,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
+    async clone(requestParameters: DBMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -179,7 +179,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
+    async createRaw(requestParameters: DBMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
         if (requestParameters['nutritionMetricIn'] == null) {
             throw new runtime.RequiredError(
                 'nutritionMetricIn',
@@ -211,7 +211,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
+    async create(requestParameters: DBMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -220,7 +220,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
+    async getRaw(requestParameters: DBMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -250,7 +250,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
+    async get(requestParameters: DBMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -259,7 +259,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<NutritionMetricOut>>> {
+    async listAllRaw(requestParameters: DBMetricsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<NutritionMetricOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -317,7 +317,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<NutritionMetricOut>> {
+    async listAll(requestParameters: DBMetricsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<NutritionMetricOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -326,7 +326,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
+    async updateRaw(requestParameters: DBMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NutritionMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -366,7 +366,7 @@ export class DBMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
+    async update(requestParameters: DBMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NutritionMetricOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

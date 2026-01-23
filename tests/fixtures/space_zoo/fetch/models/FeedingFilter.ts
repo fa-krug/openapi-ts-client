@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface FeedingFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     value?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     keeper?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     creature?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     priority?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     start?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     end?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */
     habitat?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof FeedingFilter
      */
     administered?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FeedingFilter
      */

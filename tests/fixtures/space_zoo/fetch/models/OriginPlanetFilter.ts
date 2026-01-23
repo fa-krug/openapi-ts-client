@@ -20,19 +20,19 @@ import { mapValues } from '../runtime';
  */
 export interface OriginPlanetFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof OriginPlanetFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof OriginPlanetFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof OriginPlanetFilter
      */

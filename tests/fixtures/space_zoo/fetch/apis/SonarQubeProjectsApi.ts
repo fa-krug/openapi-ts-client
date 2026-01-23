@@ -25,30 +25,30 @@ import {
     BiomeTypeOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface SonarQubeProjectsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface SonarQubeProjectsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface SonarQubeProjectsApiCreateRequest {
     biomeTypeIn: BiomeTypeIn;
 }
 
-export interface GetRequest {
+export interface SonarQubeProjectsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface SonarQubeProjectsApiListAllRequest {
     id?: string | null;
     biomeCode?: string | null;
     name?: string | null;
     habitat?: string | null;
 }
 
-export interface UpdateRequest {
+export interface SonarQubeProjectsApiUpdateRequest {
     pk: number;
     biomeTypeIn: BiomeTypeIn;
 }
@@ -62,7 +62,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: SonarQubeProjectsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -92,7 +92,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: SonarQubeProjectsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -100,7 +100,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
+    async cloneRaw(requestParameters: SonarQubeProjectsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -130,7 +130,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
+    async clone(requestParameters: SonarQubeProjectsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -139,7 +139,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
+    async createRaw(requestParameters: SonarQubeProjectsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
         if (requestParameters['biomeTypeIn'] == null) {
             throw new runtime.RequiredError(
                 'biomeTypeIn',
@@ -171,7 +171,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
+    async create(requestParameters: SonarQubeProjectsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -180,7 +180,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
+    async getRaw(requestParameters: SonarQubeProjectsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -210,7 +210,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
+    async get(requestParameters: SonarQubeProjectsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -219,7 +219,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BiomeTypeOut>>> {
+    async listAllRaw(requestParameters: SonarQubeProjectsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BiomeTypeOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -257,7 +257,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BiomeTypeOut>> {
+    async listAll(requestParameters: SonarQubeProjectsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BiomeTypeOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -266,7 +266,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
+    async updateRaw(requestParameters: SonarQubeProjectsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BiomeTypeOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -306,7 +306,7 @@ export class SonarQubeProjectsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
+    async update(requestParameters: SonarQubeProjectsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BiomeTypeOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

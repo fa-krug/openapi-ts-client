@@ -52,7 +52,7 @@ export interface InspectionCriteriaIn {
      */
     type?: string | null;
     /**
-     * 
+     * Kwargs for the field type
      * @type {object}
      * @memberof InspectionCriteriaIn
      */
@@ -82,7 +82,7 @@ export interface InspectionCriteriaIn {
      */
     section?: string | null;
     /**
-     * 
+     * Set to false to hide field from all views and calculations
      * @type {boolean}
      * @memberof InspectionCriteriaIn
      */

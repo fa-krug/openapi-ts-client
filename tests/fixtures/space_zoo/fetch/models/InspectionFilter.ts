@@ -20,79 +20,79 @@ import { mapValues } from '../runtime';
  */
 export interface InspectionFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     template?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     habitat?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     lastAudit?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     content?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     version?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     status?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     score?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof InspectionFilter
      */
     archived?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     start?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */
     end?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionFilter
      */

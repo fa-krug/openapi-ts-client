@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface InspectionCriteriaFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     text?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     audit?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     type?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     kwargs?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     info?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     value?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     score?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof InspectionCriteriaFilter
      */
     section?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof InspectionCriteriaFilter
      */

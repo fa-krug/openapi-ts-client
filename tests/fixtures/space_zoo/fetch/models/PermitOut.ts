@@ -32,7 +32,7 @@ export interface PermitOut {
      */
     name: string;
     /**
-     * 
+     * Whether the license is allowed (True/False) or unknown (None)
      * @type {boolean}
      * @memberof PermitOut
      */
@@ -44,7 +44,7 @@ export interface PermitOut {
      */
     riskScore?: number;
     /**
-     * 
+     * URL to the license details
      * @type {string}
      * @memberof PermitOut
      */

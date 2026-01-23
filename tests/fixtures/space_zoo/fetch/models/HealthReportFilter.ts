@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface HealthReportFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof HealthReportFilter
      */
     latestAudits?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     startDate?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     endDate?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     type?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof HealthReportFilter
      */
     simplify?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     blocks?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */
     permission?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HealthReportFilter
      */

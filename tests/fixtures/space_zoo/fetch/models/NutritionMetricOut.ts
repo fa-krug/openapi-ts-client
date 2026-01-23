@@ -26,43 +26,43 @@ export interface NutritionMetricOut {
      */
     id?: number | null;
     /**
-     * 
+     * ID of the original span
      * @type {string}
      * @memberof NutritionMetricOut
      */
     spanId?: string | null;
     /**
-     * 
+     * Timestamp when the request came in
      * @type {Date}
      * @memberof NutritionMetricOut
      */
     start?: Date | null;
     /**
-     * 
+     * Timestamp when the response was send out
      * @type {Date}
      * @memberof NutritionMetricOut
      */
     end?: Date | null;
     /**
-     * 
+     * Processing timespan in nanoseconds
      * @type {number}
      * @memberof NutritionMetricOut
      */
     timespanNs?: number | null;
     /**
-     * 
+     * Type of database
      * @type {string}
      * @memberof NutritionMetricOut
      */
     type?: string | null;
     /**
-     * 
+     * Name of the database if present
      * @type {string}
      * @memberof NutritionMetricOut
      */
     name?: string | null;
     /**
-     * 
+     * Full statement
      * @type {string}
      * @memberof NutritionMetricOut
      */

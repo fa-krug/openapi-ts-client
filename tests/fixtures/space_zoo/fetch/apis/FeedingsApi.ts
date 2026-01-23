@@ -25,35 +25,35 @@ import {
     FeedingOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface FeedingsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface FeedingsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface FeedingsApiCreateRequest {
     feedingIn: FeedingIn;
 }
 
-export interface DecreaseActionRequest {
+export interface FeedingsApiDecreaseActionRequest {
     pk: number;
 }
 
-export interface ExtendActionRequest {
+export interface FeedingsApiExtendActionRequest {
     pk: number;
 }
 
-export interface GetRequest {
+export interface FeedingsApiGetRequest {
     pk: number;
 }
 
-export interface IncreaseActionRequest {
+export interface FeedingsApiIncreaseActionRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface FeedingsApiListAllRequest {
     id?: string | null;
     value?: string | null;
     keeper?: string | null;
@@ -66,7 +66,7 @@ export interface ListAllRequest {
     feedingDate?: string | null;
 }
 
-export interface UpdateRequest {
+export interface FeedingsApiUpdateRequest {
     pk: number;
     feedingIn: FeedingIn;
 }
@@ -80,7 +80,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: FeedingsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -110,7 +110,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: FeedingsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -118,7 +118,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async cloneRaw(requestParameters: FeedingsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -148,7 +148,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async clone(requestParameters: FeedingsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -192,7 +192,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async createRaw(requestParameters: FeedingsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['feedingIn'] == null) {
             throw new runtime.RequiredError(
                 'feedingIn',
@@ -224,7 +224,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async create(requestParameters: FeedingsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -233,7 +233,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Decrease portion size for feeding.
      * Decrease Action
      */
-    async decreaseActionRaw(requestParameters: DecreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async decreaseActionRaw(requestParameters: FeedingsApiDecreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -263,7 +263,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Decrease portion size for feeding.
      * Decrease Action
      */
-    async decreaseAction(requestParameters: DecreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async decreaseAction(requestParameters: FeedingsApiDecreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.decreaseActionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -272,7 +272,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Extend feeding schedule duration.
      * Extend Action
      */
-    async extendActionRaw(requestParameters: ExtendActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async extendActionRaw(requestParameters: FeedingsApiExtendActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -302,7 +302,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Extend feeding schedule duration.
      * Extend Action
      */
-    async extendAction(requestParameters: ExtendActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async extendAction(requestParameters: FeedingsApiExtendActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.extendActionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -311,7 +311,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async getRaw(requestParameters: FeedingsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -341,7 +341,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async get(requestParameters: FeedingsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -350,7 +350,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Increase portion size for feeding.
      * Increase Action
      */
-    async increaseActionRaw(requestParameters: IncreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async increaseActionRaw(requestParameters: FeedingsApiIncreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -380,7 +380,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Increase portion size for feeding.
      * Increase Action
      */
-    async increaseAction(requestParameters: IncreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async increaseAction(requestParameters: FeedingsApiIncreaseActionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.increaseActionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -389,7 +389,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
+    async listAllRaw(requestParameters: FeedingsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -451,7 +451,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
+    async listAll(requestParameters: FeedingsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -460,7 +460,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
+    async updateRaw(requestParameters: FeedingsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FeedingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -500,7 +500,7 @@ export class FeedingsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
+    async update(requestParameters: FeedingsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FeedingOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

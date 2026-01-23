@@ -25,23 +25,23 @@ import {
     PermitOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface PermitsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface PermitsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface PermitsApiCreateRequest {
     permitIn: PermitIn;
 }
 
-export interface GetRequest {
+export interface PermitsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface PermitsApiListAllRequest {
     id?: string | null;
     name?: string | null;
     allowed?: boolean | null;
@@ -49,7 +49,7 @@ export interface ListAllRequest {
     sourceUrl?: string | null;
 }
 
-export interface UpdateRequest {
+export interface PermitsApiUpdateRequest {
     pk: number;
     permitIn: PermitIn;
 }
@@ -63,7 +63,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: PermitsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -93,7 +93,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: PermitsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -101,7 +101,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
+    async cloneRaw(requestParameters: PermitsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -131,7 +131,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
+    async clone(requestParameters: PermitsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -175,7 +175,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
+    async createRaw(requestParameters: PermitsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
         if (requestParameters['permitIn'] == null) {
             throw new runtime.RequiredError(
                 'permitIn',
@@ -207,7 +207,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
+    async create(requestParameters: PermitsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -216,7 +216,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
+    async getRaw(requestParameters: PermitsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -246,7 +246,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
+    async get(requestParameters: PermitsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -255,7 +255,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PermitOut>>> {
+    async listAllRaw(requestParameters: PermitsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PermitOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -297,7 +297,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PermitOut>> {
+    async listAll(requestParameters: PermitsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PermitOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -306,7 +306,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
+    async updateRaw(requestParameters: PermitsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PermitOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -346,7 +346,7 @@ export class PermitsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
+    async update(requestParameters: PermitsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PermitOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

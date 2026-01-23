@@ -25,30 +25,30 @@ import {
     EnclosureOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface EnclosuresApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface EnclosuresApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface EnclosuresApiCreateRequest {
     enclosureIn: EnclosureIn;
 }
 
-export interface GetRequest {
+export interface EnclosuresApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface EnclosuresApiListAllRequest {
     id?: string | null;
     name?: string | null;
     timestamp?: string | null;
     habitat?: string | null;
 }
 
-export interface UpdateRequest {
+export interface EnclosuresApiUpdateRequest {
     pk: number;
     enclosureIn: EnclosureIn;
 }
@@ -62,7 +62,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: EnclosuresApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -92,7 +92,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: EnclosuresApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -100,7 +100,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
+    async cloneRaw(requestParameters: EnclosuresApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -130,7 +130,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
+    async clone(requestParameters: EnclosuresApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -174,7 +174,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
+    async createRaw(requestParameters: EnclosuresApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
         if (requestParameters['enclosureIn'] == null) {
             throw new runtime.RequiredError(
                 'enclosureIn',
@@ -206,7 +206,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
+    async create(requestParameters: EnclosuresApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -215,7 +215,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
+    async getRaw(requestParameters: EnclosuresApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -245,7 +245,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
+    async get(requestParameters: EnclosuresApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -254,7 +254,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<EnclosureOut>>> {
+    async listAllRaw(requestParameters: EnclosuresApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<EnclosureOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -292,7 +292,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<EnclosureOut>> {
+    async listAll(requestParameters: EnclosuresApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<EnclosureOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -301,7 +301,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
+    async updateRaw(requestParameters: EnclosuresApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnclosureOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -341,7 +341,7 @@ export class EnclosuresApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
+    async update(requestParameters: EnclosuresApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnclosureOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

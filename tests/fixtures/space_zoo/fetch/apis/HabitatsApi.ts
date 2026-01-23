@@ -28,33 +28,33 @@ import {
     HabitatOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface HabitatsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface HabitatsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface HabitatsApiCreateRequest {
     habitatIn: HabitatIn;
 }
 
-export interface GetRequest {
+export interface HabitatsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface HabitatsApiListAllRequest {
     id?: string | null;
     name?: string | null;
 }
 
-export interface ListNamesRequest {
+export interface HabitatsApiListNamesRequest {
     id?: string | null;
     name?: string | null;
 }
 
-export interface UpdateRequest {
+export interface HabitatsApiUpdateRequest {
     pk: number;
     habitatIn: HabitatIn;
 }
@@ -68,7 +68,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: HabitatsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -98,7 +98,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: HabitatsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -106,7 +106,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
+    async cloneRaw(requestParameters: HabitatsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -136,7 +136,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
+    async clone(requestParameters: HabitatsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -180,7 +180,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
+    async createRaw(requestParameters: HabitatsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
         if (requestParameters['habitatIn'] == null) {
             throw new runtime.RequiredError(
                 'habitatIn',
@@ -212,7 +212,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
+    async create(requestParameters: HabitatsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -221,7 +221,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
+    async getRaw(requestParameters: HabitatsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -251,7 +251,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
+    async get(requestParameters: HabitatsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -260,7 +260,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HabitatOut>>> {
+    async listAllRaw(requestParameters: HabitatsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HabitatOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -290,7 +290,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HabitatOut>> {
+    async listAll(requestParameters: HabitatsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HabitatOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -299,7 +299,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async listNamesRaw(requestParameters: ListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HabitatNames>>> {
+    async listNamesRaw(requestParameters: HabitatsApiListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<HabitatNames>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -329,7 +329,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async listNames(requestParameters: ListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HabitatNames>> {
+    async listNames(requestParameters: HabitatsApiListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<HabitatNames>> {
         const response = await this.listNamesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -338,7 +338,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
+    async updateRaw(requestParameters: HabitatsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HabitatOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -378,7 +378,7 @@ export class HabitatsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
+    async update(requestParameters: HabitatsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HabitatOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

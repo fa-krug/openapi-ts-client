@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { SupplyOut } from './SupplyOut';
-import {
-    SupplyOutFromJSON,
-    SupplyOutFromJSONTyped,
-    SupplyOutToJSON,
-    SupplyOutToJSONTyped,
-} from './SupplyOut';
 import type { FoodPackageOut } from './FoodPackageOut';
 import {
     FoodPackageOutFromJSON,
@@ -27,27 +20,6 @@ import {
     FoodPackageOutToJSON,
     FoodPackageOutToJSONTyped,
 } from './FoodPackageOut';
-import type { SupplyCategoryOut } from './SupplyCategoryOut';
-import {
-    SupplyCategoryOutFromJSON,
-    SupplyCategoryOutFromJSONTyped,
-    SupplyCategoryOutToJSON,
-    SupplyCategoryOutToJSONTyped,
-} from './SupplyCategoryOut';
-import type { EnclosureNames } from './EnclosureNames';
-import {
-    EnclosureNamesFromJSON,
-    EnclosureNamesFromJSONTyped,
-    EnclosureNamesToJSON,
-    EnclosureNamesToJSONTyped,
-} from './EnclosureNames';
-import type { VulnerabilityOut } from './VulnerabilityOut';
-import {
-    VulnerabilityOutFromJSON,
-    VulnerabilityOutFromJSONTyped,
-    VulnerabilityOutToJSON,
-    VulnerabilityOutToJSONTyped,
-} from './VulnerabilityOut';
 import type { HabitatNames } from './HabitatNames';
 import {
     HabitatNamesFromJSON,
@@ -55,6 +27,13 @@ import {
     HabitatNamesToJSON,
     HabitatNamesToJSONTyped,
 } from './HabitatNames';
+import type { EnclosureNames } from './EnclosureNames';
+import {
+    EnclosureNamesFromJSON,
+    EnclosureNamesFromJSONTyped,
+    EnclosureNamesToJSON,
+    EnclosureNamesToJSONTyped,
+} from './EnclosureNames';
 import type { PermitOut } from './PermitOut';
 import {
     PermitOutFromJSON,
@@ -62,6 +41,27 @@ import {
     PermitOutToJSON,
     PermitOutToJSONTyped,
 } from './PermitOut';
+import type { SupplyCategoryOut } from './SupplyCategoryOut';
+import {
+    SupplyCategoryOutFromJSON,
+    SupplyCategoryOutFromJSONTyped,
+    SupplyCategoryOutToJSON,
+    SupplyCategoryOutToJSONTyped,
+} from './SupplyCategoryOut';
+import type { VulnerabilityOut } from './VulnerabilityOut';
+import {
+    VulnerabilityOutFromJSON,
+    VulnerabilityOutFromJSONTyped,
+    VulnerabilityOutToJSON,
+    VulnerabilityOutToJSONTyped,
+} from './VulnerabilityOut';
+import type { SupplyOut } from './SupplyOut';
+import {
+    SupplyOutFromJSON,
+    SupplyOutFromJSONTyped,
+    SupplyOutToJSON,
+    SupplyOutToJSONTyped,
+} from './SupplyOut';
 
 /**
  * 
@@ -130,7 +130,7 @@ export interface SupplyDetails {
      */
     id?: number | null;
     /**
-     * 
+     * unique overall identifier for the dependency
      * @type {string}
      * @memberof SupplyDetails
      */
@@ -148,13 +148,13 @@ export interface SupplyDetails {
      */
     bomRef: string;
     /**
-     * 
+     * Type of the dependency (e.g., library, tool)
      * @type {string}
      * @memberof SupplyDetails
      */
     type?: string | null;
     /**
-     * 
+     * Author or vendor of the dependency
      * @type {string}
      * @memberof SupplyDetails
      */
@@ -166,7 +166,7 @@ export interface SupplyDetails {
      */
     riskScore?: number;
     /**
-     * 
+     * Details about the risk score
      * @type {string}
      * @memberof SupplyDetails
      */

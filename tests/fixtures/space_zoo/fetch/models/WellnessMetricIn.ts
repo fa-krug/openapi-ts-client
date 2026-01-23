@@ -13,20 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { SecurityRating } from './SecurityRating';
+import type { TestCoverage } from './TestCoverage';
 import {
-    SecurityRatingFromJSON,
-    SecurityRatingFromJSONTyped,
-    SecurityRatingToJSON,
-    SecurityRatingToJSONTyped,
-} from './SecurityRating';
-import type { ReliabilityRating } from './ReliabilityRating';
-import {
-    ReliabilityRatingFromJSON,
-    ReliabilityRatingFromJSONTyped,
-    ReliabilityRatingToJSON,
-    ReliabilityRatingToJSONTyped,
-} from './ReliabilityRating';
+    TestCoverageFromJSON,
+    TestCoverageFromJSONTyped,
+    TestCoverageToJSON,
+    TestCoverageToJSONTyped,
+} from './TestCoverage';
 import type { CodeDuplication } from './CodeDuplication';
 import {
     CodeDuplicationFromJSON,
@@ -34,6 +27,20 @@ import {
     CodeDuplicationToJSON,
     CodeDuplicationToJSONTyped,
 } from './CodeDuplication';
+import type { ReliabilityRating } from './ReliabilityRating';
+import {
+    ReliabilityRatingFromJSON,
+    ReliabilityRatingFromJSONTyped,
+    ReliabilityRatingToJSON,
+    ReliabilityRatingToJSONTyped,
+} from './ReliabilityRating';
+import type { SecurityRating } from './SecurityRating';
+import {
+    SecurityRatingFromJSON,
+    SecurityRatingFromJSONTyped,
+    SecurityRatingToJSON,
+    SecurityRatingToJSONTyped,
+} from './SecurityRating';
 import type { SecurityReviewRating } from './SecurityReviewRating';
 import {
     SecurityReviewRatingFromJSON,
@@ -48,13 +55,6 @@ import {
     MaintainabilityRatingToJSON,
     MaintainabilityRatingToJSONTyped,
 } from './MaintainabilityRating';
-import type { TestCoverage } from './TestCoverage';
-import {
-    TestCoverageFromJSON,
-    TestCoverageFromJSONTyped,
-    TestCoverageToJSON,
-    TestCoverageToJSONTyped,
-} from './TestCoverage';
 
 /**
  * 
@@ -69,13 +69,13 @@ export interface WellnessMetricIn {
      */
     id?: number | null;
     /**
-     * 
+     * Unique ID of the metric
      * @type {string}
      * @memberof WellnessMetricIn
      */
     metricId?: string | null;
     /**
-     * 
+     * Timestamp when the metric was collected
      * @type {Date}
      * @memberof WellnessMetricIn
      */
@@ -87,43 +87,43 @@ export interface WellnessMetricIn {
      */
     habitatId?: number | null;
     /**
-     * 
+     * lines of code
      * @type {number}
      * @memberof WellnessMetricIn
      */
     linesOfCode?: number | null;
     /**
-     * 
+     * Percentage of test coverage in main branch
      * @type {TestCoverage}
      * @memberof WellnessMetricIn
      */
     testCoverage?: TestCoverage | null;
     /**
-     * 
+     * Percentage of code duplications in main branch
      * @type {CodeDuplication}
      * @memberof WellnessMetricIn
      */
     codeDuplication?: CodeDuplication | null;
     /**
-     * 
+     * reliability_rating in main branch
      * @type {ReliabilityRating}
      * @memberof WellnessMetricIn
      */
     reliabilityRating?: ReliabilityRating | null;
     /**
-     * 
+     * security_rating in main branch
      * @type {SecurityRating}
      * @memberof WellnessMetricIn
      */
     securityRating?: SecurityRating | null;
     /**
-     * 
+     * security_review_rating in main branch
      * @type {SecurityReviewRating}
      * @memberof WellnessMetricIn
      */
     securityReviewRating?: SecurityReviewRating | null;
     /**
-     * 
+     * maintainability_rating in main branch
      * @type {MaintainabilityRating}
      * @memberof WellnessMetricIn
      */

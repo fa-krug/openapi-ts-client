@@ -32,19 +32,19 @@ export interface PermitIn {
      */
     name?: string | null;
     /**
-     * 
+     * Whether the license is allowed (True/False) or unknown (None)
      * @type {boolean}
      * @memberof PermitIn
      */
     allowed?: boolean | null;
     /**
-     * 
+     * Risk score associated with the license
      * @type {number}
      * @memberof PermitIn
      */
     riskScore?: number | null;
     /**
-     * 
+     * URL to the license details
      * @type {string}
      * @memberof PermitIn
      */

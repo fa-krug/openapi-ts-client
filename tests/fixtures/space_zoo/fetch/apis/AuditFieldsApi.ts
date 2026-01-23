@@ -25,23 +25,23 @@ import {
     InspectionCriteriaOutToJSON,
 } from '../models/index';
 
-export interface CriteriaCloneRequest {
+export interface AuditFieldsApiCriteriaCloneRequest {
     pk: number;
 }
 
-export interface CriteriaCreateRequest {
+export interface AuditFieldsApiCriteriaCreateRequest {
     inspectionCriteriaIn: InspectionCriteriaIn;
 }
 
-export interface CriteriaDeleteRequest {
+export interface AuditFieldsApiCriteriaDeleteRequest {
     pk: number;
 }
 
-export interface CriteriaGetRequest {
+export interface AuditFieldsApiCriteriaGetRequest {
     pk: number;
 }
 
-export interface CriteriaListAllRequest {
+export interface AuditFieldsApiCriteriaListAllRequest {
     id?: string | null;
     text?: string | null;
     audit?: string | null;
@@ -54,7 +54,7 @@ export interface CriteriaListAllRequest {
     visible?: boolean | null;
 }
 
-export interface CriteriaUpdateRequest {
+export interface AuditFieldsApiCriteriaUpdateRequest {
     pk: number;
     inspectionCriteriaIn: InspectionCriteriaIn;
 }
@@ -68,7 +68,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async criteriaCloneRaw(requestParameters: CriteriaCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaIn>> {
+    async criteriaCloneRaw(requestParameters: AuditFieldsApiCriteriaCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaIn>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -98,7 +98,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async criteriaClone(requestParameters: CriteriaCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaIn> {
+    async criteriaClone(requestParameters: AuditFieldsApiCriteriaCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaIn> {
         const response = await this.criteriaCloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -107,7 +107,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async criteriaCreateRaw(requestParameters: CriteriaCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
+    async criteriaCreateRaw(requestParameters: AuditFieldsApiCriteriaCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
         if (requestParameters['inspectionCriteriaIn'] == null) {
             throw new runtime.RequiredError(
                 'inspectionCriteriaIn',
@@ -139,7 +139,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async criteriaCreate(requestParameters: CriteriaCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
+    async criteriaCreate(requestParameters: AuditFieldsApiCriteriaCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
         const response = await this.criteriaCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -148,7 +148,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async criteriaDeleteRaw(requestParameters: CriteriaDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async criteriaDeleteRaw(requestParameters: AuditFieldsApiCriteriaDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -178,7 +178,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async criteriaDelete(requestParameters: CriteriaDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async criteriaDelete(requestParameters: AuditFieldsApiCriteriaDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.criteriaDeleteRaw(requestParameters, initOverrides);
     }
 
@@ -186,7 +186,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async criteriaGetRaw(requestParameters: CriteriaGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
+    async criteriaGetRaw(requestParameters: AuditFieldsApiCriteriaGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -216,7 +216,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async criteriaGet(requestParameters: CriteriaGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
+    async criteriaGet(requestParameters: AuditFieldsApiCriteriaGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
         const response = await this.criteriaGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -225,7 +225,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async criteriaListAllRaw(requestParameters: CriteriaListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
+    async criteriaListAllRaw(requestParameters: AuditFieldsApiCriteriaListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -287,7 +287,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async criteriaListAll(requestParameters: CriteriaListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
+    async criteriaListAll(requestParameters: AuditFieldsApiCriteriaListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
         const response = await this.criteriaListAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -296,7 +296,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async criteriaUpdateRaw(requestParameters: CriteriaUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
+    async criteriaUpdateRaw(requestParameters: AuditFieldsApiCriteriaUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionCriteriaOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -336,7 +336,7 @@ export class AuditFieldsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async criteriaUpdate(requestParameters: CriteriaUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
+    async criteriaUpdate(requestParameters: AuditFieldsApiCriteriaUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionCriteriaOut> {
         const response = await this.criteriaUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }

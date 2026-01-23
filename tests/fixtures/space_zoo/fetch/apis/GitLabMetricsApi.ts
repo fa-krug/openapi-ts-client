@@ -25,23 +25,23 @@ import {
     MigrationMetricOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface GitLabMetricsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface GitLabMetricsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface GitLabMetricsApiCreateRequest {
     migrationMetricIn: MigrationMetricIn;
 }
 
-export interface GetRequest {
+export interface GitLabMetricsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface GitLabMetricsApiListAllRequest {
     id?: string | null;
     metricId?: string | null;
     datetime?: string | null;
@@ -61,7 +61,7 @@ export interface ListAllRequest {
     codeQuality?: string | null;
 }
 
-export interface UpdateRequest {
+export interface GitLabMetricsApiUpdateRequest {
     pk: number;
     migrationMetricIn: MigrationMetricIn;
 }
@@ -75,7 +75,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: GitLabMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -105,7 +105,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: GitLabMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -113,7 +113,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
+    async cloneRaw(requestParameters: GitLabMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -143,7 +143,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
+    async clone(requestParameters: GitLabMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -187,7 +187,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
+    async createRaw(requestParameters: GitLabMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
         if (requestParameters['migrationMetricIn'] == null) {
             throw new runtime.RequiredError(
                 'migrationMetricIn',
@@ -219,7 +219,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
+    async create(requestParameters: GitLabMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -228,7 +228,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
+    async getRaw(requestParameters: GitLabMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -258,7 +258,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
+    async get(requestParameters: GitLabMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -267,7 +267,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MigrationMetricOut>>> {
+    async listAllRaw(requestParameters: GitLabMetricsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MigrationMetricOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -357,7 +357,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MigrationMetricOut>> {
+    async listAll(requestParameters: GitLabMetricsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MigrationMetricOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -366,7 +366,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
+    async updateRaw(requestParameters: GitLabMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -406,7 +406,7 @@ export class GitLabMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
+    async update(requestParameters: GitLabMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationMetricOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

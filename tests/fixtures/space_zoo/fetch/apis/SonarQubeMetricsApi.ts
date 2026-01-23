@@ -25,23 +25,23 @@ import {
     WellnessMetricOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface SonarQubeMetricsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface SonarQubeMetricsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface SonarQubeMetricsApiCreateRequest {
     wellnessMetricIn: WellnessMetricIn;
 }
 
-export interface GetRequest {
+export interface SonarQubeMetricsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface SonarQubeMetricsApiListAllRequest {
     id?: string | null;
     metricId?: string | null;
     datetime?: string | null;
@@ -55,7 +55,7 @@ export interface ListAllRequest {
     maintainabilityRating?: string | null;
 }
 
-export interface UpdateRequest {
+export interface SonarQubeMetricsApiUpdateRequest {
     pk: number;
     wellnessMetricIn: WellnessMetricIn;
 }
@@ -69,7 +69,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: SonarQubeMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -99,7 +99,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: SonarQubeMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -107,7 +107,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
+    async cloneRaw(requestParameters: SonarQubeMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -137,7 +137,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
+    async clone(requestParameters: SonarQubeMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -181,7 +181,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
+    async createRaw(requestParameters: SonarQubeMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
         if (requestParameters['wellnessMetricIn'] == null) {
             throw new runtime.RequiredError(
                 'wellnessMetricIn',
@@ -213,7 +213,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
+    async create(requestParameters: SonarQubeMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -222,7 +222,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
+    async getRaw(requestParameters: SonarQubeMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -252,7 +252,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
+    async get(requestParameters: SonarQubeMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -261,7 +261,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<WellnessMetricOut>>> {
+    async listAllRaw(requestParameters: SonarQubeMetricsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<WellnessMetricOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -327,7 +327,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<WellnessMetricOut>> {
+    async listAll(requestParameters: SonarQubeMetricsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<WellnessMetricOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -336,7 +336,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
+    async updateRaw(requestParameters: SonarQubeMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WellnessMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -376,7 +376,7 @@ export class SonarQubeMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
+    async update(requestParameters: SonarQubeMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WellnessMetricOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

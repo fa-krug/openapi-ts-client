@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface EnvironmentReadingFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     spanId?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     start?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     end?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     timespanNs?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     habitat?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     url?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     method?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */
     version?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnvironmentReadingFilter
      */

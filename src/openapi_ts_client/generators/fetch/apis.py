@@ -357,20 +357,25 @@ def _extract_security_info(
     return oauth_items + apikey_items
 
 
-def _build_request_interface_name(method_name: str) -> str:
+def _build_request_interface_name(method_name: str, api_class_name: str = "") -> str:
     """
-    Build the request interface name from method name.
+    Build the request interface name from method name and API class name.
 
-    Converts camelCase method name to PascalCase interface name.
+    Prefixes with API class name to avoid collisions when multiple APIs
+    have operations with the same name (e.g., clone, create, delete).
+
     Examples:
-        listAll -> ListAllRequest
-        _delete -> DeleteRequest
-        getAuditChart -> GetAuditChartRequest
+        method=listAll, api=DBMetricsApi -> DBMetricsApiListAllRequest
+        method=_delete, api=PetApi -> PetApiDeleteRequest
+        method=clone, api=FeatureMetricsApi -> FeatureMetricsApiCloneRequest
     """
     # Strip leading underscore if present
     name = method_name.lstrip("_")
     # Capitalize first letter, keep rest as-is to preserve camelCase internal caps
-    return name[0].upper() + name[1:] + "Request"
+    method_part = name[0].upper() + name[1:] + "Request"
+    if api_class_name:
+        return f"{api_class_name}{method_part}"
+    return method_part
 
 
 def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
@@ -432,6 +437,8 @@ def extract_api_data(
     """
     if security_schemes is None:
         security_schemes = {}
+    # Compute class name early so we can use it for request interface naming
+    api_class_name = _tag_to_api_class_name(tag)
     model_imports: Set[str] = set()
     request_interfaces: List[Dict[str, Any]] = []
     methods: List[Dict[str, Any]] = []
@@ -583,7 +590,7 @@ def extract_api_data(
         request_interface_name = None
 
         if has_request_params:
-            request_interface_name = _build_request_interface_name(method_name)
+            request_interface_name = _build_request_interface_name(method_name, api_class_name)
             request_interfaces.append(
                 {
                     "name": request_interface_name,
@@ -646,7 +653,7 @@ def extract_api_data(
         "api_description": api_description,
         "api_version": api_version,
         "contact_email": contact_email,
-        "class_name": _tag_to_api_class_name(tag),
+        "class_name": api_class_name,
         "class_description": "",
         "model_imports": model_imports,
         "request_interfaces": request_interfaces,

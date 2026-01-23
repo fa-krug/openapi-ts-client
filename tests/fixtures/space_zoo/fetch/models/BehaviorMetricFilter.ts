@@ -20,73 +20,73 @@ import { mapValues } from '../runtime';
  */
 export interface BehaviorMetricFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     spanId?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     start?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     end?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     timespanNs?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     httpMetric?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     value?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     details?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     createdBy?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */
     message?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof BehaviorMetricFilter
      */

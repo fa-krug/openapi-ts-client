@@ -20,55 +20,55 @@ import { mapValues } from '../runtime';
  */
 export interface NutritionMetricFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     spanId?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     start?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     end?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     timespanNs?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     type?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */
     statement?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof NutritionMetricFilter
      */

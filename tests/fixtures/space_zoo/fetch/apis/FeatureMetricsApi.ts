@@ -25,23 +25,23 @@ import {
     BehaviorMetricOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface FeatureMetricsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface FeatureMetricsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface FeatureMetricsApiCreateRequest {
     behaviorMetricIn: BehaviorMetricIn;
 }
 
-export interface GetRequest {
+export interface FeatureMetricsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface FeatureMetricsApiListAllRequest {
     id?: string | null;
     spanId?: string | null;
     start?: string | null;
@@ -56,7 +56,7 @@ export interface ListAllRequest {
     state?: string | null;
 }
 
-export interface UpdateRequest {
+export interface FeatureMetricsApiUpdateRequest {
     pk: number;
     behaviorMetricIn: BehaviorMetricIn;
 }
@@ -70,7 +70,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: FeatureMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -100,7 +100,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: FeatureMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -108,7 +108,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
+    async cloneRaw(requestParameters: FeatureMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -138,7 +138,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
+    async clone(requestParameters: FeatureMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -182,7 +182,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
+    async createRaw(requestParameters: FeatureMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
         if (requestParameters['behaviorMetricIn'] == null) {
             throw new runtime.RequiredError(
                 'behaviorMetricIn',
@@ -214,7 +214,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
+    async create(requestParameters: FeatureMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -223,7 +223,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
+    async getRaw(requestParameters: FeatureMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -253,7 +253,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
+    async get(requestParameters: FeatureMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -262,7 +262,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BehaviorMetricOut>>> {
+    async listAllRaw(requestParameters: FeatureMetricsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<BehaviorMetricOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -332,7 +332,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BehaviorMetricOut>> {
+    async listAll(requestParameters: FeatureMetricsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<BehaviorMetricOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -341,7 +341,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
+    async updateRaw(requestParameters: FeatureMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<BehaviorMetricOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -381,7 +381,7 @@ export class FeatureMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
+    async update(requestParameters: FeatureMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<BehaviorMetricOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

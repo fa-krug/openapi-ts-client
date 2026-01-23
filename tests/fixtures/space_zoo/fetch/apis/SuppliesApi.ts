@@ -28,23 +28,23 @@ import {
     SupplyOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface SuppliesApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface SuppliesApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface SuppliesApiCreateRequest {
     supplyIn: SupplyIn;
 }
 
-export interface GetRequest {
+export interface SuppliesApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface SuppliesApiListAllRequest {
     id?: string | null;
     purl?: string | null;
     _package?: string | null;
@@ -60,7 +60,7 @@ export interface ListAllRequest {
     tags?: Array<number> | null;
 }
 
-export interface UpdateRequest {
+export interface SuppliesApiUpdateRequest {
     pk: number;
     supplyIn: SupplyIn;
 }
@@ -74,7 +74,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: SuppliesApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -104,7 +104,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: SuppliesApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -112,7 +112,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
+    async cloneRaw(requestParameters: SuppliesApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -142,7 +142,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
+    async clone(requestParameters: SuppliesApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -186,7 +186,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
+    async createRaw(requestParameters: SuppliesApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
         if (requestParameters['supplyIn'] == null) {
             throw new runtime.RequiredError(
                 'supplyIn',
@@ -218,7 +218,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
+    async create(requestParameters: SuppliesApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -227,7 +227,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyDetails>> {
+    async getRaw(requestParameters: SuppliesApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyDetails>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -257,7 +257,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyDetails> {
+    async get(requestParameters: SuppliesApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyDetails> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -266,7 +266,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SupplyOut>>> {
+    async listAllRaw(requestParameters: SuppliesApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SupplyOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -340,7 +340,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SupplyOut>> {
+    async listAll(requestParameters: SuppliesApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SupplyOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -349,7 +349,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
+    async updateRaw(requestParameters: SuppliesApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SupplyOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -389,7 +389,7 @@ export class SuppliesApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
+    async update(requestParameters: SuppliesApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SupplyOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

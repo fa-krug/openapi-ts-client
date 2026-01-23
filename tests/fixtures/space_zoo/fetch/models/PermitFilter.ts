@@ -20,31 +20,31 @@ import { mapValues } from '../runtime';
  */
 export interface PermitFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof PermitFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof PermitFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof PermitFilter
      */
     allowed?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof PermitFilter
      */
     riskScore?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof PermitFilter
      */

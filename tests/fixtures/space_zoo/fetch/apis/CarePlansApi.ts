@@ -28,35 +28,35 @@ import {
     CarePlanOutToJSON,
 } from '../models/index';
 
-export interface PlansCloneRequest {
+export interface CarePlansApiPlansCloneRequest {
     pk: number;
 }
 
-export interface PlansCreateRequest {
+export interface CarePlansApiPlansCreateRequest {
     carePlanIn: CarePlanIn;
 }
 
-export interface PlansDeleteRequest {
+export interface CarePlansApiPlansDeleteRequest {
     pk: number;
 }
 
-export interface PlansGetRequest {
+export interface CarePlansApiPlansGetRequest {
     pk: number;
 }
 
-export interface PlansListAllRequest {
+export interface CarePlansApiPlansListAllRequest {
     id?: string | null;
     name?: string | null;
     content?: string | null;
 }
 
-export interface PlansListNamesRequest {
+export interface CarePlansApiPlansListNamesRequest {
     id?: string | null;
     name?: string | null;
     content?: string | null;
 }
 
-export interface PlansUpdateRequest {
+export interface CarePlansApiPlansUpdateRequest {
     pk: number;
     carePlanIn: CarePlanIn;
 }
@@ -70,7 +70,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async plansCloneRaw(requestParameters: PlansCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
+    async plansCloneRaw(requestParameters: CarePlansApiPlansCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -100,7 +100,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async plansClone(requestParameters: PlansCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
+    async plansClone(requestParameters: CarePlansApiPlansCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
         const response = await this.plansCloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -144,7 +144,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async plansCreateRaw(requestParameters: PlansCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
+    async plansCreateRaw(requestParameters: CarePlansApiPlansCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
         if (requestParameters['carePlanIn'] == null) {
             throw new runtime.RequiredError(
                 'carePlanIn',
@@ -176,7 +176,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async plansCreate(requestParameters: PlansCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
+    async plansCreate(requestParameters: CarePlansApiPlansCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
         const response = await this.plansCreateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -185,7 +185,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async plansDeleteRaw(requestParameters: PlansDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async plansDeleteRaw(requestParameters: CarePlansApiPlansDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -215,7 +215,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async plansDelete(requestParameters: PlansDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async plansDelete(requestParameters: CarePlansApiPlansDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.plansDeleteRaw(requestParameters, initOverrides);
     }
 
@@ -223,7 +223,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async plansGetRaw(requestParameters: PlansGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
+    async plansGetRaw(requestParameters: CarePlansApiPlansGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -253,7 +253,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async plansGet(requestParameters: PlansGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
+    async plansGet(requestParameters: CarePlansApiPlansGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
         const response = await this.plansGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -262,7 +262,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async plansListAllRaw(requestParameters: PlansListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CarePlanOut>>> {
+    async plansListAllRaw(requestParameters: CarePlansApiPlansListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CarePlanOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -296,7 +296,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async plansListAll(requestParameters: PlansListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CarePlanOut>> {
+    async plansListAll(requestParameters: CarePlansApiPlansListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CarePlanOut>> {
         const response = await this.plansListAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -305,7 +305,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async plansListNamesRaw(requestParameters: PlansListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CarePlanNames>>> {
+    async plansListNamesRaw(requestParameters: CarePlansApiPlansListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CarePlanNames>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -339,7 +339,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async plansListNames(requestParameters: PlansListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CarePlanNames>> {
+    async plansListNames(requestParameters: CarePlansApiPlansListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CarePlanNames>> {
         const response = await this.plansListNamesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -348,7 +348,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async plansUpdateRaw(requestParameters: PlansUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
+    async plansUpdateRaw(requestParameters: CarePlansApiPlansUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CarePlanOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -388,7 +388,7 @@ export class CarePlansApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async plansUpdate(requestParameters: PlansUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
+    async plansUpdate(requestParameters: CarePlansApiPlansUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CarePlanOut> {
         const response = await this.plansUpdateRaw(requestParameters, initOverrides);
         return await response.value();
     }

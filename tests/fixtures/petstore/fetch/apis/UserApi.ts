@@ -22,28 +22,28 @@ import {
     UserToJSON,
 } from '../models/index';
 
-export interface CreateUserRequest {
+export interface UserApiCreateUserRequest {
     user?: User;
 }
 
-export interface CreateUsersWithListInputRequest {
+export interface UserApiCreateUsersWithListInputRequest {
     user?: Array<User>;
 }
 
-export interface DeleteUserRequest {
+export interface UserApiDeleteUserRequest {
     username: string;
 }
 
-export interface GetUserByNameRequest {
+export interface UserApiGetUserByNameRequest {
     username: string;
 }
 
-export interface LoginUserRequest {
+export interface UserApiLoginUserRequest {
     username?: string;
     password?: string;
 }
 
-export interface UpdateUserRequest {
+export interface UserApiUpdateUserRequest {
     username: string;
     user?: User;
 }
@@ -57,7 +57,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Create user.
      */
-    async createUserRaw(requestParameters: CreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async createUserRaw(requestParameters: UserApiCreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -82,7 +82,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Create user.
      */
-    async createUser(requestParameters: CreateUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async createUser(requestParameters: UserApiCreateUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.createUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -91,7 +91,7 @@ export class UserApi extends runtime.BaseAPI {
      * Creates list of users with given input array.
      * Creates list of users with given input array.
      */
-    async createUsersWithListInputRaw(requestParameters: CreateUsersWithListInputRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async createUsersWithListInputRaw(requestParameters: UserApiCreateUsersWithListInputRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -116,7 +116,7 @@ export class UserApi extends runtime.BaseAPI {
      * Creates list of users with given input array.
      * Creates list of users with given input array.
      */
-    async createUsersWithListInput(requestParameters: CreateUsersWithListInputRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async createUsersWithListInput(requestParameters: UserApiCreateUsersWithListInputRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.createUsersWithListInputRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -125,7 +125,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Delete user resource.
      */
-    async deleteUserRaw(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async deleteUserRaw(requestParameters: UserApiDeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -155,7 +155,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Delete user resource.
      */
-    async deleteUser(requestParameters: DeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async deleteUser(requestParameters: UserApiDeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.deleteUserRaw(requestParameters, initOverrides);
     }
 
@@ -163,7 +163,7 @@ export class UserApi extends runtime.BaseAPI {
      * Get user detail based on username.
      * Get user by user name.
      */
-    async getUserByNameRaw(requestParameters: GetUserByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async getUserByNameRaw(requestParameters: UserApiGetUserByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -193,7 +193,7 @@ export class UserApi extends runtime.BaseAPI {
      * Get user detail based on username.
      * Get user by user name.
      */
-    async getUserByName(requestParameters: GetUserByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+    async getUserByName(requestParameters: UserApiGetUserByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.getUserByNameRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -202,7 +202,7 @@ export class UserApi extends runtime.BaseAPI {
      * Log into the system.
      * Logs user into the system.
      */
-    async loginUserRaw(requestParameters: LoginUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async loginUserRaw(requestParameters: UserApiLoginUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         const queryParameters: any = {};
 
         if (requestParameters['username'] != null) {
@@ -236,7 +236,7 @@ export class UserApi extends runtime.BaseAPI {
      * Log into the system.
      * Logs user into the system.
      */
-    async loginUser(requestParameters: LoginUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async loginUser(requestParameters: UserApiLoginUserRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.loginUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -275,7 +275,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Update user resource.
      */
-    async updateUserRaw(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async updateUserRaw(requestParameters: UserApiUpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -308,7 +308,7 @@ export class UserApi extends runtime.BaseAPI {
      * This can only be done by the logged in user.
      * Update user resource.
      */
-    async updateUser(requestParameters: UpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async updateUser(requestParameters: UserApiUpdateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.updateUserRaw(requestParameters, initOverrides);
     }
 

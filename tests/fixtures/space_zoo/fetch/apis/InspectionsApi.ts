@@ -46,33 +46,33 @@ import {
     ResultSchemaToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface InspectionsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface InspectionsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface InspectionsApiCreateRequest {
     inspectionIn: InspectionIn;
 }
 
-export interface GetRequest {
+export interface InspectionsApiGetRequest {
     pk: number;
 }
 
-export interface GetAuditChartRequest {
-    pk: number;
-    simplify?: boolean;
-}
-
-export interface GetAuditScoresRequest {
+export interface InspectionsApiGetAuditChartRequest {
     pk: number;
     simplify?: boolean;
 }
 
-export interface ListAllRequest {
+export interface InspectionsApiGetAuditScoresRequest {
+    pk: number;
+    simplify?: boolean;
+}
+
+export interface InspectionsApiListAllRequest {
     id?: string | null;
     name?: string | null;
     template?: string | null;
@@ -88,7 +88,7 @@ export interface ListAllRequest {
     summary?: string | null;
 }
 
-export interface ListAuditActionsRequest {
+export interface InspectionsApiListAuditActionsRequest {
     pk: number;
     id?: string | null;
     value?: string | null;
@@ -102,19 +102,19 @@ export interface ListAuditActionsRequest {
     feedingDate?: string | null;
 }
 
-export interface ListAuditChangesRequest {
+export interface InspectionsApiListAuditChangesRequest {
     pk: number;
 }
 
-export interface ListAuditFieldsRequest {
+export interface InspectionsApiListAuditFieldsRequest {
     pk: number;
 }
 
-export interface ListAuditProblemsRequest {
+export interface InspectionsApiListAuditProblemsRequest {
     pk: number;
 }
 
-export interface ListNamesRequest {
+export interface InspectionsApiListNamesRequest {
     id?: string | null;
     name?: string | null;
     template?: string | null;
@@ -130,12 +130,12 @@ export interface ListNamesRequest {
     summary?: string | null;
 }
 
-export interface UpdateRequest {
+export interface InspectionsApiUpdateRequest {
     pk: number;
     inspectionIn: InspectionIn;
 }
 
-export interface UpdateAuditFieldsRequest {
+export interface InspectionsApiUpdateAuditFieldsRequest {
     pk: number;
     inspectionCriteriaIn: Array<InspectionCriteriaIn>;
 }
@@ -149,7 +149,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: InspectionsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -179,7 +179,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: InspectionsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -187,7 +187,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
+    async cloneRaw(requestParameters: InspectionsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -217,7 +217,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
+    async clone(requestParameters: InspectionsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -296,7 +296,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
+    async createRaw(requestParameters: InspectionsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
         if (requestParameters['inspectionIn'] == null) {
             throw new runtime.RequiredError(
                 'inspectionIn',
@@ -328,7 +328,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
+    async create(requestParameters: InspectionsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -337,7 +337,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
+    async getRaw(requestParameters: InspectionsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -367,7 +367,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
+    async get(requestParameters: InspectionsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -376,7 +376,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get graph data for an audit.
      * Get Audit Chart
      */
-    async getAuditChartRaw(requestParameters: GetAuditChartRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResultSchema>> {
+    async getAuditChartRaw(requestParameters: InspectionsApiGetAuditChartRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResultSchema>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -410,7 +410,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get graph data for an audit.
      * Get Audit Chart
      */
-    async getAuditChart(requestParameters: GetAuditChartRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResultSchema> {
+    async getAuditChart(requestParameters: InspectionsApiGetAuditChartRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResultSchema> {
         const response = await this.getAuditChartRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -419,7 +419,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get score data for an audit.
      * Get Audit Scores
      */
-    async getAuditScoresRaw(requestParameters: GetAuditScoresRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<{ [key: string]: number; }>> {
+    async getAuditScoresRaw(requestParameters: InspectionsApiGetAuditScoresRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<{ [key: string]: number; }>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -453,7 +453,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Get score data for an audit.
      * Get Audit Scores
      */
-    async getAuditScores(requestParameters: GetAuditScoresRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: number; }> {
+    async getAuditScores(requestParameters: InspectionsApiGetAuditScoresRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: number; }> {
         const response = await this.getAuditScoresRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -462,7 +462,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionOut>>> {
+    async listAllRaw(requestParameters: InspectionsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -536,7 +536,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionOut>> {
+    async listAll(requestParameters: InspectionsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -545,7 +545,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all actions for an audit.
      * List Audit Actions
      */
-    async listAuditActionsRaw(requestParameters: ListAuditActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
+    async listAuditActionsRaw(requestParameters: InspectionsApiListAuditActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<FeedingOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -615,7 +615,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all actions for an audit.
      * List Audit Actions
      */
-    async listAuditActions(requestParameters: ListAuditActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
+    async listAuditActions(requestParameters: InspectionsApiListAuditActionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<FeedingOut>> {
         const response = await this.listAuditActionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -624,7 +624,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all changes for an audit.
      * List Audit Changes
      */
-    async listAuditChangesRaw(requestParameters: ListAuditChangesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionChange>>> {
+    async listAuditChangesRaw(requestParameters: InspectionsApiListAuditChangesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionChange>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -654,7 +654,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all changes for an audit.
      * List Audit Changes
      */
-    async listAuditChanges(requestParameters: ListAuditChangesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionChange>> {
+    async listAuditChanges(requestParameters: InspectionsApiListAuditChangesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionChange>> {
         const response = await this.listAuditChangesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -663,7 +663,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all fields for an audit.
      * List Audit Fields
      */
-    async listAuditFieldsRaw(requestParameters: ListAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
+    async listAuditFieldsRaw(requestParameters: InspectionsApiListAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -693,7 +693,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all fields for an audit.
      * List Audit Fields
      */
-    async listAuditFields(requestParameters: ListAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
+    async listAuditFields(requestParameters: InspectionsApiListAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
         const response = await this.listAuditFieldsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -702,7 +702,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all problems for an audit.
      * List Audit Problems
      */
-    async listAuditProblemsRaw(requestParameters: ListAuditProblemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionIssue>>> {
+    async listAuditProblemsRaw(requestParameters: InspectionsApiListAuditProblemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionIssue>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -732,7 +732,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all problems for an audit.
      * List Audit Problems
      */
-    async listAuditProblems(requestParameters: ListAuditProblemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionIssue>> {
+    async listAuditProblems(requestParameters: InspectionsApiListAuditProblemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionIssue>> {
         const response = await this.listAuditProblemsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -741,7 +741,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async listNamesRaw(requestParameters: ListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionNames>>> {
+    async listNamesRaw(requestParameters: InspectionsApiListNamesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionNames>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -815,7 +815,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * List all names.
      * List Names
      */
-    async listNames(requestParameters: ListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionNames>> {
+    async listNames(requestParameters: InspectionsApiListNamesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionNames>> {
         const response = await this.listNamesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -824,7 +824,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
+    async updateRaw(requestParameters: InspectionsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InspectionOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -864,7 +864,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
+    async update(requestParameters: InspectionsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InspectionOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -873,7 +873,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Update fields for an audit.
      * Update Audit Fields
      */
-    async updateAuditFieldsRaw(requestParameters: UpdateAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
+    async updateAuditFieldsRaw(requestParameters: InspectionsApiUpdateAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<InspectionCriteriaOut>>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -913,7 +913,7 @@ export class InspectionsApi extends runtime.BaseAPI {
      * Update fields for an audit.
      * Update Audit Fields
      */
-    async updateAuditFields(requestParameters: UpdateAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
+    async updateAuditFields(requestParameters: InspectionsApiUpdateAuditFieldsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<InspectionCriteriaOut>> {
         const response = await this.updateAuditFieldsRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -38,18 +38,7 @@ def write_tsconfig(output_path: Path) -> None:
     (output_path / "tsconfig.json").write_text(json.dumps(tsconfig, indent=2))
 
 
-@pytest.mark.parametrize(
-    "fixture_name",
-    [
-        "petstore",
-        pytest.param(
-            "space_zoo",
-            marks=pytest.mark.xfail(
-                reason="Duplicate export names (CloneRequest, etc.) across APIs"
-            ),
-        ),
-    ],
-)
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
 def test_fetch_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     """Test that generated Fetch client compiles with tsc."""
     spec = load_spec(fixture_name)

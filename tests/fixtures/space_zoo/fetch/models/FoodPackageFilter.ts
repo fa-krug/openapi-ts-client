@@ -20,37 +20,37 @@ import { mapValues } from '../runtime';
  */
 export interface FoodPackageFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FoodPackageFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FoodPackageFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FoodPackageFilter
      */
     allowedSpecifier?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof FoodPackageFilter
      */
     latestVersion?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof FoodPackageFilter
      */
     hidden?: boolean | null;
     /**
-     * 
+     * Filter by exact match
      * @type {boolean}
      * @memberof FoodPackageFilter
      */

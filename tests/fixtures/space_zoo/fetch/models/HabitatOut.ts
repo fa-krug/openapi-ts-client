@@ -13,13 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { BiomeTypeIn } from './BiomeTypeIn';
-import {
-    BiomeTypeInFromJSON,
-    BiomeTypeInFromJSONTyped,
-    BiomeTypeInToJSON,
-    BiomeTypeInToJSONTyped,
-} from './BiomeTypeIn';
 import type { OriginPlanetIn } from './OriginPlanetIn';
 import {
     OriginPlanetInFromJSON,
@@ -27,6 +20,13 @@ import {
     OriginPlanetInToJSON,
     OriginPlanetInToJSONTyped,
 } from './OriginPlanetIn';
+import type { BiomeTypeIn } from './BiomeTypeIn';
+import {
+    BiomeTypeInFromJSON,
+    BiomeTypeInFromJSONTyped,
+    BiomeTypeInToJSON,
+    BiomeTypeInToJSONTyped,
+} from './BiomeTypeIn';
 import type { EnclosureIn } from './EnclosureIn';
 import {
     EnclosureInFromJSON,

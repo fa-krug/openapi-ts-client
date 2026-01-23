@@ -20,61 +20,61 @@ import { mapValues } from '../runtime';
  */
 export interface SupplyFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     purl?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     _package?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     version?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     image?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     bomRef?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     type?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     author?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */
     riskScore?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyFilter
      */

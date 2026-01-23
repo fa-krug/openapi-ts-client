@@ -20,103 +20,103 @@ import { mapValues } from '../runtime';
  */
 export interface MigrationMetricFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     metricId?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     datetime?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     habitat?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     lastCommit?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     commits?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     lastRelease?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     openIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     closedIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     featureIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     closedFeatureIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     bugIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     closedBugIssues?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     bugTtl?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     doingTime?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */
     reviewTime?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof MigrationMetricFilter
      */

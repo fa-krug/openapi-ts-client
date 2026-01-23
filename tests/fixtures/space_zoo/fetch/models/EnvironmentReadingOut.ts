@@ -26,25 +26,25 @@ export interface EnvironmentReadingOut {
      */
     id?: number | null;
     /**
-     * 
+     * ID of the original span
      * @type {string}
      * @memberof EnvironmentReadingOut
      */
     spanId?: string | null;
     /**
-     * 
+     * Timestamp when the request came in
      * @type {Date}
      * @memberof EnvironmentReadingOut
      */
     start?: Date | null;
     /**
-     * 
+     * Timestamp when the response was send out
      * @type {Date}
      * @memberof EnvironmentReadingOut
      */
     end?: Date | null;
     /**
-     * 
+     * Processing timespan in nanoseconds
      * @type {number}
      * @memberof EnvironmentReadingOut
      */
@@ -56,25 +56,25 @@ export interface EnvironmentReadingOut {
      */
     habitatId?: number | null;
     /**
-     * 
+     * Called full URL
      * @type {string}
      * @memberof EnvironmentReadingOut
      */
     url?: string | null;
     /**
-     * 
+     * Method used for the request
      * @type {string}
      * @memberof EnvironmentReadingOut
      */
     method?: string | null;
     /**
-     * 
+     * HTML Version
      * @type {string}
      * @memberof EnvironmentReadingOut
      */
     version?: string | null;
     /**
-     * 
+     * HTML Status Code
      * @type {number}
      * @memberof EnvironmentReadingOut
      */

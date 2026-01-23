@@ -25,23 +25,23 @@ import {
     EnvironmentReadingOutToJSON,
 } from '../models/index';
 
-export interface DeleteRequest {
+export interface HTTPMetricsApiDeleteRequest {
     pk: number;
 }
 
-export interface CloneRequest {
+export interface HTTPMetricsApiCloneRequest {
     pk: number;
 }
 
-export interface CreateRequest {
+export interface HTTPMetricsApiCreateRequest {
     environmentReadingIn: EnvironmentReadingIn;
 }
 
-export interface GetRequest {
+export interface HTTPMetricsApiGetRequest {
     pk: number;
 }
 
-export interface ListAllRequest {
+export interface HTTPMetricsApiListAllRequest {
     id?: string | null;
     spanId?: string | null;
     start?: string | null;
@@ -54,7 +54,7 @@ export interface ListAllRequest {
     statusCode?: string | null;
 }
 
-export interface UpdateRequest {
+export interface HTTPMetricsApiUpdateRequest {
     pk: number;
     environmentReadingIn: EnvironmentReadingIn;
 }
@@ -68,7 +68,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async _deleteRaw(requestParameters: HTTPMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -98,7 +98,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Remove a feeding schedule.
      * Delete
      */
-    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async _delete(requestParameters: HTTPMetricsApiDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this._deleteRaw(requestParameters, initOverrides);
     }
 
@@ -106,7 +106,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async cloneRaw(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
+    async cloneRaw(requestParameters: HTTPMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -136,7 +136,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Duplicate a feeding schedule.
      * Clone
      */
-    async clone(requestParameters: CloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
+    async clone(requestParameters: HTTPMetricsApiCloneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
         const response = await this.cloneRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -180,7 +180,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async createRaw(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
+    async createRaw(requestParameters: HTTPMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
         if (requestParameters['environmentReadingIn'] == null) {
             throw new runtime.RequiredError(
                 'environmentReadingIn',
@@ -212,7 +212,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Create a new feeding schedule.
      * Create
      */
-    async create(requestParameters: CreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
+    async create(requestParameters: HTTPMetricsApiCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
         const response = await this.createRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -221,7 +221,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async getRaw(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
+    async getRaw(requestParameters: HTTPMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -251,7 +251,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Get a feeding record.
      * Get
      */
-    async get(requestParameters: GetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
+    async get(requestParameters: HTTPMetricsApiGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
         const response = await this.getRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -260,7 +260,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAllRaw(requestParameters: ListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<EnvironmentReadingOut>>> {
+    async listAllRaw(requestParameters: HTTPMetricsApiListAllRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<EnvironmentReadingOut>>> {
         const queryParameters: any = {};
 
         if (requestParameters['id'] != null) {
@@ -322,7 +322,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * List all feeding schedules.
      * List All
      */
-    async listAll(requestParameters: ListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<EnvironmentReadingOut>> {
+    async listAll(requestParameters: HTTPMetricsApiListAllRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<EnvironmentReadingOut>> {
         const response = await this.listAllRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -331,7 +331,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async updateRaw(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
+    async updateRaw(requestParameters: HTTPMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnvironmentReadingOut>> {
         if (requestParameters['pk'] == null) {
             throw new runtime.RequiredError(
                 'pk',
@@ -371,7 +371,7 @@ export class HTTPMetricsApi extends runtime.BaseAPI {
      * Update a feeding schedule.
      * Update
      */
-    async update(requestParameters: UpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
+    async update(requestParameters: HTTPMetricsApiUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnvironmentReadingOut> {
         const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }

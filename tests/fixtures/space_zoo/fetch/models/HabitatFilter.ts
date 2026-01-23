@@ -20,13 +20,13 @@ import { mapValues } from '../runtime';
  */
 export interface HabitatFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HabitatFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof HabitatFilter
      */

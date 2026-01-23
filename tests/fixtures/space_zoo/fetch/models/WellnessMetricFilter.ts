@@ -20,67 +20,67 @@ import { mapValues } from '../runtime';
  */
 export interface WellnessMetricFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     metricId?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     datetime?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     habitat?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     linesOfCode?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     testCoverage?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     codeDuplication?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     reliabilityRating?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     securityRating?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */
     securityReviewRating?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof WellnessMetricFilter
      */

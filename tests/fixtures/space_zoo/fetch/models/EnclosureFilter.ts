@@ -20,25 +20,25 @@ import { mapValues } from '../runtime';
  */
 export interface EnclosureFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnclosureFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnclosureFilter
      */
     name?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnclosureFilter
      */
     timestamp?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof EnclosureFilter
      */

@@ -26,25 +26,25 @@ export interface BehaviorMetricIn {
      */
     id?: number | null;
     /**
-     * 
+     * ID of the original span
      * @type {string}
      * @memberof BehaviorMetricIn
      */
     spanId?: string | null;
     /**
-     * 
+     * Timestamp when the request came in
      * @type {Date}
      * @memberof BehaviorMetricIn
      */
     start?: Date | null;
     /**
-     * 
+     * Timestamp when the response was send out
      * @type {Date}
      * @memberof BehaviorMetricIn
      */
     end?: Date | null;
     /**
-     * 
+     * Processing timespan in nanoseconds
      * @type {number}
      * @memberof BehaviorMetricIn
      */
@@ -56,37 +56,37 @@ export interface BehaviorMetricIn {
      */
     httpMetricId?: number | null;
     /**
-     * 
+     * Name of the feature
      * @type {string}
      * @memberof BehaviorMetricIn
      */
     name?: string | null;
     /**
-     * 
+     * Basic value
      * @type {number}
      * @memberof BehaviorMetricIn
      */
     value?: number | null;
     /**
-     * 
+     * More granular details
      * @type {object}
      * @memberof BehaviorMetricIn
      */
     details?: object | null;
     /**
-     * 
+     * Who triggered the event
      * @type {string}
      * @memberof BehaviorMetricIn
      */
     createdBy?: string | null;
     /**
-     * 
+     * Message of the event
      * @type {string}
      * @memberof BehaviorMetricIn
      */
     message?: string | null;
     /**
-     * 
+     * State of the feature metric
      * @type {string}
      * @memberof BehaviorMetricIn
      */

@@ -20,13 +20,13 @@ import { mapValues } from '../runtime';
  */
 export interface SupplyCategoryFilter {
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyCategoryFilter
      */
     id?: string | null;
     /**
-     * 
+     * Filter by exact match
      * @type {string}
      * @memberof SupplyCategoryFilter
      */
