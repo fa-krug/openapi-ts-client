@@ -15,15 +15,8 @@ class TestLoadAndResolveSpec:
             "info": {"title": "Test", "version": "1.0"},
             "paths": {},
             "components": {
-                "schemas": {
-                    "User": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string"}
-                        }
-                    }
-                }
-            }
+                "schemas": {"User": {"type": "object", "properties": {"name": {"type": "string"}}}}
+            },
         }
         resolved = load_and_resolve_spec(spec)
         assert "components" in resolved
@@ -38,20 +31,13 @@ class TestLoadAndResolveSpec:
             "paths": {},
             "components": {
                 "schemas": {
-                    "User": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string"}
-                        }
-                    },
+                    "User": {"type": "object", "properties": {"name": {"type": "string"}}},
                     "Response": {
                         "type": "object",
-                        "properties": {
-                            "user": {"$ref": "#/components/schemas/User"}
-                        }
-                    }
+                        "properties": {"user": {"$ref": "#/components/schemas/User"}},
+                    },
                 }
-            }
+            },
         }
         resolved = load_and_resolve_spec(spec)
         response_schema = resolved["components"]["schemas"]["Response"]

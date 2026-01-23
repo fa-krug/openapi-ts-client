@@ -2,8 +2,6 @@
 
 import logging
 
-import pytest
-
 from openapi_ts_client.logging_config import (
     DATE_FORMAT,
     LOGGER_NAME,

@@ -1,9 +1,9 @@
 """Tests for anyOf type extraction."""
 
 from openapi_ts_client.generators.shared.anyof_extractor import (
-    discover_titled_anyofs,
     assign_type_names,
     create_extraction_registry,
+    discover_titled_anyofs,
 )
 
 
@@ -91,9 +91,24 @@ class TestAssignTypeNames:
         """Second occurrence of same title gets numeric suffix when schemas differ."""
         # Different anyOf content triggers different type names
         discoveries = [
-            {"path": "/a", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "number"}]}},
-            {"path": "/b", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "string"}]}},
-            {"path": "/c", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "integer"}]}},
+            {
+                "path": "/a",
+                "title": "Score",
+                "description": "",
+                "schema": {"anyOf": [{"type": "number"}]},
+            },
+            {
+                "path": "/b",
+                "title": "Score",
+                "description": "",
+                "schema": {"anyOf": [{"type": "string"}]},
+            },
+            {
+                "path": "/c",
+                "title": "Score",
+                "description": "",
+                "schema": {"anyOf": [{"type": "integer"}]},
+            },
         ]
         registry = assign_type_names(discoveries, set())
         assert registry["/a"]["type_name"] == "Score"
@@ -113,8 +128,18 @@ class TestAssignTypeNames:
         """Assignments preserve discovery order (first discovered gets base name)."""
         # Different anyOf content to ensure different type names
         discoveries = [
-            {"path": "/z/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "string"}]}},
-            {"path": "/a/prop", "title": "Score", "description": "", "schema": {"anyOf": [{"type": "number"}]}},
+            {
+                "path": "/z/prop",
+                "title": "Score",
+                "description": "",
+                "schema": {"anyOf": [{"type": "string"}]},
+            },
+            {
+                "path": "/a/prop",
+                "title": "Score",
+                "description": "",
+                "schema": {"anyOf": [{"type": "number"}]},
+            },
         ]
         registry = assign_type_names(discoveries, set())
         # /z was discovered first, so it gets "Score"

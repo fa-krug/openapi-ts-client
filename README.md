@@ -168,6 +168,8 @@ Generate a TypeScript client from an OpenAPI specification.
 ## Requirements
 
 - Python 3.8+
+- Node.js (for `typescript` and `tsx`)
+- `typescript` and `tsx` (for verifying/running generated code)
 
 ## License
 
