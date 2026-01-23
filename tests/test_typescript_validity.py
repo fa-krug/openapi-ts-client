@@ -45,7 +45,7 @@ def write_tsconfig(output_path: Path) -> None:
         pytest.param(
             "space_zoo",
             marks=pytest.mark.xfail(
-                reason="Pre-existing bug: 'clone' method conflicts with BaseAPI.clone"
+                reason="Duplicate export names (CloneRequest, etc.) across APIs"
             ),
         ),
     ],

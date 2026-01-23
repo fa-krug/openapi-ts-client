@@ -100,7 +100,7 @@ export class BaseAPI {
     }
 
     withMiddleware<T extends BaseAPI>(this: T, ...middlewares: Middleware[]) {
-        const next = this.clone<T>();
+        const next = this._internalClone<T>();
         next.middleware = next.middleware.concat(...middlewares);
         return next;
     }
@@ -242,7 +242,7 @@ export class BaseAPI {
      * Create a shallow clone of `this` by constructing a new instance
      * and then shallow cloning data members.
      */
-    private clone<T extends BaseAPI>(this: T): T {
+    private _internalClone<T extends BaseAPI>(this: T): T {
         const constructor = this.constructor as any;
         const next = new constructor(this.configuration);
         next.middleware = this.middleware.slice();
