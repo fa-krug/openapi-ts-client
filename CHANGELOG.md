@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.2 (2026-01-23)
+
+### Bug Fixes
+
+- **ci**: Detect semantic-release version output correctly
+  ([`597bd66`](https://github.com/fa-krug/openapi-ts-client/commit/597bd66eb15c403d1feaef83183f3c07ec68c1a3))
+
+
 ## v1.1.1 (2026-01-23)
 
 ### Bug Fixes
