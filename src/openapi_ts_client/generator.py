@@ -12,8 +12,17 @@ from .generators.axios.generator import generate_axios_client
 from .generators.fetch.generator import generate_fetch_client
 from .logging_config import get_logger, setup_logging
 
-# Initialize logger with verbose output
-logger = setup_logging()
+# Lazy logger initialization - don't call setup_logging() at import time
+# This allows CLI to configure logging before we initialize
+_logger = None
+
+
+def _get_logger():
+    """Get the logger, initializing on first use."""
+    global _logger
+    if _logger is None:
+        _logger = setup_logging()
+    return _logger
 
 
 def generate_typescript_client(

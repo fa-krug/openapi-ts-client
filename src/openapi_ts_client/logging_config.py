@@ -1,11 +1,15 @@
 """Logging configuration for the openapi-ts-client package."""
 
 import logging
+import os
 import sys
 from typing import Optional
 
 # Package logger name
 LOGGER_NAME = "openapi_ts_client"
+
+# Environment variable to control log level (used by CLI)
+LOG_LEVEL_ENV_VAR = "OPENAPI_TS_CLIENT_LOG_LEVEL"
 
 # Verbose format with all details
 VERBOSE_FORMAT = (
@@ -27,8 +31,12 @@ def setup_logging(level: int = logging.DEBUG) -> logging.Logger:
     - Module, function name, and line number
     - The log message
 
+    The log level can be controlled via the OPENAPI_TS_CLIENT_LOG_LEVEL environment
+    variable. Valid values: DEBUG, INFO, WARNING, ERROR, CRITICAL.
+
     Args:
         level: The logging level to use. Defaults to DEBUG for maximum verbosity.
+              This is overridden by the environment variable if set.
 
     Returns:
         The configured logger instance.
@@ -39,25 +47,34 @@ def setup_logging(level: int = logging.DEBUG) -> logging.Logger:
     if logger.handlers:
         return logger
 
-    logger.setLevel(level)
+    # Check for environment variable override (used by CLI)
+    env_level = os.environ.get(LOG_LEVEL_ENV_VAR)
+    if env_level:
+        effective_level = getattr(logging, env_level.upper(), level)
+    else:
+        effective_level = level
 
-    # Create console handler with verbose formatting
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(level)
+    logger.setLevel(effective_level)
 
-    # Create formatter with verbose format
-    formatter = logging.Formatter(fmt=VERBOSE_FORMAT, datefmt=DATE_FORMAT)
-    console_handler.setFormatter(formatter)
+    # Only add handler and show initialization messages if not suppressed
+    if effective_level <= logging.INFO:
+        # Create console handler with verbose formatting
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(effective_level)
 
-    # Add handler to logger
-    logger.addHandler(console_handler)
+        # Create formatter with verbose format
+        formatter = logging.Formatter(fmt=VERBOSE_FORMAT, datefmt=DATE_FORMAT)
+        console_handler.setFormatter(formatter)
+
+        # Add handler to logger
+        logger.addHandler(console_handler)
+
+        logger.debug("Logger initialized with verbose output")
+        logger.debug(f"Log level set to: {logging.getLevelName(effective_level)}")
+        logger.debug(f"Log format: {VERBOSE_FORMAT}")
 
     # Prevent propagation to root logger
     logger.propagate = False
-
-    logger.debug("Logger initialized with verbose output")
-    logger.debug(f"Log level set to: {logging.getLevelName(level)}")
-    logger.debug(f"Log format: {VERBOSE_FORMAT}")
 
     return logger
 

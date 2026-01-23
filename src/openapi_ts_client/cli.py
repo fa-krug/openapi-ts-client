@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-from . import ClientFormat, generate_typescript_client
+# Configure library logging BEFORE importing generator
+# This must happen at module load time, before __init__.py imports generator
+if "-q" in sys.argv or "--quiet" in sys.argv:
+    os.environ["OPENAPI_TS_CLIENT_LOG_LEVEL"] = "CRITICAL"
+elif "-v" not in sys.argv and "--verbose" not in sys.argv:
+    os.environ["OPENAPI_TS_CLIENT_LOG_LEVEL"] = "WARNING"
+
+from . import ClientFormat, generate_typescript_client  # noqa: E402
 
 # Read version from pyproject.toml - this is the canonical version
 __version__ = "1.1.2"
