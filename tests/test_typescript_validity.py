@@ -121,6 +121,56 @@ def test_angular_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
             pytest.fail("TypeScript compilation errors:\n" + "\n".join(errors))
 
 
+@pytest.mark.parametrize(
+    "fixture_name",
+    [
+        "petstore",
+        pytest.param(
+            "space_zoo",
+            marks=pytest.mark.xfail(
+                reason="Space zoo fixture needs updating to match generator output"
+            ),
+        ),
+    ],
+)
+def test_axios_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
+    """Test that generated Axios client compiles with tsc."""
+    spec = load_spec(fixture_name)
+    generate_typescript_client(spec, ClientFormat.AXIOS, tmp_path)
+
+    # Axios needs axios types - write tsconfig with type stubs
+    tsconfig = {
+        "compilerOptions": {
+            "target": "ES2020",
+            "module": "ESNext",
+            "moduleResolution": "node",
+            "strict": True,
+            "noEmit": True,
+            "skipLibCheck": True,
+            "esModuleInterop": True,
+        },
+        "include": ["**/*.ts"],
+    }
+    (tmp_path / "tsconfig.json").write_text(json.dumps(tsconfig, indent=2))
+
+    result = subprocess.run(
+        ["tsc", "--project", str(tmp_path)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    # Filter out errors about missing axios module (expected without npm install)
+    if result.returncode != 0:
+        errors = [
+            line
+            for line in result.stderr.split("\n")
+            if "error TS" in line and "Cannot find module" not in line and "'axios'" not in line
+        ]
+        if errors:
+            pytest.fail("TypeScript compilation errors:\n" + "\n".join(errors))
+
+
 def generate_runtime_test(structure: dict) -> str:
     """Generate a runtime test file based on extracted structure.
 
