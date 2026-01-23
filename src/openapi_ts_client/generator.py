@@ -2,10 +2,13 @@
 
 import json
 import os
+import tempfile
 from pathlib import Path
 from typing import Any, Dict, Union
 
 from .enums import ClientFormat
+from .generators.angular.generator import generate_angular_client
+from .generators.fetch.generator import generate_fetch_client
 from .logging_config import get_logger, setup_logging
 
 # Initialize logger with verbose output
@@ -15,7 +18,7 @@ logger = setup_logging()
 def generate_typescript_client(
     openapi_spec: Union[Dict[str, Any], str],
     output_format: ClientFormat = ClientFormat.FETCH,
-    output_path: Union[str, Path] = ".",
+    output_path: Union[str, Path, None] = None,
 ) -> str:
     """
     Generate a TypeScript client from an OpenAPI specification.
@@ -34,7 +37,7 @@ def generate_typescript_client(
             - ClientFormat.REACT: React-optimized client with hooks
             - ClientFormat.ANGULAR: Angular-optimized client with services
         output_path: The directory path where the generated client will be written.
-            Defaults to the current directory (".").
+            Defaults to a temporary directory if not specified.
 
     Returns:
         A status message indicating the result of the generation process.
@@ -55,6 +58,11 @@ def generate_typescript_client(
     func_logger.info("=" * 80)
     func_logger.info("Starting TypeScript client generation")
     func_logger.info("=" * 80)
+
+    # Use temp directory if output_path not specified
+    if output_path is None:
+        output_path = Path(tempfile.mkdtemp(prefix="openapi_ts_client_"))
+        func_logger.info(f"No output path specified, using temp directory: {output_path}")
 
     # Log input parameters
     func_logger.debug(f"Input parameter 'output_format': {output_format}")
@@ -110,25 +118,40 @@ def generate_typescript_client(
     func_logger.info(f"  API Version: {parsed_spec.get('info', {}).get('version', 'Unknown')}")
     func_logger.info("-" * 60)
 
-    # Placeholder for actual generation logic
-    func_logger.warning("=" * 80)
-    func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED")
-    func_logger.warning("This is a placeholder. The actual TypeScript client generation")
-    func_logger.warning("logic needs to be implemented in this function.")
-    func_logger.warning("=" * 80)
-
     # Build status message
     api_title = parsed_spec.get("info", {}).get("title", "Unknown API")
     api_version = parsed_spec.get("info", {}).get("version", "Unknown")
     paths_count = len(parsed_spec.get("paths", {}))
 
-    status_message = (
-        f"TypeScript client generation initiated for '{api_title}' v{api_version} "
-        f"(OpenAPI {openapi_version}). "
-        f"Format: {output_format.value}, Output: {resolved_output_path}, "
-        f"Paths to process: {paths_count}. "
-        f"NOTE: Generation logic not yet implemented."
-    )
+    # Dispatch to appropriate generator based on format
+    if output_format == ClientFormat.ANGULAR:
+        func_logger.info("Dispatching to Angular generator")
+        generate_angular_client(parsed_spec, resolved_output_path)
+        status_message = (
+            f"TypeScript Angular client generated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Output: {resolved_output_path}"
+        )
+    elif output_format == ClientFormat.FETCH:
+        func_logger.info("Dispatching to Fetch generator")
+        generate_fetch_client(parsed_spec, resolved_output_path)
+        status_message = (
+            f"TypeScript Fetch client generated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Output: {resolved_output_path}"
+        )
+    else:
+        # Placeholder for other formats (e.g., REACT)
+        func_logger.warning("=" * 80)
+        func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED FOR THIS FORMAT")
+        func_logger.warning("=" * 80)
+        status_message = (
+            f"TypeScript client generation initiated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Format: {output_format.value}, Output: {resolved_output_path}, "
+            f"Paths to process: {paths_count}. "
+            f"NOTE: Generation logic not yet implemented for this format."
+        )
 
     func_logger.info("=" * 80)
     func_logger.info("Generation process completed")
