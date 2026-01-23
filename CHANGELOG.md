@@ -2,6 +2,88 @@
 
 <!-- version list -->
 
+## v1.2.0 (2026-01-23)
+
+### Bug Fixes
+
+- **cli**: Suppress library logging in quiet mode
+  ([`f813f7d`](https://github.com/fa-krug/openapi-ts-client/commit/f813f7d2f1ad45039b397bccdbdb223dfc0818e1))
+
+- **fetch**: Prefix request interfaces with API class name
+  ([`41a4997`](https://github.com/fa-krug/openapi-ts-client/commit/41a4997f4666e9d1f7f276f86f5bda0e1f3b52fb))
+
+- **fetch**: Rename BaseAPI.clone to _internalClone to avoid conflicts
+  ([`c510f38`](https://github.com/fa-krug/openapi-ts-client/commit/c510f38830ef3cf330eb131447058f059b825f5b))
+
+### Documentation
+
+- Add axios test coverage implementation plan
+  ([`ad7b94c`](https://github.com/fa-krug/openapi-ts-client/commit/ad7b94c1a63964aa38cc98879f2f7877822e9aab))
+
+- Add CLI design document
+  ([`b8c792c`](https://github.com/fa-krug/openapi-ts-client/commit/b8c792cd409ce9231021ec7a3638dc5dab3a52ba))
+
+- Add CLI implementation plan
+  ([`30f4c5b`](https://github.com/fa-krug/openapi-ts-client/commit/30f4c5b69d4cafb0b9ac62e9d2c8edbede6aa1db))
+
+- Add CLI usage documentation
+  ([`404b995`](https://github.com/fa-krug/openapi-ts-client/commit/404b99520cb5d8462f40edfb5dd6875e6a2ef082))
+
+- Comprehensive README and CLAUDE.md update
+  ([`6b014b0`](https://github.com/fa-krug/openapi-ts-client/commit/6b014b0b3f22c268cd3717d82dcc0fd824be164b))
+
+### Features
+
+- **cli**: Add CLI skeleton with --help and --version
+  ([`87bbd34`](https://github.com/fa-krug/openapi-ts-client/commit/87bbd341a16ed70a5fb7fce8fb114a2046c0e6cd))
+
+- **cli**: Implement --no-validate flag
+  ([`25255dd`](https://github.com/fa-krug/openapi-ts-client/commit/25255dd68158f1fa8bc322e78114cf68a0a68d6c))
+
+- **cli**: Implement config file support
+  ([`3cf9113`](https://github.com/fa-krug/openapi-ts-client/commit/3cf9113bfbb2ab4568efe143f3107a7781f358e6))
+
+- **cli**: Implement file input
+  ([`fd76eb5`](https://github.com/fa-krug/openapi-ts-client/commit/fd76eb5095ac9d5fe25876e22c79ce716ff72112))
+
+- **cli**: Implement progress output formatting
+  ([`e5a695e`](https://github.com/fa-krug/openapi-ts-client/commit/e5a695e52e1b2faa98e20995da2829d75f9ce3f6))
+
+- **cli**: Implement stdin input
+  ([`9db40ab`](https://github.com/fa-krug/openapi-ts-client/commit/9db40ab835c008afb4210b38fa9fd7bbb5d70902))
+
+- **cli**: Implement URL input
+  ([`709eb8a`](https://github.com/fa-krug/openapi-ts-client/commit/709eb8ac0f7d40ce6bd7d769b3521774631dabfd))
+
+- **generators**: Implement axios client generation
+  ([`da61211`](https://github.com/fa-krug/openapi-ts-client/commit/da612119895a15e27d0e26cd4fb50ba801b7b8ac))
+
+### Refactoring
+
+- **enums**: Rename REACT to AXIOS in ClientFormat
+  ([`d2a596a`](https://github.com/fa-krug/openapi-ts-client/commit/d2a596adf2e75a652fdb82d7c04f70f121390202))
+
+### Testing
+
+- **axios**: Add TypeScript compilation test
+  ([`ad6f1c3`](https://github.com/fa-krug/openapi-ts-client/commit/ad6f1c377ad65ebd8a196592e5903d49a714d106))
+
+- **axios**: Add TypeScript runtime test
+  ([`fa810b3`](https://github.com/fa-krug/openapi-ts-client/commit/fa810b3555e2900c2aed2db29372fc13da495bf4))
+
+- **axios**: Enable structural equivalence tests with xfail markers
+  ([`8ab993f`](https://github.com/fa-krug/openapi-ts-client/commit/8ab993fdbbe5e924dbc723a32c88a3b8faf84ebb))
+
+- **axios**: Regenerate fixtures with our generator
+  ([`182f364`](https://github.com/fa-krug/openapi-ts-client/commit/182f3649a690011698019b57e03e6f2a6b3b01c0))
+
+- **axios**: Remove unnecessary xfail from compilation test
+  ([`a011da3`](https://github.com/fa-krug/openapi-ts-client/commit/a011da3c973701bcf0a41fd32f1632ac22d54af9))
+
+- **fixtures**: Add axios reference fixtures for petstore and space_zoo
+  ([`02ea05b`](https://github.com/fa-krug/openapi-ts-client/commit/02ea05b4336c5d228d95e60830c598ff31ddc740))
+
+
 ## v1.1.2 (2026-01-23)
 
 ### Bug Fixes
