@@ -168,5 +168,5 @@ def create_extraction_registry(spec: dict) -> dict:
 ## Scope
 
 - Angular generator only (initial implementation)
-- Can extract to shared utilities if FETCH/REACT formats need it later
+- Can extract to shared utilities if FETCH/AXIOS formats need it later
 - Additive change; should not break existing generation

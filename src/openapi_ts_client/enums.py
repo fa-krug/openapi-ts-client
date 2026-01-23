@@ -9,12 +9,12 @@ class ClientFormat(Enum):
 
     Attributes:
         FETCH: Generate a client using the native Fetch API (default).
-        REACT: Generate a client optimized for React applications with hooks.
+        AXIOS: Generate a client using Axios HTTP library.
         ANGULAR: Generate a client optimized for Angular applications with services.
     """
 
     FETCH = "fetch"
-    REACT = "react"
+    AXIOS = "axios"
     ANGULAR = "angular"
 
     def __str__(self) -> str:

@@ -20,7 +20,7 @@ Example usage:
     >>> # With custom format and output path
     >>> result = generate_typescript_client(
     ...     spec,
-    ...     output_format=ClientFormat.REACT,
+    ...     output_format=ClientFormat.AXIOS,
     ...     output_path="./generated"
     ... )
 """

@@ -82,16 +82,16 @@ result = generate_typescript_client(json_string)
 The package supports three output formats:
 
 - `ClientFormat.FETCH` (default) - Native Fetch API client
-- `ClientFormat.REACT` - React-optimized client with hooks
+- `ClientFormat.AXIOS` - Axios HTTP library client
 - `ClientFormat.ANGULAR` - Angular-optimized client with services
 
 ```python
 from openapi_ts_client import generate_typescript_client, ClientFormat
 
-# Generate a React client
+# Generate an Axios client
 result = generate_typescript_client(
     spec,
-    output_format=ClientFormat.REACT
+    output_format=ClientFormat.AXIOS
 )
 
 # Generate an Angular client
@@ -122,10 +122,10 @@ from openapi_ts_client import generate_typescript_client, ClientFormat
 with open("api-spec.json", "r") as f:
     spec = f.read()
 
-# Generate a React client in a specific directory
+# Generate an Axios client in a specific directory
 result = generate_typescript_client(
     openapi_spec=spec,
-    output_format=ClientFormat.REACT,
+    output_format=ClientFormat.AXIOS,
     output_path="./src/api"
 )
 
@@ -156,7 +156,7 @@ Generate a TypeScript client from an OpenAPI specification.
 ### `ClientFormat` Enum
 
 - `ClientFormat.FETCH` - Generate a client using the native Fetch API
-- `ClientFormat.REACT` - Generate a client optimized for React applications
+- `ClientFormat.AXIOS` - Generate a client using Axios HTTP library
 - `ClientFormat.ANGULAR` - Generate a client optimized for Angular applications
 
 ## Supported OpenAPI Versions

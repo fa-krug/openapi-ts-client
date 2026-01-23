@@ -206,8 +206,8 @@ def generate_typescript_client(spec, output_path, client_format):
         generate_angular_client(spec, output_path)
     elif client_format == ClientFormat.FETCH:
         generate_fetch_client(spec, output_path)
-    elif client_format == ClientFormat.REACT:
-        logger.warning("REACT format not yet implemented")
+    elif client_format == ClientFormat.AXIOS:
+        logger.warning("AXIOS format not yet implemented")
 ```
 
 ## Testing
