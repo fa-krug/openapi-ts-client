@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 from . import ClientFormat, generate_typescript_client
@@ -75,6 +77,22 @@ def load_spec_from_file(file_path: str) -> dict:
     return json.loads(path.read_text())
 
 
+def is_url(input_str: str) -> bool:
+    """Check if input is a URL."""
+    return input_str.startswith("http://") or input_str.startswith("https://")
+
+
+def load_spec_from_url(url: str) -> dict:
+    """Load OpenAPI spec from a URL."""
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        raise ConnectionError(f"Failed to fetch URL: {url}\n  HTTP {e.code}: {e.reason}") from e
+    except urllib.error.URLError as e:
+        raise ConnectionError(f"Failed to fetch URL: {url}\n  {e.reason}") from e
+
+
 def get_client_format(format_str: str) -> ClientFormat:
     """Convert format string to ClientFormat enum."""
     return {
@@ -94,8 +112,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        # Load spec from file
-        spec = load_spec_from_file(args.input)
+        # Load spec based on input type
+        if is_url(args.input):
+            spec = load_spec_from_url(args.input)
+        else:
+            spec = load_spec_from_file(args.input)
 
         # Generate client
         client_format = get_client_format(args.format)
@@ -105,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Generated {args.format} client to {args.output}")
 
         return 0
-    except FileNotFoundError as e:
+    except (FileNotFoundError, ConnectionError) as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
     except Exception as e:

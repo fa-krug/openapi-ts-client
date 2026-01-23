@@ -69,3 +69,50 @@ class TestFileInput:
         )
         assert result.returncode == 1
         assert "not found" in result.stderr.lower() or "error" in result.stderr.lower()
+
+
+class TestURLInput:
+    """Test URL input handling."""
+
+    def test_detect_url(self):
+        """Test that URLs are detected correctly."""
+        from openapi_ts_client.cli import is_url
+
+        assert is_url("https://example.com/openapi.json")
+        assert is_url("http://localhost:8080/spec.json")
+        assert not is_url("./openapi.json")
+        assert not is_url("/absolute/path.json")
+        assert not is_url("-")
+
+    def test_generate_from_url_mocked(self, tmp_path: Path, monkeypatch):
+        """Test generating client from a URL with mocked HTTP."""
+        import json
+
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+
+        # Create a test file to simulate URL content
+        spec_file = tmp_path / "url_spec.json"
+        spec_file.write_text(json.dumps(spec))
+
+        # Monkeypatch load_spec_from_url in the cli module
+        from openapi_ts_client import cli
+
+        def mock_load_spec_from_url(url):
+            return spec
+
+        monkeypatch.setattr(cli, "load_spec_from_url", mock_load_spec_from_url)
+
+        output_dir = tmp_path / "output"
+        result = cli.main(
+            [
+                "https://example.com/openapi.json",
+                "-o",
+                str(output_dir),
+            ]
+        )
+        assert result == 0
+        assert output_dir.exists()
