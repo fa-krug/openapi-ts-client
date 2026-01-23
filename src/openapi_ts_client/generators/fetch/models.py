@@ -22,6 +22,7 @@ def _get_property_info(
     prop_name: str,
     prop_schema: Dict[str, Any],
     required_props: List[str],
+    model_name: str = "",
     registry: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
@@ -31,14 +32,30 @@ def _get_property_info(
         prop_name: The JSON property name (may be snake_case)
         prop_schema: The OpenAPI schema for this property
         required_props: List of required property names
+        model_name: The name of the model containing this property
         registry: Optional extraction registry for titled anyOf schemas
 
     Returns:
         Dictionary with property metadata for template
     """
-    ts_type, type_imports = map_openapi_type_with_imports(prop_schema, registry)
     ts_name = _snake_to_camel(prop_name)
     is_required = prop_name in required_props
+
+    # Check for enum in string schema
+    enum_info = None
+    if prop_schema.get("type") == "string" and "enum" in prop_schema:
+        # Generate enum name: ModelNamePropertyNameEnum
+        cap_prop = prop_name[0].upper() + prop_name[1:]
+        enum_name = f"{model_name}{cap_prop}Enum"
+        enum_values = prop_schema["enum"]
+        enum_info = {
+            "name": enum_name,
+            "enum_values": enum_values,
+        }
+        ts_type = enum_name
+        type_imports: Set[str] = set()
+    else:
+        ts_type, type_imports = map_openapi_type_with_imports(prop_schema, registry)
 
     # Determine if nullable (either explicit nullable or anyOf with null)
     is_nullable = prop_schema.get("nullable", False)
@@ -52,7 +69,11 @@ def _get_property_info(
     ts_type_for_interface = ts_type
 
     # Determine the doc type (without | null for @type annotation)
-    ts_type_doc = ts_type.replace(" | null", "")
+    # For enum types, use 'string' as the doc type
+    if enum_info:
+        ts_type_doc = "string"
+    else:
+        ts_type_doc = ts_type.replace(" | null", "")
 
     # Detect if this is an array type
     is_array = prop_schema.get("type") == "array"
@@ -144,6 +165,7 @@ def _get_property_info(
         "nested_type": nested_type,
         "is_date": is_date,
         "is_date_time": is_date_time,
+        "enum_info": enum_info,
     }
 
 
@@ -223,7 +245,11 @@ def _build_to_json_expr(
         if array_item_imports:
             # Array of complex types - need to map through ToJSON
             item_type = list(array_item_imports)[0]
-            return f"(({value_access} as Array<any>).map({item_type}ToJSON))"
+            inner_expr = f"(({value_access} as Array<any>).map({item_type}ToJSON))"
+            # Check for null on optional arrays
+            if not is_required:
+                return f"{value_access} == null ? undefined : {inner_expr}"
+            return inner_expr
         # Array of primitives - pass through
         return value_access
 
@@ -344,8 +370,11 @@ def generate_models(
 
         properties = []
         for prop_name, prop_schema in properties_schema.items():
-            prop_info = _get_property_info(prop_name, prop_schema, required_props, registry)
+            prop_info = _get_property_info(prop_name, prop_schema, required_props, type_name, registry)
             properties.append(prop_info)
+
+        # Collect enum definitions from properties
+        enum_defs = [p["enum_info"] for p in properties if p.get("enum_info")]
 
         # Collect type imports
         type_imports = _collect_type_imports(properties)
@@ -362,6 +391,7 @@ def generate_models(
             "required_properties": required_properties,
             "type_imports": type_imports,
             "has_properties": len(properties) > 0,
+            "enum_defs": enum_defs,
         }
 
         content = model_template.render(**context)

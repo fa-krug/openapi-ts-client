@@ -100,8 +100,18 @@ def _tag_to_api_class_name(tag: str) -> str:
     return f"{class_name}Api"
 
 
-def _get_typescript_type_for_param(param: Dict[str, Any]) -> Tuple[str, Set[str]]:
-    """Get TypeScript type for a parameter schema."""
+def _get_typescript_type_for_param(
+    param: Dict[str, Any],
+    method_name: str = "",
+    param_name: str = "",
+) -> Tuple[str, Set[str], Optional[Dict[str, Any]]]:
+    """
+    Get TypeScript type for a parameter schema.
+
+    Returns:
+        Tuple of (ts_type, imports, enum_info)
+        enum_info is None if not an enum, otherwise dict with name and values
+    """
     schema = param.get("schema", {})
 
     # Handle anyOf patterns (nullable types)
@@ -112,9 +122,24 @@ def _get_typescript_type_for_param(param: Dict[str, Any]) -> Tuple[str, Set[str]
             ts_type, imports = map_openapi_type_with_imports(non_null_types[0])
             if has_null:
                 ts_type = f"{ts_type} | null"
-            return ts_type, imports
+            return ts_type, imports, None
 
-    return map_openapi_type_with_imports(schema)
+    # Check for enum in string schema
+    if schema.get("type") == "string" and "enum" in schema:
+        # Generate enum name: MethodNameParamNameEnum
+        # e.g., findPetsByStatus + status -> FindPetsByStatusStatusEnum
+        cap_method = method_name[0].upper() + method_name[1:] if method_name else ""
+        cap_param = param_name[0].upper() + param_name[1:] if param_name else ""
+        enum_name = f"{cap_method}{cap_param}Enum"
+        enum_values = schema["enum"]
+        enum_info = {
+            "name": enum_name,
+            "enum_values": enum_values,
+        }
+        return enum_name, set(), enum_info
+
+    ts_type, imports = map_openapi_type_with_imports(schema)
+    return ts_type, imports, None
 
 
 def _extract_response_info(
@@ -133,6 +158,10 @@ def _extract_response_info(
         if status in responses:
             response = responses[status]
             content = response.get("content", {})
+
+            # If there's no content, this is a void response
+            if not content:
+                return "void", set(), False, False, False, None, None
 
             if "application/json" in content:
                 schema = content["application/json"].get("schema", {})
@@ -220,19 +249,25 @@ def _schema_to_response_info(
 
 def _extract_request_body_info(
     operation: Dict[str, Any],
-) -> Tuple[Optional[str], Optional[str], Set[str], bool, bool, Optional[str]]:
+) -> Tuple[Optional[str], Optional[str], Set[str], bool, bool, Optional[str], Optional[str]]:
     """
     Extract request body parameter name, type, imports, required flag, and serializer.
 
     Returns:
-        Tuple of (param_name, param_type, imports, is_required, is_array, serializer)
+        Tuple of (param_name, param_type, imports, is_required, is_array, serializer, content_type)
     """
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
     is_required = request_body.get("required", False)
 
     if not content:
-        return None, None, set(), False, False, None
+        return None, None, set(), False, False, None, None
+
+    # Check for binary/octet-stream content
+    if "application/octet-stream" in content:
+        schema = content["application/octet-stream"].get("schema", {})
+        if schema.get("type") == "string" and schema.get("format") == "binary":
+            return "body", "Blob", set(), is_required, False, None, "application/octet-stream"
 
     # Find schema (prefer application/json)
     schema = None
@@ -240,13 +275,13 @@ def _extract_request_body_info(
         schema = content["application/json"].get("schema", {})
 
     if not schema:
-        return None, None, set(), False, False, None
+        return None, None, set(), False, False, None, None
 
     # Handle $ref
     if "$ref" in schema:
         type_name = schema["$ref"].split("/")[-1]
         param_name = type_name[0].lower() + type_name[1:]
-        return param_name, type_name, {type_name}, is_required, False, f"{type_name}ToJSON"
+        return param_name, type_name, {type_name}, is_required, False, f"{type_name}ToJSON", "application/json"
 
     # Handle array type
     if schema.get("type") == "array":
@@ -261,9 +296,53 @@ def _extract_request_body_info(
                 is_required,
                 True,
                 f"{item_type}ToJSON",
+                "application/json",
             )
 
-    return None, None, set(), False, False, None
+    return None, None, set(), False, False, None, None
+
+
+def _extract_security_info(
+    operation: Dict[str, Any],
+    security_schemes: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """
+    Extract security requirements for an operation.
+
+    Returns a list of security items, each with:
+        - type: 'oauth2', 'apiKey', etc.
+        - name: the security scheme name
+        - scopes: list of required scopes (for OAuth)
+        - header_name: header name for apiKey types
+
+    Items are ordered: OAuth2 first, then apiKey.
+    """
+    security_reqs = operation.get("security", [])
+    oauth_items = []
+    apikey_items = []
+
+    for req in security_reqs:
+        for scheme_name, scopes in req.items():
+            scheme = security_schemes.get(scheme_name, {})
+            scheme_type = scheme.get("type", "")
+
+            if scheme_type == "oauth2":
+                oauth_items.append({
+                    "type": "oauth2",
+                    "name": scheme_name,
+                    "scopes": scopes,
+                })
+            elif scheme_type == "apiKey":
+                in_location = scheme.get("in", "header")
+                if in_location == "header":
+                    apikey_items.append({
+                        "type": "apiKey",
+                        "name": scheme_name,
+                        "header_name": scheme.get("name", scheme_name),
+                    })
+
+    # Return OAuth2 items first, then apiKey items
+    return oauth_items + apikey_items
 
 
 def _build_request_interface_name(method_name: str) -> str:
@@ -322,6 +401,7 @@ def extract_api_data(
     api_description: str,
     api_version: str,
     contact_email: str,
+    security_schemes: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Extract data needed to render an API class template.
@@ -333,10 +413,13 @@ def extract_api_data(
         api_description: API description for header comment
         api_version: API version for header comment
         contact_email: Contact email for header comment
+        security_schemes: Security schemes from spec components
 
     Returns:
         Dictionary with template data
     """
+    if security_schemes is None:
+        security_schemes = {}
     model_imports: Set[str] = set()
     request_interfaces: List[Dict[str, Any]] = []
     methods: List[Dict[str, Any]] = []
@@ -351,20 +434,27 @@ def extract_api_data(
         summary = operation.get("summary", "")
         description = operation.get("description", "")
 
+        # Extract security requirements
+        security_info = _extract_security_info(operation, security_schemes)
+
         # Extract parameters
         parameters = operation.get("parameters", [])
         path_params = [p for p in parameters if p.get("in") == "path"]
         query_params = [p for p in parameters if p.get("in") == "query"]
+        header_params = [p for p in parameters if p.get("in") == "header"]
 
         # Collect all params for request interface
         interface_params: List[Dict[str, Any]] = []
         validations: List[Dict[str, str]] = []
+        enum_defs: List[Dict[str, Any]] = []
 
         # Path parameters - always required
         for p in path_params:
-            ts_type, imports = _get_typescript_type_for_param(p)
-            model_imports.update(imports)
             param_name = p["name"]
+            ts_type, imports, enum_info = _get_typescript_type_for_param(p, method_name, param_name)
+            model_imports.update(imports)
+            if enum_info:
+                enum_defs.append(enum_info)
             interface_params.append(
                 {
                     "name": param_name,
@@ -377,14 +467,16 @@ def extract_api_data(
         # Query parameters
         query_param_data = []
         for p in query_params:
-            ts_type, imports = _get_typescript_type_for_param(p)
-            model_imports.update(imports)
             original_name = p["name"]
             # Convert to camelCase for TypeScript interface
             ts_name = _to_camel_case(original_name)
             # Handle reserved words for query params like "package" -> "_package"
             if ts_name in TYPESCRIPT_RESERVED_WORDS:
                 ts_name = f"_{ts_name}"
+            ts_type, imports, enum_info = _get_typescript_type_for_param(p, method_name, ts_name)
+            model_imports.update(imports)
+            if enum_info:
+                enum_defs.append(enum_info)
             interface_params.append(
                 {
                     "name": ts_name,
@@ -401,6 +493,35 @@ def extract_api_data(
             if p.get("required", False):
                 validations.append({"param": ts_name})
 
+        # Header parameters
+        header_param_data = []
+        for p in header_params:
+            original_name = p["name"]
+            # Convert to camelCase for TypeScript interface
+            ts_name = _to_camel_case(original_name)
+            # Handle reserved words
+            if ts_name in TYPESCRIPT_RESERVED_WORDS:
+                ts_name = f"_{ts_name}"
+            ts_type, imports, enum_info = _get_typescript_type_for_param(p, method_name, ts_name)
+            model_imports.update(imports)
+            if enum_info:
+                enum_defs.append(enum_info)
+            interface_params.append(
+                {
+                    "name": ts_name,
+                    "type": ts_type,
+                    "required": p.get("required", False),
+                }
+            )
+            header_param_data.append(
+                {
+                    "original_name": original_name,
+                    "ts_name": ts_name,
+                }
+            )
+            if p.get("required", False):
+                validations.append({"param": ts_name})
+
         # Request body
         (
             body_param_name,
@@ -409,10 +530,12 @@ def extract_api_data(
             body_required,
             body_is_array,
             body_serializer,
+            body_content_type,
         ) = _extract_request_body_info(operation)
         model_imports.update(body_imports)
 
         has_body = body_param_name is not None
+        is_binary_body = body_content_type == "application/octet-stream"
         body_serializer_expr = None
         if has_body:
             interface_params.append(
@@ -426,7 +549,10 @@ def extract_api_data(
                 validations.append({"param": body_param_name})
 
             # Build serializer expression
-            if body_is_array:
+            if is_binary_body:
+                # Binary bodies are passed directly without serialization
+                body_serializer_expr = f"requestParameters['{body_param_name}'] as any"
+            elif body_is_array:
                 body_serializer_expr = (
                     f"requestParameters['{body_param_name}']!.map({body_serializer})"
                 )
@@ -474,9 +600,11 @@ def extract_api_data(
                 "path": path,
                 "path_params": path_param_data,
                 "query_params": query_param_data,
+                "header_params": header_param_data,
                 "validations": validations,
                 "has_body": has_body,
                 "body_serializer": body_serializer_expr,
+                "body_content_type": body_content_type,
                 "has_request_params": has_request_params,
                 "has_all_optional_params": has_all_optional,
                 "request_interface": request_interface_name,
@@ -487,6 +615,8 @@ def extract_api_data(
                 "is_blob_return": is_blob,
                 "is_any_return": is_any_return,
                 "item_deserializer": deserializer if is_array else None,
+                "enum_defs": enum_defs,
+                "security": security_info,
             }
         )
 
@@ -519,6 +649,7 @@ def generate_api(
     api_description: str,
     api_version: str,
     contact_email: str,
+    security_schemes: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Generate TypeScript API class code for a tag.
@@ -530,6 +661,7 @@ def generate_api(
         api_description: API description for header comment
         api_version: API version for header comment
         contact_email: Contact email for header comment
+        security_schemes: Security schemes from spec components
 
     Returns:
         Generated TypeScript code as string
@@ -537,7 +669,9 @@ def generate_api(
     env = get_template_env()
     template = env.get_template("api.ts.j2")
 
-    data = extract_api_data(tag, operations, api_title, api_description, api_version, contact_email)
+    data = extract_api_data(
+        tag, operations, api_title, api_description, api_version, contact_email, security_schemes
+    )
 
     return template.render(**data)
 
@@ -564,6 +698,10 @@ def generate_apis(spec: Dict[str, Any], output_path: Path) -> List[str]:
     contact = info.get("contact", {})
     contact_email = contact.get("email", "")
 
+    # Extract security schemes
+    components = spec.get("components", {})
+    security_schemes = components.get("securitySchemes", {})
+
     paths = spec.get("paths", {})
     tag_operations = group_operations_by_tag(paths)
 
@@ -576,7 +714,7 @@ def generate_apis(spec: Dict[str, Any], output_path: Path) -> List[str]:
         api_names.append(api_class_name)
 
         content = generate_api(
-            tag, operations, api_title, api_description, api_version, contact_email
+            tag, operations, api_title, api_description, api_version, contact_email, security_schemes
         )
         filename = f"{api_class_name}.ts"
         (apis_dir / filename).write_text(content)
