@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Union
@@ -39,6 +40,23 @@ def _get_non_hidden_files(directory: Path) -> list:
     if not directory.exists():
         return []
     return [p for p in directory.iterdir() if not p.name.startswith(".")]
+
+
+def _clear_directory(directory: Path) -> None:
+    """Remove all contents of directory (but not the directory itself).
+
+    Removes both hidden and non-hidden files and subdirectories.
+
+    Args:
+        directory: The directory to clear.
+    """
+    if not directory.exists():
+        return
+    for item in directory.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
 
 
 def generate_typescript_client(

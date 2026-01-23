@@ -491,3 +491,51 @@ class TestGetNonHiddenFiles:
         nonexistent = tmp_path / "nonexistent"
         result = _get_non_hidden_files(nonexistent)
         assert result == []
+
+
+class TestClearDirectory:
+    """Tests for _clear_directory helper."""
+
+    def test_clears_all_files(self, tmp_path: Path):
+        """Test that all files are cleared."""
+        from openapi_ts_client.generator import _clear_directory
+
+        (tmp_path / "file1.ts").touch()
+        (tmp_path / "file2.ts").touch()
+        _clear_directory(tmp_path)
+        assert list(tmp_path.iterdir()) == []
+
+    def test_clears_subdirectories(self, tmp_path: Path):
+        """Test that subdirectories are cleared."""
+        from openapi_ts_client.generator import _clear_directory
+
+        subdir = tmp_path / "models"
+        subdir.mkdir()
+        (subdir / "User.ts").touch()
+        _clear_directory(tmp_path)
+        assert list(tmp_path.iterdir()) == []
+
+    def test_preserves_directory_itself(self, tmp_path: Path):
+        """Test that the directory itself is preserved."""
+        from openapi_ts_client.generator import _clear_directory
+
+        (tmp_path / "file.ts").touch()
+        _clear_directory(tmp_path)
+        assert tmp_path.exists()
+        assert tmp_path.is_dir()
+
+    def test_clears_dotfiles_too(self, tmp_path: Path):
+        """Test that dotfiles are also cleared."""
+        from openapi_ts_client.generator import _clear_directory
+
+        (tmp_path / ".gitkeep").touch()
+        (tmp_path / "index.ts").touch()
+        _clear_directory(tmp_path)
+        assert list(tmp_path.iterdir()) == []
+
+    def test_empty_directory_no_error(self, tmp_path: Path):
+        """Test that empty directory doesn't raise error."""
+        from openapi_ts_client.generator import _clear_directory
+
+        _clear_directory(tmp_path)
+        assert tmp_path.exists()
