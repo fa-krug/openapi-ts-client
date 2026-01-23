@@ -8,6 +8,7 @@ from typing import Any, Dict, Union
 
 from .enums import ClientFormat
 from .generators.angular.generator import generate_angular_client
+from .generators.axios.generator import generate_axios_client
 from .generators.fetch.generator import generate_fetch_client
 from .logging_config import get_logger, setup_logging
 
@@ -34,7 +35,7 @@ def generate_typescript_client(
         output_format: The format of the generated TypeScript client.
             Defaults to ClientFormat.FETCH. Options are:
             - ClientFormat.FETCH: Native Fetch API client
-            - ClientFormat.REACT: React-optimized client with hooks
+            - ClientFormat.AXIOS: Axios HTTP library client
             - ClientFormat.ANGULAR: Angular-optimized client with services
         output_path: The directory path where the generated client will be written.
             Defaults to a temporary directory if not specified.
@@ -50,7 +51,7 @@ def generate_typescript_client(
         >>> from openapi_ts_client import generate_typescript_client, ClientFormat
         >>> # OpenAPI 3.x example
         >>> spec = {"openapi": "3.0.0", "info": {"title": "My API", "version": "1.0"}, "paths": {}}
-        >>> result = generate_typescript_client(spec, ClientFormat.REACT, "./output")
+        >>> result = generate_typescript_client(spec, ClientFormat.AXIOS, "./output")
         >>> print(result)
     """
     func_logger = get_logger("generator")
@@ -140,8 +141,16 @@ def generate_typescript_client(
             f"(OpenAPI {openapi_version}). "
             f"Output: {resolved_output_path}"
         )
+    elif output_format == ClientFormat.AXIOS:
+        func_logger.info("Dispatching to Axios generator")
+        generate_axios_client(parsed_spec, resolved_output_path)
+        status_message = (
+            f"TypeScript Axios client generated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Output: {resolved_output_path}"
+        )
     else:
-        # Placeholder for other formats (e.g., REACT)
+        # Placeholder for other formats
         func_logger.warning("=" * 80)
         func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED FOR THIS FORMAT")
         func_logger.warning("=" * 80)

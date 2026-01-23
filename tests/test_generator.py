@@ -72,16 +72,16 @@ class TestGenerateTypescriptClient:
         # Default format is FETCH - verify successful generation
         assert "Fetch client generated" in result
 
-    def test_react_output_format(self):
-        """Test generation with REACT format."""
+    def test_axios_output_format(self):
+        """Test generation with AXIOS format."""
         spec = {
             "openapi": "3.0.0",
             "info": {"title": "Test API", "version": "1.0.0"},
             "paths": {},
         }
-        result = generate_typescript_client(spec, output_format=ClientFormat.REACT)
-        # React format not yet implemented, should indicate this
-        assert "React client" in result or "not yet implemented" in result.lower()
+        result = generate_typescript_client(spec, output_format=ClientFormat.AXIOS)
+        # Axios format now generates a client
+        assert "Axios client generated" in result
 
     def test_angular_output_format(self):
         """Test generation with ANGULAR format."""
