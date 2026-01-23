@@ -441,3 +441,53 @@ class TestOutputDirectoryNotEmpty:
         from openapi_ts_client import OutputDirectoryNotEmptyError
 
         assert issubclass(OutputDirectoryNotEmptyError, Exception)
+
+
+class TestGetNonHiddenFiles:
+    """Tests for _get_non_hidden_files helper."""
+
+    def test_empty_directory_returns_empty_list(self, tmp_path: Path):
+        """Test that empty directory returns empty list."""
+        from openapi_ts_client.generator import _get_non_hidden_files
+
+        result = _get_non_hidden_files(tmp_path)
+        assert result == []
+
+    def test_returns_non_hidden_files(self, tmp_path: Path):
+        """Test that non-hidden files are returned."""
+        from openapi_ts_client.generator import _get_non_hidden_files
+
+        (tmp_path / "file1.ts").touch()
+        (tmp_path / "file2.ts").touch()
+        result = _get_non_hidden_files(tmp_path)
+        assert len(result) == 2
+
+    def test_ignores_dotfiles(self, tmp_path: Path):
+        """Test that dotfiles are ignored."""
+        from openapi_ts_client.generator import _get_non_hidden_files
+
+        (tmp_path / ".gitkeep").touch()
+        (tmp_path / ".gitignore").touch()
+        result = _get_non_hidden_files(tmp_path)
+        assert result == []
+
+    def test_mixed_files(self, tmp_path: Path):
+        """Test with mix of hidden and non-hidden files."""
+        from openapi_ts_client.generator import _get_non_hidden_files
+
+        (tmp_path / ".gitkeep").touch()
+        (tmp_path / "index.ts").touch()
+        (tmp_path / "models").mkdir()
+        result = _get_non_hidden_files(tmp_path)
+        assert len(result) == 2
+        names = [p.name for p in result]
+        assert "index.ts" in names
+        assert "models" in names
+
+    def test_nonexistent_directory_returns_empty(self, tmp_path: Path):
+        """Test that nonexistent directory returns empty list."""
+        from openapi_ts_client.generator import _get_non_hidden_files
+
+        nonexistent = tmp_path / "nonexistent"
+        result = _get_non_hidden_files(nonexistent)
+        assert result == []

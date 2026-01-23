@@ -25,6 +25,22 @@ def _get_logger():
     return _logger
 
 
+def _get_non_hidden_files(directory: Path) -> list:
+    """Return list of non-hidden files/dirs in directory.
+
+    Hidden files are those starting with a dot (e.g., .gitkeep, .gitignore).
+
+    Args:
+        directory: The directory to scan.
+
+    Returns:
+        List of Path objects for non-hidden files and directories.
+    """
+    if not directory.exists():
+        return []
+    return [p for p in directory.iterdir() if not p.name.startswith(".")]
+
+
 def generate_typescript_client(
     openapi_spec: Union[Dict[str, Any], str],
     output_format: ClientFormat = ClientFormat.FETCH,
