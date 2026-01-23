@@ -1,0 +1,28 @@
+# HabitatIn
+
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**originPlanets** | [**Array&lt;OriginPlanetIn&gt;**](OriginPlanetIn.md) |  | [default to undefined]
+**biomeTypes** | [**Array&lt;BiomeTypeIn&gt;**](BiomeTypeIn.md) |  | [default to undefined]
+**enclosures** | [**Array&lt;EnclosureIn&gt;**](EnclosureIn.md) |  | [default to undefined]
+**id** | **number** |  | [optional] [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
+
+## Example
+
+```typescript
+import { HabitatIn } from './api';
+
+const instance: HabitatIn = {
+    originPlanets,
+    biomeTypes,
+    enclosures,
+    id,
+    name,
+};
+```
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

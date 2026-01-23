@@ -1,0 +1,38 @@
+# EnvironmentReadingOut
+
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**id** | **number** |  | [optional] [default to undefined]
+**spanId** | **string** |  | [optional] [default to undefined]
+**start** | **string** |  | [optional] [default to undefined]
+**end** | **string** |  | [optional] [default to undefined]
+**timespanNs** | **number** |  | [optional] [default to undefined]
+**habitat_id** | **number** |  | [optional] [default to undefined]
+**url** | **string** |  | [optional] [default to undefined]
+**method** | **string** |  | [optional] [default to undefined]
+**version** | **string** |  | [optional] [default to undefined]
+**statusCode** | **number** |  | [optional] [default to undefined]
+
+## Example
+
+```typescript
+import { EnvironmentReadingOut } from './api';
+
+const instance: EnvironmentReadingOut = {
+    id,
+    spanId,
+    start,
+    end,
+    timespanNs,
+    habitat_id,
+    url,
+    method,
+    version,
+    statusCode,
+};
+```
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
