@@ -27,7 +27,14 @@
       "Bash(xargs:*)",
       "Bash(wc:*)",
       "Bash(git check-ignore:*)",
-      "Bash(git worktree add:*)"
+      "Bash(git worktree add:*)",
+      "Skill(superpowers:executing-plans)",
+      "Skill(superpowers:finishing-a-development-branch)",
+      "Bash(git -C /Users/skrug/PycharmProjects/openapi-ts-client/.worktrees/folder-cleanup status)",
+      "Bash(git -C /Users/skrug/PycharmProjects/openapi-ts-client/.worktrees/folder-cleanup diff src/openapi_ts_client/generator.py tests/test_generator.py)",
+      "Bash(git -C /Users/skrug/PycharmProjects/openapi-ts-client/.worktrees/folder-cleanup log --oneline -5)",
+      "Bash(git -C /Users/skrug/PycharmProjects/openapi-ts-client/.worktrees/folder-cleanup add src/openapi_ts_client/generator.py tests/test_generator.py)",
+      "Bash(git -C /Users/skrug/PycharmProjects/openapi-ts-client/.worktrees/folder-cleanup commit -m \"$\\(cat <<''EOF''\nfeat: add _clear_directory helper function\n\nAdds a helper function to remove all contents of a directory \\(files and\nsubdirectories\\) while preserving the directory itself. This will be used\nwhen clean=True is passed to generate_typescript_client.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
