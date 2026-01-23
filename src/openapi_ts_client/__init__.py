@@ -26,6 +26,7 @@ Example usage:
 """
 
 from .enums import ClientFormat
+from .exceptions import OutputDirectoryNotEmptyError
 from .generator import generate_typescript_client
 
 __version__ = "0.1.0"
@@ -33,5 +34,6 @@ __author__ = "openapi-ts-client contributors"
 __all__ = [
     "generate_typescript_client",
     "ClientFormat",
+    "OutputDirectoryNotEmptyError",
     "__version__",
 ]

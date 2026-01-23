@@ -431,3 +431,13 @@ class TestPathMethods:
         }
         result = generate_typescript_client(spec)
         assert "Test API" in result
+
+
+class TestOutputDirectoryNotEmpty:
+    """Tests for non-empty output directory handling."""
+
+    def test_error_is_importable(self):
+        """Test that OutputDirectoryNotEmptyError can be imported."""
+        from openapi_ts_client import OutputDirectoryNotEmptyError
+
+        assert issubclass(OutputDirectoryNotEmptyError, Exception)
