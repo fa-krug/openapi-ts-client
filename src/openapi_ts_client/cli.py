@@ -74,6 +74,16 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Show detailed progress",
     )
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clear output directory before generating",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Continue even if output directory is not empty (may overwrite files)",
+    )
     return parser
 
 
@@ -212,7 +222,12 @@ def generate_from_config(config: dict, args, out: Output) -> int:
         # Generate
         client_format = get_client_format(format_str)
         generate_typescript_client(
-            spec, client_format, output_path, skip_validation=args.no_validate
+            spec,
+            client_format,
+            output_path,
+            skip_validation=args.no_validate,
+            clean=getattr(args, "clean", False),
+            force=getattr(args, "force", False),
         )
 
         out.success(f"Generated to {output_path}")
@@ -255,7 +270,12 @@ def main(argv: list[str] | None = None) -> int:
             # Generate client
             client_format = get_client_format(args.format)
             generate_typescript_client(
-                spec, client_format, args.output, skip_validation=args.no_validate
+                spec,
+                client_format,
+                args.output,
+                skip_validation=args.no_validate,
+                clean=args.clean,
+                force=args.force,
             )
 
             out.success(f"Generated to {args.output}")

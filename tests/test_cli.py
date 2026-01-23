@@ -409,3 +409,95 @@ class TestValidation:
         # Check that it didn't fail with validation error
         if result.returncode != 0:
             assert "info.title" not in result.stderr.lower()
+
+
+class TestCleanForceFlags:
+    """Test --clean and --force CLI flags."""
+
+    def test_clean_flag_clears_directory(self, tmp_path: Path):
+        """Test that --clean clears the output directory."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "old_file.ts").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--clean",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert not (output_dir / "old_file.ts").exists()
+        assert (output_dir / "index.ts").exists()
+
+    def test_force_flag_continues_without_clearing(self, tmp_path: Path):
+        """Test that --force continues without clearing."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "keep_me.txt").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--force",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert (output_dir / "keep_me.txt").exists()
+        assert (output_dir / "index.ts").exists()
+
+    def test_both_flags_error(self, tmp_path: Path):
+        """Test that --clean and --force together gives error."""
+        output_dir = tmp_path / "output"
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+                "--clean",
+                "--force",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0
+        assert "mutually exclusive" in result.stderr.lower() or "error" in result.stderr.lower()
+
+    def test_nonempty_without_flags_error(self, tmp_path: Path):
+        """Test that non-empty directory without flags gives error."""
+        output_dir = tmp_path / "output"
+        output_dir.mkdir()
+        (output_dir / "existing.ts").touch()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "tests/fixtures/petstore/openapi.json",
+                "-o",
+                str(output_dir),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0
+        assert "not empty" in result.stderr.lower() or "error" in result.stderr.lower()
