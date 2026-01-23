@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
+
+from . import ClientFormat, generate_typescript_client
 
 # Read version from pyproject.toml - this is the canonical version
 __version__ = "1.1.2"
@@ -63,13 +67,50 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def load_spec_from_file(file_path: str) -> dict:
+    """Load OpenAPI spec from a file."""
+    path = Path(file_path)
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {file_path}")
+    return json.loads(path.read_text())
+
+
+def get_client_format(format_str: str) -> ClientFormat:
+    """Convert format string to ClientFormat enum."""
+    return {
+        "fetch": ClientFormat.FETCH,
+        "axios": ClientFormat.AXIOS,
+        "angular": ClientFormat.ANGULAR,
+    }[format_str]
+
+
 def main(argv: list[str] | None = None) -> int:
     """Main entry point for the CLI."""
     parser = create_parser()
-    parser.parse_args(argv)
+    args = parser.parse_args(argv)
 
-    # For now, just return 0 - implementation comes in later tasks
-    return 0
+    if not args.input:
+        parser.print_help()
+        return 2
+
+    try:
+        # Load spec from file
+        spec = load_spec_from_file(args.input)
+
+        # Generate client
+        client_format = get_client_format(args.format)
+        generate_typescript_client(spec, client_format, args.output)
+
+        if not args.quiet:
+            print(f"Generated {args.format} client to {args.output}")
+
+        return 0
+    except FileNotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
