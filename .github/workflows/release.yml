@@ -70,19 +70,33 @@ jobs:
       - name: Semantic release version
         id: release
         run: |
-          semantic-release version
+          OUTPUT=$(semantic-release version 2>&1) || true
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "No release will be made"; then
+            echo "released=false" >> $GITHUB_OUTPUT
+          elif echo "$OUTPUT" | grep -q "bumped"; then
+            echo "released=true" >> $GITHUB_OUTPUT
+          else
+            echo "released=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Semantic release publish
+      - name: Push version commit and tag
+        if: steps.release.outputs.released == 'true'
         run: |
-          semantic-release publish
+          git push origin main --follow-tags
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build package
-        if: steps.release.outcome == 'success'
+        if: steps.release.outputs.released == 'true'
         run: python -m build
       - name: Publish to PyPI
-        if: steps.release.outcome == 'success'
+        if: steps.release.outputs.released == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Create GitHub Release
+        if: steps.release.outputs.released == 'true'
+        run: semantic-release publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
