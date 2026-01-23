@@ -14,6 +14,10 @@ Generate TypeScript clients from OpenAPI 3.x specifications.
 - Accepts specs as Python dictionaries or JSON strings
 - Automatic validation of OpenAPI specifications
 
+## Why This Project?
+
+Python backend frameworks like FastAPI and django-ninja already generate OpenAPI specs from your type hints. This library enables those frameworks to take the next step: generating TypeScript clients that mirror your backend types exactly. Framework authors can integrate openapi-ts-client to give their users end-to-end type safety with zero manual type definitions.
+
 ## Installation
 
 ```bash
@@ -443,6 +447,10 @@ ruff format src
 # Setup pre-commit hooks
 pre-commit install
 ```
+
+## Acknowledgements
+
+This project builds on the excellent work of the [OpenAPI Generator](https://openapi-generator.tech/) team. Their years of effort creating robust code generation templates provided the foundation that made openapi-ts-client possible. Thank you for your contributions to the open-source community.
 
 ## License
 
