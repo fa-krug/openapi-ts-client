@@ -12,14 +12,24 @@ from .generators.axios.generator import generate_axios_client
 from .generators.fetch.generator import generate_fetch_client
 from .logging_config import get_logger, setup_logging
 
-# Initialize logger with verbose output
-logger = setup_logging()
+# Lazy logger initialization - don't call setup_logging() at import time
+# This allows CLI to configure logging before we initialize
+_logger = None
+
+
+def _get_logger():
+    """Get the logger, initializing on first use."""
+    global _logger
+    if _logger is None:
+        _logger = setup_logging()
+    return _logger
 
 
 def generate_typescript_client(
     openapi_spec: Union[Dict[str, Any], str],
     output_format: ClientFormat = ClientFormat.FETCH,
     output_path: Union[str, Path, None] = None,
+    skip_validation: bool = False,
 ) -> str:
     """
     Generate a TypeScript client from an OpenAPI specification.
@@ -98,8 +108,12 @@ def generate_typescript_client(
         )
 
     # Validate OpenAPI specification
-    func_logger.info("Validating OpenAPI specification")
-    openapi_version = _validate_openapi_spec(parsed_spec, func_logger)
+    if not skip_validation:
+        func_logger.info("Validating OpenAPI specification")
+        openapi_version = _validate_openapi_spec(parsed_spec, func_logger)
+    else:
+        func_logger.info("Skipping OpenAPI specification validation")
+        openapi_version = parsed_spec.get("openapi") or parsed_spec.get("swagger", "unknown")
 
     # Resolve and validate output path
     func_logger.info("Resolving output path")

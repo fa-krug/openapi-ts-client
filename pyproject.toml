@@ -33,6 +33,9 @@ dependencies = [
 Homepage = "https://github.com/fa-krug/openapi-ts-client"
 Repository = "https://github.com/fa-krug/openapi-ts-client"
 
+[project.scripts]
+openapi-ts-client = "openapi_ts_client.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "ruff>=0.4.0",
