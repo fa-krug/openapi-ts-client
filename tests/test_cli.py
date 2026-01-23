@@ -1,5 +1,6 @@
 """Tests for the CLI module."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -116,3 +117,51 @@ class TestURLInput:
         )
         assert result == 0
         assert output_dir.exists()
+
+
+class TestStdinInput:
+    """Test stdin input handling."""
+
+    def test_generate_from_stdin(self, tmp_path: Path):
+        """Test generating client from stdin."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Stdin API", "version": "1.0.0"},
+            "paths": {},
+        }
+
+        output_dir = tmp_path / "output"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "-",
+                "-o",
+                str(output_dir),
+            ],
+            input=json.dumps(spec),
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert output_dir.exists()
+
+    def test_empty_stdin(self, tmp_path: Path):
+        """Test error on empty stdin."""
+        output_dir = tmp_path / "output"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "-",
+                "-o",
+                str(output_dir),
+            ],
+            input="",
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 1
+        assert "error" in result.stderr.lower()

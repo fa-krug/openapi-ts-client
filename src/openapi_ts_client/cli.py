@@ -93,6 +93,17 @@ def load_spec_from_url(url: str) -> dict:
         raise ConnectionError(f"Failed to fetch URL: {url}\n  {e.reason}") from e
 
 
+def load_spec_from_stdin() -> dict:
+    """Load OpenAPI spec from stdin."""
+    content = sys.stdin.read()
+    if not content.strip():
+        raise ValueError("No input received from stdin")
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON from stdin: {e}") from e
+
+
 def get_client_format(format_str: str) -> ClientFormat:
     """Convert format string to ClientFormat enum."""
     return {
@@ -113,7 +124,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         # Load spec based on input type
-        if is_url(args.input):
+        if args.input == "-":
+            spec = load_spec_from_stdin()
+        elif is_url(args.input):
             spec = load_spec_from_url(args.input)
         else:
             spec = load_spec_from_file(args.input)
@@ -126,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Generated {args.format} client to {args.output}")
 
         return 0
-    except (FileNotFoundError, ConnectionError) as e:
+    except (FileNotFoundError, ConnectionError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
     except Exception as e:
