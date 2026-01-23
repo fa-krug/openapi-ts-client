@@ -113,35 +113,110 @@ def get_client_format(format_str: str) -> ClientFormat:
     }[format_str]
 
 
+DEFAULT_CONFIG_NAME = "openapi-ts-client.json"
+
+
+def load_config(config_path: str | None) -> dict | None:
+    """Load config file if it exists."""
+    if config_path:
+        path = Path(config_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Config file not found: {config_path}")
+    else:
+        path = Path(DEFAULT_CONFIG_NAME)
+        if not path.exists():
+            return None
+
+    try:
+        return json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid config file: {path}\n  {e}") from e
+
+
+def normalize_config(config: dict) -> list[dict]:
+    """Normalize config to list of client configs."""
+    if "clients" in config:
+        return config["clients"]
+    # Single client shorthand
+    return [config]
+
+
+def validate_client_config(client: dict, index: int) -> None:
+    """Validate a single client config."""
+    if "input" not in client:
+        raise ValueError(f"Config client #{index + 1} missing required 'input' field")
+
+
+def generate_from_config(config: dict, args) -> int:
+    """Generate clients from config file."""
+    clients = normalize_config(config)
+
+    for i, client in enumerate(clients):
+        validate_client_config(client, i)
+
+        input_path = client["input"]
+        format_str = client.get("format", "fetch")
+        output_path = client.get("output", "./generated")
+
+        # Load spec
+        if is_url(input_path):
+            spec = load_spec_from_url(input_path)
+        else:
+            spec = load_spec_from_file(input_path)
+
+        # Generate
+        client_format = get_client_format(format_str)
+        generate_typescript_client(spec, client_format, output_path)
+
+        if not args.quiet:
+            if len(clients) > 1:
+                print(f"[{i + 1}/{len(clients)}] Generated {format_str} client to {output_path}")
+            else:
+                print(f"Generated {format_str} client to {output_path}")
+
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Main entry point for the CLI."""
     parser = create_parser()
     args = parser.parse_args(argv)
 
-    if not args.input:
-        parser.print_help()
-        return 2
-
     try:
-        # Load spec based on input type
-        if args.input == "-":
-            spec = load_spec_from_stdin()
-        elif is_url(args.input):
-            spec = load_spec_from_url(args.input)
-        else:
-            spec = load_spec_from_file(args.input)
+        # If explicit input given, use it (ignore config)
+        if args.input:
+            # Load spec based on input type
+            if args.input == "-":
+                spec = load_spec_from_stdin()
+            elif is_url(args.input):
+                spec = load_spec_from_url(args.input)
+            else:
+                spec = load_spec_from_file(args.input)
 
-        # Generate client
-        client_format = get_client_format(args.format)
-        generate_typescript_client(spec, client_format, args.output)
+            # Generate client
+            client_format = get_client_format(args.format)
+            generate_typescript_client(spec, client_format, args.output)
 
-        if not args.quiet:
-            print(f"Generated {args.format} client to {args.output}")
+            if not args.quiet:
+                print(f"Generated {args.format} client to {args.output}")
 
-        return 0
-    except (FileNotFoundError, ConnectionError, ValueError) as e:
+            return 0
+
+        # No input - try config file
+        config = load_config(args.config)
+        if config is None:
+            print("Error: No input provided and no config file found", file=sys.stderr)
+            print("  Usage: openapi-ts-client <input> [options]", file=sys.stderr)
+            return 2
+
+        return generate_from_config(config, args)
+
+    except (FileNotFoundError, ConnectionError) as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 2
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1

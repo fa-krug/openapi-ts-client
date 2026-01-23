@@ -1,6 +1,7 @@
 """Tests for the CLI module."""
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -165,3 +166,127 @@ class TestStdinInput:
         )
         assert result.returncode == 1
         assert "error" in result.stderr.lower()
+
+
+class TestConfigFile:
+    """Test config file handling."""
+
+    def test_single_client_config(self, tmp_path: Path):
+        """Test config with single client shorthand."""
+        # Use absolute path for the spec file
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        config = {
+            "input": str(spec_path),
+            "format": "axios",
+            "output": str(tmp_path / "output"),
+        }
+        config_file = tmp_path / "openapi-ts-client.json"
+        config_file.write_text(json.dumps(config))
+
+        result = subprocess.run(
+            [sys.executable, "-m", "openapi_ts_client.cli"],
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert (tmp_path / "output" / "index.ts").exists()
+
+    def test_multi_client_config(self, tmp_path: Path):
+        """Test config with multiple clients."""
+        # Use absolute path for the spec file
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        config = {
+            "clients": [
+                {
+                    "input": str(spec_path),
+                    "format": "fetch",
+                    "output": str(tmp_path / "fetch-client"),
+                },
+                {
+                    "input": str(spec_path),
+                    "format": "axios",
+                    "output": str(tmp_path / "axios-client"),
+                },
+            ]
+        }
+        config_file = tmp_path / "openapi-ts-client.json"
+        config_file.write_text(json.dumps(config))
+
+        result = subprocess.run(
+            [sys.executable, "-m", "openapi_ts_client.cli"],
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert (tmp_path / "fetch-client").exists()
+        assert (tmp_path / "axios-client").exists()
+
+    def test_custom_config_path(self, tmp_path: Path):
+        """Test --config flag for custom config path."""
+        # Use absolute path for the spec file
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        config = {
+            "input": str(spec_path),
+            "output": str(tmp_path / "output"),
+        }
+        config_file = tmp_path / "custom-config.json"
+        config_file.write_text(json.dumps(config))
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                "--config",
+                str(config_file),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+
+    def test_explicit_input_ignores_config(self, tmp_path: Path):
+        """Test that explicit input argument ignores config file."""
+        # Use absolute path for the spec file
+        spec_path = Path.cwd() / "tests/fixtures/petstore/openapi.json"
+        config = {
+            "input": "wrong-file.json",
+            "output": str(tmp_path / "config-output"),
+        }
+        config_file = tmp_path / "openapi-ts-client.json"
+        config_file.write_text(json.dumps(config))
+
+        output_dir = tmp_path / "cli-output"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "openapi_ts_client.cli",
+                str(spec_path),
+                "-o",
+                str(output_dir),
+            ],
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+        )
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert output_dir.exists()
+        assert not (tmp_path / "config-output").exists()
+
+    def test_invalid_config_file(self, tmp_path: Path):
+        """Test error on invalid config file."""
+        config_file = tmp_path / "openapi-ts-client.json"
+        config_file.write_text("not valid json")
+
+        result = subprocess.run(
+            [sys.executable, "-m", "openapi_ts_client.cli"],
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+        )
+        assert result.returncode == 2
+        assert "config" in result.stderr.lower() or "error" in result.stderr.lower()
