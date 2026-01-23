@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:using-git-worktrees)",
+      "Skill(superpowers:writing-plans)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(python -c:*)",
+      "Bash(/usr/bin/env python3:*)",
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(sed:*)",
+      "Bash(git log:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(for f in:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(xargs:*)",
+      "Bash(wc:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git worktree add:*)"
+    ]
+  }
+}
