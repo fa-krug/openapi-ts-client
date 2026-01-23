@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from openapi_ts_client.generators.shared import map_openapi_type_with_imports
 from openapi_ts_client.utils.naming import (
     operation_id_to_method_name,
     schema_to_filename,
@@ -17,14 +18,52 @@ from openapi_ts_client.utils.naming import (
 # Strict mode reserved words that cannot be used as variable names
 # Note: 'type' is a contextual keyword and CAN be used as a variable name
 PARAM_RESERVED_WORDS = {
-    "break", "case", "catch", "class", "const", "continue", "debugger",
-    "default", "delete", "do", "else", "enum", "export", "extends", "false",
-    "finally", "for", "function", "if", "import", "in", "instanceof", "new",
-    "null", "return", "super", "switch", "this", "throw", "true", "try",
-    "typeof", "var", "void", "while", "with", "yield", "let", "static",
-    "implements", "interface", "package", "private", "protected", "public",
+    "break",
+    "case",
+    "catch",
+    "class",
+    "const",
+    "continue",
+    "debugger",
+    "default",
+    "delete",
+    "do",
+    "else",
+    "enum",
+    "export",
+    "extends",
+    "false",
+    "finally",
+    "for",
+    "function",
+    "if",
+    "import",
+    "in",
+    "instanceof",
+    "new",
+    "null",
+    "return",
+    "super",
+    "switch",
+    "this",
+    "throw",
+    "true",
+    "try",
+    "typeof",
+    "var",
+    "void",
+    "while",
+    "with",
+    "yield",
+    "let",
+    "static",
+    "implements",
+    "interface",
+    "package",
+    "private",
+    "protected",
+    "public",
 }
-from openapi_ts_client.generators.angular.type_mapper import map_openapi_type_with_imports
 
 
 def _escape_description(text: str) -> str:
@@ -58,11 +97,11 @@ def get_template_env() -> Environment:
 def _to_camel_case(name: str) -> str:
     """Convert snake_case or kebab-case to camelCase."""
     # Split by underscore or hyphen
-    parts = re.split(r'[_-]', name)
+    parts = re.split(r"[_-]", name)
     if not parts:
         return name
     # First part lowercase, rest title case
-    return parts[0] + ''.join(word.title() for word in parts[1:])
+    return parts[0] + "".join(word.title() for word in parts[1:])
 
 
 def _to_param_name(name: str) -> str:
@@ -78,7 +117,7 @@ def _to_param_name(name: str) -> str:
 
 def _extract_path_params(path: str) -> List[str]:
     """Extract path parameter names from a path template."""
-    return re.findall(r'\{(\w+)\}', path)
+    return re.findall(r"\{(\w+)\}", path)
 
 
 def _get_typescript_type_for_param(param: Dict[str, Any]) -> Tuple[str, Set[str]]:
@@ -105,7 +144,7 @@ def _build_path_template(path: str, path_params: List[Dict[str, Any]]) -> str:
         data_format = schema.get("format")
 
         # Replace {name} with template expression
-        placeholder = f'{{{name}}}'
+        placeholder = f"{{{name}}}"
         data_format_str = f'"{data_format}"' if data_format else "undefined"
         replacement = (
             f'${{this.configuration.encodeParam({{name: "{name}", value: {name}, '
@@ -132,7 +171,7 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
                 return map_openapi_type_with_imports(schema)
 
             # Handle binary response types (e.g., application/pdf, application/octet-stream)
-            for content_type, content_info in content.items():
+            for _content_type, content_info in content.items():
                 schema = content_info.get("schema", {})
                 if schema.get("type") == "string" and schema.get("format") == "binary":
                     return "Blob", set()
@@ -140,7 +179,9 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
     return "any", set()
 
 
-def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Set[str], List[str], bool, str]:
+def _extract_request_body_info(
+    operation: Dict[str, Any],
+) -> Tuple[Optional[str], Optional[str], Set[str], List[str], bool, str]:
     """Extract request body parameter name, type, imports, content types, required flag, and description."""
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
@@ -175,7 +216,14 @@ def _extract_request_body_info(operation: Dict[str, Any]) -> Tuple[Optional[str]
                 item_type = items["$ref"].split("/")[-1]
                 # Use the item type name for parameter (lowercase first char)
                 param_name = item_type[0].lower() + item_type[1:]
-                return param_name, f"Array<{item_type}>", {item_type}, content_types, is_required, description
+                return (
+                    param_name,
+                    f"Array<{item_type}>",
+                    {item_type},
+                    content_types,
+                    is_required,
+                    description,
+                )
 
     # Handle octet-stream (binary) body
     if "application/octet-stream" in content:
@@ -241,53 +289,70 @@ def extract_service_data(
             for scheme_name in sec.keys():
                 # Determine auth type based on scheme name (simplified)
                 if scheme_name == "api_key":
-                    auth_methods.append({
-                        "name": scheme_name,
-                        "type": "apiKey",
-                        "header_name": "api_key",
-                        "prefix": "",
-                    })
+                    auth_methods.append(
+                        {
+                            "name": scheme_name,
+                            "type": "apiKey",
+                            "header_name": "api_key",
+                            "prefix": "",
+                        }
+                    )
                 else:
                     # Assume oauth2 for other schemes
-                    auth_methods.append({
-                        "name": scheme_name,
-                        "type": "oauth2",
-                        "header_name": "Authorization",
-                        "prefix": "Bearer ",
-                    })
+                    auth_methods.append(
+                        {
+                            "name": scheme_name,
+                            "type": "oauth2",
+                            "header_name": "Authorization",
+                            "prefix": "Bearer ",
+                        }
+                    )
 
         # Build required params list (path params are always required)
         required_params = []
         for p in path_params:
             ts_type, imports = _get_typescript_type_for_param(p)
             model_imports.update(imports)
-            required_params.append({
-                "name": p["name"],
-                "type": ts_type,
-                "description": p.get("description", ""),
-            })
+            required_params.append(
+                {
+                    "name": p["name"],
+                    "type": ts_type,
+                    "description": p.get("description", ""),
+                }
+            )
 
         # Handle request body
-        body_param_name, body_param_type, body_imports, content_types, body_is_required, body_description = _extract_request_body_info(operation)
+        (
+            body_param_name,
+            body_param_type,
+            body_imports,
+            content_types,
+            body_is_required,
+            body_description,
+        ) = _extract_request_body_info(operation)
         model_imports.update(body_imports)
 
         if body_param_name and body_is_required:
-            required_params.append({
-                "name": body_param_name,
-                "type": body_param_type,
-                "description": body_description,
-            })
+            required_params.append(
+                {
+                    "name": body_param_name,
+                    "type": body_param_type,
+                    "description": body_description,
+                }
+            )
 
         # Add required query params to required_params for validation
         for p in query_params:
             if p.get("required", False):
                 ts_type, imports = _get_typescript_type_for_param(p)
                 model_imports.update(imports)
-                required_params.append({
-                    "name": p["name"],
-                    "type": ts_type,
-                    "description": p.get("description", ""),
-                })
+                required_params.append(
+                    {
+                        "name": p["name"],
+                        "type": ts_type,
+                        "description": p.get("description", ""),
+                    }
+                )
 
         # Extract response type
         return_type, return_imports = _extract_response_type(operation)
@@ -309,13 +374,15 @@ def extract_service_data(
             ts_type, imports = _get_typescript_type_for_param(p)
             model_imports.update(imports)
             param_name = _to_camel_case(p["name"])
-            header_param_data.append({
-                "name": param_name,  # camelCase for variable
-                "header_name": p["name"],  # original for HTTP header
-                "type": ts_type,
-                "required": p.get("required", False),
-                "description": p.get("description", ""),
-            })
+            header_param_data.append(
+                {
+                    "name": param_name,  # camelCase for variable
+                    "header_name": p["name"],  # original for HTTP header
+                    "type": ts_type,
+                    "required": p.get("required", False),
+                    "description": p.get("description", ""),
+                }
+            )
 
         # Build parameter signatures
         all_params = []
@@ -323,33 +390,51 @@ def extract_service_data(
         # Path parameters first
         for p in path_params:
             ts_type, _ = _get_typescript_type_for_param(p)
-            all_params.append({"name": p["name"], "type": ts_type, "required": True, "description": p.get("description", "")})
+            all_params.append(
+                {
+                    "name": p["name"],
+                    "type": ts_type,
+                    "required": True,
+                    "description": p.get("description", ""),
+                }
+            )
 
         # Header parameters next (optional)
         for p in header_params:
             ts_type, _ = _get_typescript_type_for_param(p)
             param_name = _to_camel_case(p["name"])
-            all_params.append({
-                "name": param_name,  # camelCase for variable
-                "type": ts_type,
-                "required": p.get("required", False),
-                "description": p.get("description", ""),
-            })
+            all_params.append(
+                {
+                    "name": param_name,  # camelCase for variable
+                    "type": ts_type,
+                    "required": p.get("required", False),
+                    "description": p.get("description", ""),
+                }
+            )
 
         # Query parameters next (optional)
         for p in query_params:
             ts_type, imports = _get_typescript_type_for_param(p)
             model_imports.update(imports)
-            all_params.append({
-                "name": _to_param_name(p["name"]),
-                "type": ts_type,
-                "required": p.get("required", False),
-                "description": p.get("description", ""),
-            })
+            all_params.append(
+                {
+                    "name": _to_param_name(p["name"]),
+                    "type": ts_type,
+                    "required": p.get("required", False),
+                    "description": p.get("description", ""),
+                }
+            )
 
         # Request body last
         if body_param_name:
-            all_params.append({"name": body_param_name, "type": body_param_type, "required": body_is_required, "description": body_description})
+            all_params.append(
+                {
+                    "name": body_param_name,
+                    "type": body_param_type,
+                    "required": body_is_required,
+                    "description": body_description,
+                }
+            )
 
         # Build signature strings
         sig_parts = []
@@ -365,35 +450,39 @@ def extract_service_data(
         query_param_data = []
         for p in query_params:
             ts_type, _ = _get_typescript_type_for_param(p)
-            query_param_data.append({
-                "name": _to_param_name(p["name"]),  # TypeScript variable name
-                "original_name": p["name"],  # HTTP query parameter name
-                "type": ts_type,
-            })
+            query_param_data.append(
+                {
+                    "name": _to_param_name(p["name"]),  # TypeScript variable name
+                    "original_name": p["name"],  # HTTP query parameter name
+                    "type": ts_type,
+                }
+            )
 
-        methods.append({
-            "method_name": method_name,
-            "summary": summary,
-            "description": description,
-            "http_method": http_method,
-            "path": path,
-            "path_template": path_template,
-            "parameters": all_params,
-            "required_params": required_params,
-            "query_params": query_param_data,
-            "header_params": header_param_data,
-            "auth_methods": auth_methods,
-            "has_body": body_param_name is not None,
-            "body_param_name": body_param_name,
-            "content_types": content_types,
-            "return_type": return_type,
-            "accept_types": accept_types,
-            "accept_list": accept_list,
-            "params_signature_body": params_signature,
-            "params_signature_response": params_signature,
-            "params_signature_events": params_signature,
-            "params_signature_impl": params_signature,
-        })
+        methods.append(
+            {
+                "method_name": method_name,
+                "summary": summary,
+                "description": description,
+                "http_method": http_method,
+                "path": path,
+                "path_template": path_template,
+                "parameters": all_params,
+                "required_params": required_params,
+                "query_params": query_param_data,
+                "header_params": header_param_data,
+                "auth_methods": auth_methods,
+                "has_body": body_param_name is not None,
+                "body_param_name": body_param_name,
+                "content_types": content_types,
+                "return_type": return_type,
+                "accept_types": accept_types,
+                "accept_list": accept_list,
+                "params_signature_body": params_signature,
+                "params_signature_response": params_signature,
+                "params_signature_events": params_signature,
+                "params_signature_impl": params_signature,
+            }
+        )
 
     # Sort methods alphabetically by method_name
     methods.sort(key=lambda m: m["method_name"])
@@ -455,11 +544,13 @@ def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, A
                     if tag not in tag_operations:
                         tag_operations[tag] = []
 
-                    tag_operations[tag].append({
-                        "path": path,
-                        "http_method": method,
-                        "operation": operation,
-                    })
+                    tag_operations[tag].append(
+                        {
+                            "path": path,
+                            "http_method": method,
+                            "operation": operation,
+                        }
+                    )
 
     return tag_operations
 

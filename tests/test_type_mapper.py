@@ -1,6 +1,6 @@
 """Tests for TypeScript type mapper."""
 
-from openapi_ts_client.generators.angular.type_mapper import (
+from openapi_ts_client.generators.shared import (
     map_openapi_type,
     map_openapi_type_with_imports,
 )

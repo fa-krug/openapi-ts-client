@@ -5,10 +5,11 @@ from typing import Any, Dict, List
 
 from jinja2 import Environment, PackageLoader
 
+from openapi_ts_client.generators.shared import (
+    create_extraction_registry,
+    map_openapi_type_with_imports,
+)
 from openapi_ts_client.utils import schema_to_filename
-
-from .anyof_extractor import create_extraction_registry
-from .type_mapper import map_openapi_type_with_imports
 
 
 def _lower_first(s: str) -> str:
@@ -123,9 +124,7 @@ def _generate_model_file(
     enums = []
 
     for prop_name, prop_schema in properties.items():
-        info = _get_property_info(
-            prop_name, prop_schema, required_props, schema_name, registry
-        )
+        info = _get_property_info(prop_name, prop_schema, required_props, schema_name, registry)
         prop_infos.append(info)
         all_imports.update(info["imports"])
 
@@ -222,9 +221,7 @@ def generate_all_models(
     # Generate schema model files
     for schema_name, schema in schemas.items():
         # Generate model file
-        content = _generate_model_file(
-            env, schema_name, schema, api_title, contact_email, registry
-        )
+        content = _generate_model_file(env, schema_name, schema, api_title, contact_email, registry)
 
         # Get filename (without .ts extension for barrel export)
         filename = schema_to_filename(schema_name)

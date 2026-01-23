@@ -1,6 +1,6 @@
 """Tests for anyOf type extraction."""
 
-from openapi_ts_client.generators.angular.anyof_extractor import (
+from openapi_ts_client.generators.shared.anyof_extractor import (
     discover_titled_anyofs,
     assign_type_names,
     create_extraction_registry,

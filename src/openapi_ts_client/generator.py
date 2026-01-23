@@ -7,8 +7,9 @@ from pathlib import Path
 from typing import Any, Dict, Union
 
 from .enums import ClientFormat
-from .logging_config import get_logger, setup_logging
 from .generators.angular.generator import generate_angular_client
+from .generators.fetch.generator import generate_fetch_client
+from .logging_config import get_logger, setup_logging
 
 # Initialize logger with verbose output
 logger = setup_logging()
@@ -131,8 +132,16 @@ def generate_typescript_client(
             f"(OpenAPI {openapi_version}). "
             f"Output: {resolved_output_path}"
         )
+    elif output_format == ClientFormat.FETCH:
+        func_logger.info("Dispatching to Fetch generator")
+        generate_fetch_client(parsed_spec, resolved_output_path)
+        status_message = (
+            f"TypeScript Fetch client generated for '{api_title}' v{api_version} "
+            f"(OpenAPI {openapi_version}). "
+            f"Output: {resolved_output_path}"
+        )
     else:
-        # Placeholder for other formats
+        # Placeholder for other formats (e.g., REACT)
         func_logger.warning("=" * 80)
         func_logger.warning("CLIENT GENERATION LOGIC NOT IMPLEMENTED FOR THIS FORMAT")
         func_logger.warning("=" * 80)

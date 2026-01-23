@@ -1,6 +1,19 @@
 """Naming convention utilities for TypeScript generation."""
 
 # TypeScript reserved words that need escaping
+# Schema names that conflict with fetch runtime types and need "Model" prefix
+# These match the OpenAPI Generator behavior for typescript-fetch
+FETCH_RESERVED_TYPE_NAMES = {
+    "ApiResponse",
+    "Response",
+    "RequestInit",
+    "Headers",
+    "Request",
+    "Blob",
+    "File",
+}
+
+
 TYPESCRIPT_RESERVED_WORDS = {
     "break",
     "case",
@@ -58,6 +71,21 @@ TYPESCRIPT_RESERVED_WORDS = {
     "async",
     "await",
 }
+
+
+def schema_to_type_name(schema_name: str) -> str:
+    """
+    Convert OpenAPI schema name to TypeScript type name.
+
+    Adds "Model" prefix to names that conflict with fetch runtime types.
+
+    Examples:
+        FeedingOut -> FeedingOut (unchanged)
+        ApiResponse -> ModelApiResponse (prefixed)
+    """
+    if schema_name in FETCH_RESERVED_TYPE_NAMES:
+        return f"Model{schema_name}"
+    return schema_name
 
 
 def schema_to_filename(schema_name: str) -> str:

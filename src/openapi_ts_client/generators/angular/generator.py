@@ -5,9 +5,10 @@ from typing import Any, Dict
 
 from openapi_ts_client.logging_config import get_logger
 from openapi_ts_client.utils.openapi import load_and_resolve_spec
+
+from .infrastructure import generate_infrastructure
 from .models import generate_models
 from .services import generate_all_services
-from .infrastructure import generate_infrastructure
 
 
 def generate_angular_client(
@@ -61,7 +62,9 @@ def generate_angular_client(
     generate_all_services(paths, output_path / "api", api_title, contact_email)
 
     # Collect service files (excludes api.ts barrel export, handled separately)
-    service_files = [f.name for f in (output_path / "api").iterdir() if f.is_file() and f.name != "api.ts"]
+    service_files = [
+        f.name for f in (output_path / "api").iterdir() if f.is_file() and f.name != "api.ts"
+    ]
 
     # Generate infrastructure files
     logger.info("Generating infrastructure files...")
