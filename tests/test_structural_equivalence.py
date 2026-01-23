@@ -111,8 +111,23 @@ def test_angular_structural_equivalence(fixture_name: str, tmp_path: Path, ts_pa
         pytest.fail("\n\n".join(differences))
 
 
-@pytest.mark.xfail(reason="Axios fixture contains models not in spec - needs fixture update")
-@pytest.mark.parametrize("fixture_name", ["space_zoo"])
+@pytest.mark.parametrize(
+    "fixture_name",
+    [
+        pytest.param(
+            "petstore",
+            marks=pytest.mark.xfail(
+                reason="Generator output differs from OpenAPI Generator reference fixture"
+            ),
+        ),
+        pytest.param(
+            "space_zoo",
+            marks=pytest.mark.xfail(
+                reason="Axios fixture contains models not in spec - needs fixture update"
+            ),
+        ),
+    ],
+)
 def test_axios_structural_equivalence(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that Axios generation produces structurally equivalent output."""
     fixture_dir = FIXTURES_DIR / fixture_name / "axios"
