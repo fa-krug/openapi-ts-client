@@ -50,7 +50,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-openapi_ts_client = ["templates/**/*.j2"]
+openapi_ts_client = ["templates/**/*.j2", "templates/**/.*.j2"]
 
 [tool.ruff]
 target-version = "py38"
