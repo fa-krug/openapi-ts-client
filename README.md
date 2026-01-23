@@ -89,6 +89,8 @@ openapi-ts-client
 | `-o, --output` | Output directory | ./generated |
 | `-c, --config` | Config file path | openapi-ts-client.json |
 | `--no-validate` | Skip OpenAPI spec validation | - |
+| `--clean` | Clear output directory before generating | - |
+| `--force` | Continue even if output directory is not empty (may overwrite files) | - |
 | `-q, --quiet` | Suppress all output except errors | - |
 | `-v, --verbose` | Show detailed progress | - |
 
@@ -372,6 +374,9 @@ Generate a TypeScript client from an OpenAPI specification.
 | `openapi_spec` | `dict \| str` | required | The OpenAPI specification as a dictionary or JSON string |
 | `output_format` | `ClientFormat` | `ClientFormat.FETCH` | The output client format |
 | `output_path` | `str \| Path \| None` | `None` | Output directory (uses temp dir if not specified) |
+| `skip_validation` | `bool` | `False` | Skip OpenAPI specification validation |
+| `clean` | `bool` | `False` | Clear the output directory before generating. Cannot be used together with `force`. |
+| `force` | `bool` | `False` | Continue generation even if output directory is not empty. Files will be overwritten but existing files not part of the generated output will remain. Cannot be used together with `clean`. |
 
 **Returns:**
 
