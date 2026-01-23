@@ -442,6 +442,79 @@ class TestOutputDirectoryNotEmpty:
 
         assert issubclass(OutputDirectoryNotEmptyError, Exception)
 
+    def test_nonempty_raises_error_by_default(self, tmp_path: Path):
+        """Test that non-empty directory raises error without flags."""
+        from openapi_ts_client import OutputDirectoryNotEmptyError
+
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        (tmp_path / "existing.ts").touch()
+        with pytest.raises(OutputDirectoryNotEmptyError) as excinfo:
+            generate_typescript_client(spec, output_path=tmp_path)
+        assert "not empty" in str(excinfo.value)
+        assert "1 files" in str(excinfo.value)
+
+    def test_clean_true_clears_directory(self, tmp_path: Path):
+        """Test that clean=True clears the directory."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        (tmp_path / "old_file.ts").touch()
+        generate_typescript_client(spec, output_path=tmp_path, clean=True)
+        assert not (tmp_path / "old_file.ts").exists()
+        assert (tmp_path / "index.ts").exists()
+
+    def test_force_true_continues_without_clearing(self, tmp_path: Path):
+        """Test that force=True continues without clearing."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        (tmp_path / "keep_me.txt").touch()
+        generate_typescript_client(spec, output_path=tmp_path, force=True)
+        assert (tmp_path / "keep_me.txt").exists()
+        assert (tmp_path / "index.ts").exists()
+
+    def test_clean_and_force_raises_error(self, tmp_path: Path):
+        """Test that both clean and force raises ValueError."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        with pytest.raises(ValueError) as excinfo:
+            generate_typescript_client(spec, output_path=tmp_path, clean=True, force=True)
+        assert "mutually exclusive" in str(excinfo.value).lower()
+
+    def test_dotfiles_only_treated_as_empty(self, tmp_path: Path):
+        """Test that directory with only dotfiles is treated as empty."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        (tmp_path / ".gitkeep").touch()
+        (tmp_path / ".gitignore").touch()
+        # Should not raise - dotfiles are ignored
+        result = generate_typescript_client(spec, output_path=tmp_path)
+        assert "Test API" in result
+
+    def test_empty_directory_proceeds(self, tmp_path: Path):
+        """Test that empty directory proceeds normally."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "Test API", "version": "1.0.0"},
+            "paths": {},
+        }
+        result = generate_typescript_client(spec, output_path=tmp_path)
+        assert "Test API" in result
+
 
 class TestGetNonHiddenFiles:
     """Tests for _get_non_hidden_files helper."""
