@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v1.4.0 (2026-01-24)
+
+### Chores
+
+- Clean up tictactoe fixture to match other fixtures
+  ([`1d5d296`](https://github.com/fa-krug/openapi-ts-client/commit/1d5d2960a71ec8ef0efddd7d30a39b8d3060f96f))
+
+### Features
+
+- Add YAML string support for OpenAPI spec input
+  ([`5b55780`](https://github.com/fa-krug/openapi-ts-client/commit/5b55780fd33feb82acaa456a93f2a42e61799821))
+
+- Improve enum handling and parameter resolution across all generators
+  ([`a2e9227`](https://github.com/fa-krug/openapi-ts-client/commit/a2e9227eb451d761ef04d177c1fd0ab37c765a60))
+
+- Improve fetch generator enum handling and naming conventions
+  ([`e4a7ad0`](https://github.com/fa-krug/openapi-ts-client/commit/e4a7ad018f3d8700499e0c065e1137a54371ab27))
+
+### Testing
+
+- Add missing model files to tictactoe fixtures
+  ([`944efa1`](https://github.com/fa-krug/openapi-ts-client/commit/944efa1a8a30e71b8229fdf5c20b3a0380a31174))
+
+- Add tictactoe test fixtures
+  ([`198183d`](https://github.com/fa-krug/openapi-ts-client/commit/198183dbbe03ba3d68ee5c0540fd0995abd3aada))
+
+
 ## v1.3.1 (2026-01-23)
 
 ### Bug Fixes
