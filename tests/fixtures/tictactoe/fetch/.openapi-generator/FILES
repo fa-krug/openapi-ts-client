@@ -1,0 +1,13 @@
+.openapi-generator-ignore
+apis/GameplayApi.ts
+apis/index.ts
+docs/GameplayApi.md
+docs/Mark.md
+docs/Status.md
+docs/Winner.md
+index.ts
+models/Mark.ts
+models/Status.ts
+models/Winner.ts
+models/index.ts
+runtime.ts
