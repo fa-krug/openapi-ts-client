@@ -66,6 +66,58 @@ PARAM_RESERVED_WORDS = {
 }
 
 
+def _resolve_parameter_ref(param: Dict[str, Any], spec: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Resolve a parameter $ref to its actual parameter definition.
+
+    Args:
+        param: Parameter object (may contain $ref)
+        spec: Full OpenAPI spec for resolving refs
+
+    Returns:
+        Resolved parameter definition
+    """
+    if "$ref" not in param:
+        return param
+
+    ref = param["$ref"]
+    # Parse ref path like "#/components/parameters/rowParam"
+    if ref.startswith("#/"):
+        parts = ref[2:].split("/")
+        resolved = spec
+        for part in parts:
+            resolved = resolved.get(part, {})
+        return resolved
+
+    return param
+
+
+def _resolve_schema_ref(schema: Dict[str, Any], spec: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Resolve a schema $ref to its actual schema definition.
+
+    Args:
+        schema: Schema object (may contain $ref)
+        spec: Full OpenAPI spec for resolving refs
+
+    Returns:
+        Resolved schema definition
+    """
+    if "$ref" not in schema:
+        return schema
+
+    ref = schema["$ref"]
+    # Parse ref path like "#/components/schemas/coordinate"
+    if ref.startswith("#/"):
+        parts = ref[2:].split("/")
+        resolved = spec
+        for part in parts:
+            resolved = resolved.get(part, {})
+        return resolved
+
+    return schema
+
+
 def _escape_description(text: str) -> str:
     """Escape HTML entities in description text, matching OpenAPI Generator output."""
     # First apply standard HTML escaping
@@ -181,8 +233,12 @@ def _extract_response_type(operation: Dict[str, Any]) -> Tuple[str, Set[str]]:
 
 def _extract_request_body_info(
     operation: Dict[str, Any],
+    spec: Dict[str, Any] = None,
 ) -> Tuple[Optional[str], Optional[str], Set[str], List[str], bool, str]:
     """Extract request body parameter name, type, imports, content types, required flag, and description."""
+    if spec is None:
+        spec = {}
+
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
     is_required = request_body.get("required", False)
@@ -204,7 +260,18 @@ def _extract_request_body_info(
     if schema:
         # Handle $ref
         if "$ref" in schema:
-            type_name = schema["$ref"].split("/")[-1]
+            ref_name = schema["$ref"].split("/")[-1]
+            # Check if the referenced schema is a primitive type
+            # If so, use 'body' as parameter name and the underlying type
+            referenced_schema = spec.get("components", {}).get("schemas", {}).get(ref_name, {})
+            schema_type = referenced_schema.get("type")
+
+            # Primitive types (including string enums) use 'body' with the base type
+            if schema_type in ("string", "integer", "number", "boolean"):
+                return "body", schema_type, set(), content_types, is_required, description
+
+            # Complex types use the schema name
+            type_name = ref_name
             # Convert to camelCase for parameter name
             param_name = type_name[0].lower() + type_name[1:]
             return param_name, type_name, {type_name}, content_types, is_required, description
@@ -250,6 +317,7 @@ def extract_service_data(
     operations: List[Dict[str, Any]],
     api_title: str,
     contact_email: str,
+    spec: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Extract data needed to render a service template.
@@ -259,10 +327,13 @@ def extract_service_data(
         operations: List of operations for this tag
         api_title: API title for header comment
         contact_email: Contact email for header comment
+        spec: Full OpenAPI spec for resolving refs
 
     Returns:
         Dictionary with template data
     """
+    if spec is None:
+        spec = {}
     model_imports: Set[str] = set()
     methods: List[Dict[str, Any]] = []
 
@@ -270,14 +341,23 @@ def extract_service_data(
         path = op["path"]
         http_method = op["http_method"]
         operation = op["operation"]
+        path_level_params = op.get("path_level_params", [])
 
         operation_id = operation.get("operationId", "")
         method_name = operation_id_to_method_name(operation_id)
         summary = operation.get("summary", "")
         description = _escape_description(operation.get("description", ""))
 
-        # Extract parameters
-        parameters = operation.get("parameters", [])
+        # Extract parameters - merge path-level params with operation-level params
+        # Operation-level params override path-level params with the same name
+        operation_params = operation.get("parameters", [])
+        operation_param_names = {p.get("name") for p in operation_params}
+        # Add path-level params that aren't overridden by operation-level params
+        parameters = list(operation_params)
+        for p in path_level_params:
+            if p.get("name") not in operation_param_names:
+                parameters.append(p)
+
         path_params = [p for p in parameters if p.get("in") == "path"]
         query_params = [p for p in parameters if p.get("in") == "query"]
         header_params = [p for p in parameters if p.get("in") == "header"]
@@ -329,7 +409,7 @@ def extract_service_data(
             content_types,
             body_is_required,
             body_description,
-        ) = _extract_request_body_info(operation)
+        ) = _extract_request_body_info(operation, spec)
         model_imports.update(body_imports)
 
         if body_param_name and body_is_required:
@@ -501,6 +581,7 @@ def generate_service(
     operations: List[Dict[str, Any]],
     api_title: str,
     contact_email: str,
+    spec: Dict[str, Any] = None,
 ) -> str:
     """
     Generate TypeScript service code for a tag.
@@ -510,24 +591,31 @@ def generate_service(
         operations: List of operations for this tag
         api_title: API title for header comment
         contact_email: Contact email for header comment
+        spec: Full OpenAPI spec for resolving refs
 
     Returns:
         Generated TypeScript code as string
     """
+    if spec is None:
+        spec = {}
+
     env = get_template_env()
     template = env.get_template("service.ts.j2")
 
-    data = extract_service_data(tag, operations, api_title, contact_email)
+    data = extract_service_data(tag, operations, api_title, contact_email, spec)
 
     return template.render(**data)
 
 
-def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
+def group_operations_by_tag(
+    paths: Dict[str, Any], spec: Dict[str, Any]
+) -> Dict[str, List[Dict[str, Any]]]:
     """
     Group path operations by their tags.
 
     Args:
         paths: OpenAPI paths object
+        spec: Full OpenAPI spec for resolving refs
 
     Returns:
         Dictionary mapping tag names to list of operations
@@ -535,6 +623,15 @@ def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, A
     tag_operations: Dict[str, List[Dict[str, Any]]] = {}
 
     for path, path_item in paths.items():
+        # Get path-level parameters (shared by all methods)
+        path_level_params = path_item.get("parameters", [])
+        # Resolve $ref in path-level parameters
+        resolved_path_params = [_resolve_parameter_ref(p, spec) for p in path_level_params]
+        # Also resolve schema $refs inside parameters
+        for param in resolved_path_params:
+            if "schema" in param and "$ref" in param.get("schema", {}):
+                param["schema"] = _resolve_schema_ref(param["schema"], spec)
+
         for method in ["get", "post", "put", "delete", "patch", "options", "head"]:
             if method in path_item:
                 operation = path_item[method]
@@ -549,6 +646,7 @@ def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, A
                             "path": path,
                             "http_method": method,
                             "operation": operation,
+                            "path_level_params": resolved_path_params,
                         }
                     )
 
@@ -560,6 +658,7 @@ def generate_all_services(
     output_path: Path,
     api_title: str,
     contact_email: str,
+    spec: Dict[str, Any] = None,
 ) -> List[str]:
     """
     Generate all service files from OpenAPI paths.
@@ -569,20 +668,24 @@ def generate_all_services(
         output_path: Directory to write service files
         api_title: API title for header comments
         contact_email: Contact email for header comments
+        spec: Full OpenAPI spec for resolving refs
 
     Returns:
         List of generated service class names
     """
+    if spec is None:
+        spec = {}
+
     env = get_template_env()
     service_names = []
 
-    tag_operations = group_operations_by_tag(paths)
+    tag_operations = group_operations_by_tag(paths, spec)
 
     for tag, operations in sorted(tag_operations.items()):
         service_name = tag_to_service_name(tag)
         service_names.append(service_name)
 
-        content = generate_service(tag, operations, api_title, contact_email)
+        content = generate_service(tag, operations, api_title, contact_email, spec)
         filename = tag_to_service_filename(tag)
         (output_path / filename).write_text(content)
 

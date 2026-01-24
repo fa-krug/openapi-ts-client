@@ -2,6 +2,8 @@
 
 from typing import Any, Dict, Optional, Set, Tuple
 
+from openapi_ts_client.utils import schema_to_type_name
+
 
 def map_openapi_type(
     schema: Dict[str, Any], registry: Optional[Dict[str, Dict[str, Any]]] = None
@@ -45,7 +47,9 @@ def map_openapi_type_with_imports(
     if "$ref" in schema:
         ref = schema["$ref"]
         # Extract schema name from "#/components/schemas/Name"
-        type_name = ref.split("/")[-1]
+        raw_name = ref.split("/")[-1]
+        # Convert to PascalCase for TypeScript type name
+        type_name = schema_to_type_name(raw_name)
         imports.add(type_name)
         return type_name, imports
 

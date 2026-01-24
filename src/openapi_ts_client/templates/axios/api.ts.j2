@@ -23,6 +23,24 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+{% for enum in enums %}
+{% if enum.description %}
+/**
+ * {{ enum.description }}
+ */
+{% endif %}
+
+export const {{ enum.name }} = {
+{% for member in enum.members %}
+    {{ member.key }}: '{{ member.value }}'{% if not loop.last %},{% endif %}
+
+{% endfor %}
+} as const;
+
+export type {{ enum.name }} = typeof {{ enum.name }}[keyof typeof {{ enum.name }}];
+
+{% endfor %}
+
 {% for model in models %}
 {% if model.description %}
 /**

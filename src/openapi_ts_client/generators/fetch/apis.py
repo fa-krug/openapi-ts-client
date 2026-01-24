@@ -249,13 +249,21 @@ def _schema_to_response_info(
 
 def _extract_request_body_info(
     operation: Dict[str, Any],
+    spec: Dict[str, Any] = None,
 ) -> Tuple[Optional[str], Optional[str], Set[str], bool, bool, Optional[str], Optional[str]]:
     """
     Extract request body parameter name, type, imports, required flag, and serializer.
 
+    Args:
+        operation: Operation object
+        spec: Full OpenAPI spec for resolving refs
+
     Returns:
         Tuple of (param_name, param_type, imports, is_required, is_array, serializer, content_type)
     """
+    if spec is None:
+        spec = {}
+
     request_body = operation.get("requestBody", {})
     content = request_body.get("content", {})
     is_required = request_body.get("required", False)
@@ -280,6 +288,25 @@ def _extract_request_body_info(
     # Handle $ref
     if "$ref" in schema:
         raw_name = schema["$ref"].split("/")[-1]
+
+        # Check if the referenced schema is a primitive type
+        # If so, use 'body' as parameter name and the underlying type
+        referenced_schema = spec.get("components", {}).get("schemas", {}).get(raw_name, {})
+        schema_type = referenced_schema.get("type")
+
+        # Primitive types (including string enums) use 'body' with the base type
+        if schema_type in ("string", "integer", "number", "boolean"):
+            return (
+                "body",
+                schema_type,
+                set(),
+                is_required,
+                False,
+                None,  # No serializer for primitives
+                "application/json",
+            )
+
+        # Complex types use the schema name
         type_name = schema_to_type_name(raw_name)
         param_name = type_name[0].lower() + type_name[1:]
         return (
@@ -320,24 +347,34 @@ def _extract_security_info(
     Extract security requirements for an operation.
 
     Returns a list of security items, each with:
-        - type: 'oauth2', 'apiKey', etc.
+        - type: 'oauth2', 'apiKey', 'http', etc.
         - name: the security scheme name
         - scopes: list of required scopes (for OAuth)
         - header_name: header name for apiKey types
+        - scheme: 'bearer' or 'basic' for http types
 
-    Items are ordered: OAuth2 first, then apiKey.
+    Items are returned in the order they appear in the security requirement.
     """
     security_reqs = operation.get("security", [])
-    oauth_items = []
-    apikey_items = []
+    items = []
 
     for req in security_reqs:
         for scheme_name, scopes in req.items():
             scheme = security_schemes.get(scheme_name, {})
             scheme_type = scheme.get("type", "")
 
-            if scheme_type == "oauth2":
-                oauth_items.append(
+            if scheme_type == "http":
+                http_scheme = scheme.get("scheme", "").lower()
+                if http_scheme == "bearer":
+                    items.append(
+                        {
+                            "type": "http",
+                            "name": scheme_name,
+                            "scheme": "bearer",
+                        }
+                    )
+            elif scheme_type == "oauth2":
+                items.append(
                     {
                         "type": "oauth2",
                         "name": scheme_name,
@@ -347,7 +384,7 @@ def _extract_security_info(
             elif scheme_type == "apiKey":
                 in_location = scheme.get("in", "header")
                 if in_location == "header":
-                    apikey_items.append(
+                    items.append(
                         {
                             "type": "apiKey",
                             "name": scheme_name,
@@ -355,37 +392,101 @@ def _extract_security_info(
                         }
                     )
 
-    # Return OAuth2 items first, then apiKey items
-    return oauth_items + apikey_items
+    return items
 
 
-def _build_request_interface_name(method_name: str, api_class_name: str = "") -> str:
+def _build_request_interface_name(
+    method_name: str, api_class_name: str = "", use_prefix: bool = True
+) -> str:
     """
     Build the request interface name from method name and API class name.
 
     Prefixes with API class name to avoid collisions when multiple APIs
     have operations with the same name (e.g., clone, create, delete).
 
+    When there's only one API (single tag), the prefix is not used for cleaner
+    interface names.
+
+    Args:
+        method_name: The method name
+        api_class_name: The API class name
+        use_prefix: If True, prefix with API class name (default for multi-tag specs)
+                   If False, use simple names (for single-tag specs)
+
     Examples:
-        method=listAll, api=DBMetricsApi -> DBMetricsApiListAllRequest
-        method=_delete, api=PetApi -> PetApiDeleteRequest
-        method=clone, api=FeatureMetricsApi -> FeatureMetricsApiCloneRequest
+        method=listAll, api=DBMetricsApi, use_prefix=True -> DBMetricsApiListAllRequest
+        method=getSquare, api=GameplayApi, use_prefix=False -> GetSquareRequest
     """
     # Strip leading underscore if present
     name = method_name.lstrip("_")
     # Capitalize first letter, keep rest as-is to preserve camelCase internal caps
     method_part = name[0].upper() + name[1:] + "Request"
-    if api_class_name:
+    if api_class_name and use_prefix:
         return f"{api_class_name}{method_part}"
     return method_part
 
 
-def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
+def _resolve_parameter_ref(param: Dict[str, Any], spec: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Resolve a parameter $ref to its actual parameter definition.
+
+    Args:
+        param: Parameter object (may contain $ref)
+        spec: Full OpenAPI spec for resolving refs
+
+    Returns:
+        Resolved parameter definition
+    """
+    if "$ref" not in param:
+        return param
+
+    ref = param["$ref"]
+    # Parse ref path like "#/components/parameters/rowParam"
+    if ref.startswith("#/"):
+        parts = ref[2:].split("/")
+        resolved = spec
+        for part in parts:
+            resolved = resolved.get(part, {})
+        return resolved
+
+    return param
+
+
+def _resolve_schema_ref(schema: Dict[str, Any], spec: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Resolve a schema $ref to its actual schema definition.
+
+    Args:
+        schema: Schema object (may contain $ref)
+        spec: Full OpenAPI spec for resolving refs
+
+    Returns:
+        Resolved schema definition
+    """
+    if "$ref" not in schema:
+        return schema
+
+    ref = schema["$ref"]
+    # Parse ref path like "#/components/schemas/coordinate"
+    if ref.startswith("#/"):
+        parts = ref[2:].split("/")
+        resolved = spec
+        for part in parts:
+            resolved = resolved.get(part, {})
+        return resolved
+
+    return schema
+
+
+def group_operations_by_tag(
+    paths: Dict[str, Any], spec: Dict[str, Any]
+) -> Dict[str, List[Dict[str, Any]]]:
     """
     Group path operations by their tags.
 
     Args:
         paths: OpenAPI paths object
+        spec: Full OpenAPI spec for resolving refs
 
     Returns:
         Dictionary mapping tag names to list of operations
@@ -393,6 +494,15 @@ def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, A
     tag_operations: Dict[str, List[Dict[str, Any]]] = {}
 
     for path, path_item in paths.items():
+        # Get path-level parameters (shared by all methods)
+        path_level_params = path_item.get("parameters", [])
+        # Resolve $ref in path-level parameters
+        resolved_path_params = [_resolve_parameter_ref(p, spec) for p in path_level_params]
+        # Also resolve schema $refs inside parameters
+        for param in resolved_path_params:
+            if "schema" in param and "$ref" in param.get("schema", {}):
+                param["schema"] = _resolve_schema_ref(param["schema"], spec)
+
         for method in ["get", "post", "put", "delete", "patch", "options", "head"]:
             if method in path_item:
                 operation = path_item[method]
@@ -407,6 +517,7 @@ def group_operations_by_tag(paths: Dict[str, Any]) -> Dict[str, List[Dict[str, A
                             "path": path,
                             "http_method": method.upper(),
                             "operation": operation,
+                            "path_level_params": resolved_path_params,
                         }
                     )
 
@@ -421,6 +532,8 @@ def extract_api_data(
     api_version: str,
     contact_email: str,
     security_schemes: Optional[Dict[str, Any]] = None,
+    spec: Optional[Dict[str, Any]] = None,
+    use_api_prefix: bool = True,
 ) -> Dict[str, Any]:
     """
     Extract data needed to render an API class template.
@@ -433,12 +546,16 @@ def extract_api_data(
         api_version: API version for header comment
         contact_email: Contact email for header comment
         security_schemes: Security schemes from spec components
+        spec: Full OpenAPI spec for resolving refs
+        use_api_prefix: If True, prefix request interfaces with API class name
 
     Returns:
         Dictionary with template data
     """
     if security_schemes is None:
         security_schemes = {}
+    if spec is None:
+        spec = {}
     # Compute class name early so we can use it for request interface naming
     api_class_name = _tag_to_api_class_name(tag)
     model_imports: Set[str] = set()
@@ -449,6 +566,7 @@ def extract_api_data(
         path = op["path"]
         http_method = op["http_method"]
         operation = op["operation"]
+        path_level_params = op.get("path_level_params", [])
 
         operation_id = operation.get("operationId", "")
         method_name = operation_id_to_method_name(operation_id)
@@ -458,8 +576,16 @@ def extract_api_data(
         # Extract security requirements
         security_info = _extract_security_info(operation, security_schemes)
 
-        # Extract parameters
-        parameters = operation.get("parameters", [])
+        # Extract parameters - merge path-level params with operation-level params
+        # Operation-level params override path-level params with the same name
+        operation_params = operation.get("parameters", [])
+        operation_param_names = {p.get("name") for p in operation_params}
+        # Add path-level params that aren't overridden by operation-level params
+        parameters = list(operation_params)
+        for p in path_level_params:
+            if p.get("name") not in operation_param_names:
+                parameters.append(p)
+
         path_params = [p for p in parameters if p.get("in") == "path"]
         query_params = [p for p in parameters if p.get("in") == "query"]
         header_params = [p for p in parameters if p.get("in") == "header"]
@@ -552,7 +678,7 @@ def extract_api_data(
             body_is_array,
             body_serializer,
             body_content_type,
-        ) = _extract_request_body_info(operation)
+        ) = _extract_request_body_info(operation, spec)
         model_imports.update(body_imports)
 
         has_body = body_param_name is not None
@@ -573,6 +699,9 @@ def extract_api_data(
             if is_binary_body:
                 # Binary bodies are passed directly without serialization
                 body_serializer_expr = f"requestParameters['{body_param_name}'] as any"
+            elif body_serializer is None:
+                # Primitive types don't need a serializer function
+                body_serializer_expr = f"requestParameters['{body_param_name}'] as any"
             elif body_is_array:
                 body_serializer_expr = (
                     f"requestParameters['{body_param_name}']!.map({body_serializer})"
@@ -592,7 +721,9 @@ def extract_api_data(
         request_interface_name = None
 
         if has_request_params:
-            request_interface_name = _build_request_interface_name(method_name, api_class_name)
+            request_interface_name = _build_request_interface_name(
+                method_name, api_class_name, use_prefix=use_api_prefix
+            )
             request_interfaces.append(
                 {
                     "name": request_interface_name,
@@ -671,6 +802,8 @@ def generate_api(
     api_version: str,
     contact_email: str,
     security_schemes: Optional[Dict[str, Any]] = None,
+    spec: Optional[Dict[str, Any]] = None,
+    use_api_prefix: bool = True,
 ) -> str:
     """
     Generate TypeScript API class code for a tag.
@@ -683,6 +816,8 @@ def generate_api(
         api_version: API version for header comment
         contact_email: Contact email for header comment
         security_schemes: Security schemes from spec components
+        spec: Full OpenAPI spec for resolving refs
+        use_api_prefix: If True, prefix request interfaces with API class name
 
     Returns:
         Generated TypeScript code as string
@@ -691,7 +826,15 @@ def generate_api(
     template = env.get_template("api.ts.j2")
 
     data = extract_api_data(
-        tag, operations, api_title, api_description, api_version, contact_email, security_schemes
+        tag,
+        operations,
+        api_title,
+        api_description,
+        api_version,
+        contact_email,
+        security_schemes,
+        spec,
+        use_api_prefix,
     )
 
     return template.render(**data)
@@ -724,7 +867,11 @@ def generate_apis(spec: Dict[str, Any], output_path: Path) -> List[str]:
     security_schemes = components.get("securitySchemes", {})
 
     paths = spec.get("paths", {})
-    tag_operations = group_operations_by_tag(paths)
+    tag_operations = group_operations_by_tag(paths, spec)
+
+    # Determine if we should use API prefix for request interfaces
+    # When there's only one API (single tag), use simple names for cleaner output
+    use_api_prefix = len(tag_operations) > 1
 
     # Create apis subdirectory
     apis_dir = output_path / "apis"
@@ -742,6 +889,8 @@ def generate_apis(spec: Dict[str, Any], output_path: Path) -> List[str]:
             api_version,
             contact_email,
             security_schemes,
+            spec,
+            use_api_prefix,
         )
         filename = f"{api_class_name}.ts"
         (apis_dir / filename).write_text(content)

@@ -59,7 +59,7 @@ def generate_angular_client(
     # Generate services
     logger.info("Generating services...")
     paths = resolved_spec.get("paths", {})
-    generate_all_services(paths, output_path / "api", api_title, contact_email)
+    generate_all_services(paths, output_path / "api", api_title, contact_email, resolved_spec)
 
     # Collect service files (excludes api.ts barrel export, handled separately)
     service_files = [

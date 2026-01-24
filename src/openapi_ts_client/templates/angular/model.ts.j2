@@ -39,7 +39,5 @@ export namespace {{ interface_name }} {
     export type {{ enum.name }} = typeof {{ enum.name }}[keyof typeof {{ enum.name }}];
 {% endfor %}
 }
-
-{% else %}
 {% endif %}
 

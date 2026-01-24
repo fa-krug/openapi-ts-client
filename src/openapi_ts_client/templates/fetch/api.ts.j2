@@ -84,7 +84,16 @@ export class {{ class_name }} extends runtime.BaseAPI {
 
 {% endfor %}
 {% for sec in method.security %}
-{% if sec.type == 'oauth2' %}
+{% if sec.type == 'http' and sec.scheme == 'bearer' %}
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("{{ sec.name }}", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+{% elif sec.type == 'oauth2' %}
         if (this.configuration && this.configuration.accessToken) {
             // oauth required
             headerParameters["Authorization"] = await this.configuration.accessToken("{{ sec.name }}", [{{ sec.scopes | map('tojson') | join(', ') }}]);
@@ -92,7 +101,7 @@ export class {{ class_name }} extends runtime.BaseAPI {
 
 {% elif sec.type == 'apiKey' %}
         if (this.configuration && this.configuration.apiKey) {
-            headerParameters["{{ sec.header_name }}"] = await this.configuration.apiKey("{{ sec.name }}"); // {{ sec.name }} authentication
+            headerParameters["{{ sec.header_name }}"] = await this.configuration.apiKey("{{ sec.header_name }}"); // {{ sec.name }} authentication
         }
 
 {% endif %}

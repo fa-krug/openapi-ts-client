@@ -9,7 +9,7 @@ from openapi_ts_client.generators.shared import (
     create_extraction_registry,
     map_openapi_type_with_imports,
 )
-from openapi_ts_client.utils import schema_to_filename
+from openapi_ts_client.utils import schema_to_filename, schema_to_type_name
 
 
 def _lower_first(s: str) -> str:
@@ -17,6 +17,228 @@ def _lower_first(s: str) -> str:
     if not s:
         return s
     return s[0].lower() + s[1:]
+
+
+def _is_top_level_enum_schema(schema: Dict[str, Any]) -> bool:
+    """
+    Check if a schema is a top-level enum (string enum with no properties).
+
+    These should be generated as:
+    export const Name = { ... } as const;
+    export type Name = typeof Name[keyof typeof Name];
+
+    Rather than as an interface.
+    """
+    # Must have enum values
+    if "enum" not in schema:
+        return False
+
+    # Must be string type (or no type specified, which defaults to string for enum)
+    schema_type = schema.get("type")
+    if schema_type is not None and schema_type != "string":
+        return False
+
+    # Should not have properties (that would make it an object with enum property)
+    if schema.get("properties"):
+        return False
+
+    return True
+
+
+def _should_use_pascal_case(schema: Dict[str, Any]) -> bool:
+    """
+    Check if a schema should use PascalCase naming.
+
+    PascalCase is used for:
+    - String enum schemas (have 'enum' with type 'string')
+    - Object schemas with properties
+
+    Original case is preserved for:
+    - Primitive types (string, integer, number, boolean without enum)
+    - Array types
+
+    Args:
+        schema: The schema definition
+
+    Returns:
+        True if the schema should use PascalCase, False otherwise
+    """
+    # String enums should use PascalCase
+    if _is_top_level_enum_schema(schema):
+        return True
+
+    # Object schemas with properties should use PascalCase
+    if schema.get("properties"):
+        return True
+
+    # Primitive and array types keep original case
+    return False
+
+
+def _is_primitive_schema(schema: Dict[str, Any]) -> bool:
+    """
+    Check if a schema represents a primitive or array type (not an object with properties).
+
+    Primitive schemas are inlined in references and don't need a separate model file
+    with a namespace.
+    """
+    schema_type = schema.get("type")
+
+    # Has properties - it's a complex object
+    if schema.get("properties"):
+        return False
+
+    # Has enum - it's a named type
+    if "enum" in schema:
+        return False
+
+    # Primitive types
+    if schema_type in ("string", "integer", "number", "boolean"):
+        return True
+
+    # Array types
+    if schema_type == "array":
+        return True
+
+    return False
+
+
+def _enum_value_to_key(value: str) -> str:
+    """
+    Convert an enum value to a valid TypeScript const key name.
+
+    Special characters get converted to descriptive names:
+    - '.' -> 'Period'
+    - '-' -> 'Hyphen'
+    - etc.
+
+    Regular alphanumeric values get capitalized.
+    """
+    # Handle special characters
+    special_chars = {
+        ".": "Period",
+        "-": "Hyphen",
+        "_": "Underscore",
+        " ": "Space",
+        "/": "Slash",
+        "\\": "Backslash",
+        "+": "Plus",
+        "*": "Asterisk",
+        "?": "Question",
+        "!": "Exclamation",
+        "@": "At",
+        "#": "Hash",
+        "$": "Dollar",
+        "%": "Percent",
+        "^": "Caret",
+        "&": "Ampersand",
+        "(": "LeftParen",
+        ")": "RightParen",
+        "[": "LeftBracket",
+        "]": "RightBracket",
+        "{": "LeftBrace",
+        "}": "RightBrace",
+        "<": "LessThan",
+        ">": "GreaterThan",
+        "=": "Equals",
+        ":": "Colon",
+        ";": "Semicolon",
+        ",": "Comma",
+        "|": "Pipe",
+        "~": "Tilde",
+        "`": "Backtick",
+        '"': "DoubleQuote",
+        "'": "SingleQuote",
+    }
+
+    # If it's a single special character, return its name
+    if value in special_chars:
+        return special_chars[value]
+
+    # If it starts with a special character, prepend the name
+    if value and value[0] in special_chars:
+        return special_chars[value[0]] + value[1:].capitalize()
+
+    # Regular alphanumeric - capitalize first letter
+    if value:
+        return value[0].upper() + value[1:] if len(value) > 1 else value.upper()
+
+    return value
+
+
+def _generate_enum_file(
+    env: Environment,
+    schema_name: str,
+    schema: Dict[str, Any],
+    api_title: str,
+    contact_email: str,
+) -> str:
+    """
+    Generate a TypeScript const/type pattern for a string enum schema.
+
+    Args:
+        env: Jinja2 environment
+        schema_name: Name of the schema (already PascalCase)
+        schema: The schema definition
+        api_title: API title for the header
+        contact_email: Contact email for the header
+
+    Returns:
+        Generated TypeScript content
+    """
+    template = env.get_template("enum.ts.j2")
+
+    enum_values = schema.get("enum", [])
+    description = schema.get("description", "")
+
+    # Convert enum values to key-value pairs
+    enum_members = []
+    for value in enum_values:
+        key = _enum_value_to_key(str(value))
+        enum_members.append({"key": key, "value": value})
+
+    return template.render(
+        api_title=api_title,
+        contact_email=contact_email,
+        type_name=schema_name,
+        description=description,
+        enum_members=enum_members,
+    )
+
+
+def _generate_primitive_model_file(
+    env: Environment,
+    schema_name: str,
+    schema: Dict[str, Any],
+    api_title: str,
+    contact_email: str,
+) -> str:
+    """
+    Generate a minimal TypeScript interface file for a primitive/array schema.
+
+    These schemas are typically inlined in references, but we still generate
+    empty interface files to maintain consistency with OpenAPI Generator output.
+
+    Args:
+        env: Jinja2 environment
+        schema_name: Name of the schema (keeps original case for primitives)
+        schema: The schema definition
+        api_title: API title for the header
+        contact_email: Contact email for the header
+
+    Returns:
+        Generated TypeScript content
+    """
+    template = env.get_template("primitive_model.ts.j2")
+
+    description = schema.get("description", "")
+
+    return template.render(
+        api_title=api_title,
+        contact_email=contact_email,
+        interface_name=schema_name,
+        description=description,
+    )
 
 
 def _create_jinja_env() -> Environment:
@@ -37,6 +259,7 @@ def _get_property_info(
     required_props: List[str],
     interface_name: str,
     registry: Dict[str, Dict[str, Any]] = None,
+    all_schemas: Dict[str, Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Get property information for template rendering.
@@ -47,12 +270,15 @@ def _get_property_info(
         required_props: List of required property names
         interface_name: Name of the parent interface (for enum type references)
         registry: Extraction registry for titled anyOf schemas
+        all_schemas: All schemas for inlining primitive/array refs
 
     Returns:
         Dict with name, type, required status, and enum info
     """
     if registry is None:
         registry = {}
+    if all_schemas is None:
+        all_schemas = {}
 
     enum_values = prop_schema.get("enum")
     description = prop_schema.get("description", "")
@@ -77,7 +303,7 @@ def _get_property_info(
     # Non-enum property - pass registry for titled anyOf lookups
     # Angular uses string for dates, not Date objects, and doesn't prefix reserved names
     ts_type, imports = map_openapi_type_with_imports(
-        prop_schema, registry, use_date_type=False, use_model_prefix=False
+        prop_schema, registry, use_date_type=False, use_model_prefix=False, all_schemas=all_schemas
     )
     return {
         "name": prop_name,
@@ -98,6 +324,7 @@ def _generate_model_file(
     api_title: str,
     contact_email: str,
     registry: Dict[str, Dict[str, Any]] = None,
+    all_schemas: Dict[str, Dict[str, Any]] = None,
 ) -> str:
     """
     Generate a single model file content.
@@ -109,12 +336,15 @@ def _generate_model_file(
         api_title: API title for the header
         contact_email: Contact email for the header
         registry: Extraction registry for titled anyOf schemas
+        all_schemas: All schemas for inlining primitive/array refs
 
     Returns:
         Generated TypeScript content
     """
     if registry is None:
         registry = {}
+    if all_schemas is None:
+        all_schemas = {}
 
     template = env.get_template("model.ts.j2")
 
@@ -127,7 +357,9 @@ def _generate_model_file(
     enums = []
 
     for prop_name, prop_schema in properties.items():
-        info = _get_property_info(prop_name, prop_schema, required_props, schema_name, registry)
+        info = _get_property_info(
+            prop_name, prop_schema, required_props, schema_name, registry, all_schemas
+        )
         prop_infos.append(info)
         all_imports.update(info["imports"])
 
@@ -223,11 +455,31 @@ def generate_all_models(
 
     # Generate schema model files
     for schema_name, schema in schemas.items():
-        # Generate model file
-        content = _generate_model_file(env, schema_name, schema, api_title, contact_email, registry)
+        # Determine the type name based on schema type
+        # - Enums and object schemas use PascalCase
+        # - Primitive/array schemas keep original case
+        # Angular doesn't need the Model prefix for reserved names
+        if _should_use_pascal_case(schema):
+            type_name = schema_to_type_name(schema_name, add_model_prefix=False)
+        else:
+            type_name = schema_name  # Keep original case
+
+        # Check if this is a top-level enum schema
+        if _is_top_level_enum_schema(schema):
+            content = _generate_enum_file(env, type_name, schema, api_title, contact_email)
+        elif _is_primitive_schema(schema):
+            # Generate a minimal interface file for primitive/array schemas
+            content = _generate_primitive_model_file(
+                env, type_name, schema, api_title, contact_email
+            )
+        else:
+            # Generate model file (interface with namespace)
+            content = _generate_model_file(
+                env, type_name, schema, api_title, contact_email, registry, schemas
+            )
 
         # Get filename (without .ts extension for barrel export)
-        filename = schema_to_filename(schema_name)
+        filename = schema_to_filename(type_name)
         filename_without_ext = filename[:-3]  # Remove .ts
 
         model_filenames.append(filename_without_ext)

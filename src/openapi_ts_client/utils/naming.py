@@ -73,16 +73,22 @@ TYPESCRIPT_RESERVED_WORDS = {
 }
 
 
-def schema_to_type_name(schema_name: str) -> str:
+def schema_to_type_name(schema_name: str, add_model_prefix: bool = True) -> str:
     """
     Convert OpenAPI schema name to TypeScript type name.
 
-    Capitalizes the first letter and adds "Model" prefix to names that
+    Capitalizes the first letter and optionally adds "Model" prefix to names that
     conflict with fetch runtime types.
+
+    Args:
+        schema_name: The OpenAPI schema name
+        add_model_prefix: If True, add "Model" prefix for reserved names (Fetch style)
+                         If False, just capitalize (Angular style)
 
     Examples:
         FeedingOut -> FeedingOut (unchanged)
-        ApiResponse -> ModelApiResponse (prefixed)
+        ApiResponse (add_model_prefix=True) -> ModelApiResponse (prefixed)
+        ApiResponse (add_model_prefix=False) -> ApiResponse (just capitalized)
         mark -> Mark (capitalized)
         winner -> Winner (capitalized)
     """
@@ -94,8 +100,8 @@ def schema_to_type_name(schema_name: str) -> str:
         schema_name[0].upper() + schema_name[1:] if len(schema_name) > 1 else schema_name.upper()
     )
 
-    # Add Model prefix for reserved names
-    if capitalized in FETCH_RESERVED_TYPE_NAMES:
+    # Add Model prefix for reserved names (only for Fetch-style generators)
+    if add_model_prefix and capitalized in FETCH_RESERVED_TYPE_NAMES:
         return f"Model{capitalized}"
     return capitalized
 
