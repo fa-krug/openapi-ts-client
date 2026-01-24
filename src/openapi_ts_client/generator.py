@@ -7,6 +7,8 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, Union
 
+import yaml
+
 from .enums import ClientFormat
 from .exceptions import OutputDirectoryNotEmptyError
 from .generators.angular.generator import generate_angular_client
@@ -136,17 +138,29 @@ def generate_typescript_client(
     # Parse the OpenAPI spec if it's a string
     func_logger.info("Processing OpenAPI specification input")
     if isinstance(openapi_spec, str):
-        func_logger.debug("OpenAPI spec provided as string, attempting to parse as JSON")
+        func_logger.debug("OpenAPI spec provided as string, attempting to parse")
         func_logger.debug(f"String length: {len(openapi_spec)} characters")
         try:
             parsed_spec = json.loads(openapi_spec)
             func_logger.info("Successfully parsed OpenAPI spec from JSON string")
             func_logger.debug(f"Parsed spec keys: {list(parsed_spec.keys())}")
-        except json.JSONDecodeError as e:
-            func_logger.error(f"Failed to parse OpenAPI spec as JSON: {e}")
-            func_logger.error(f"JSON error at line {e.lineno}, column {e.colno}")
-            func_logger.error(f"Error message: {e.msg}")
-            raise ValueError(f"Invalid JSON in openapi_spec: {e}") from e
+        except json.JSONDecodeError as json_err:
+            func_logger.debug(f"JSON parsing failed: {json_err}, trying YAML")
+            try:
+                parsed_spec = yaml.safe_load(openapi_spec)
+                if not isinstance(parsed_spec, dict):
+                    raise ValueError(
+                        f"Invalid OpenAPI spec: expected dict, got {type(parsed_spec).__name__}"
+                    )
+                func_logger.info("Successfully parsed OpenAPI spec from YAML string")
+                func_logger.debug(f"Parsed spec keys: {list(parsed_spec.keys())}")
+            except yaml.YAMLError as yaml_err:
+                func_logger.error("Failed to parse OpenAPI spec as JSON or YAML")
+                func_logger.error(f"JSON error: {json_err}")
+                func_logger.error(f"YAML error: {yaml_err}")
+                raise ValueError(
+                    f"Invalid OpenAPI spec: not valid JSON ({json_err}) or YAML ({yaml_err})"
+                ) from yaml_err
     elif isinstance(openapi_spec, dict):
         func_logger.debug("OpenAPI spec provided as dictionary")
         func_logger.debug(f"Dictionary keys: {list(openapi_spec.keys())}")

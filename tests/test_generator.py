@@ -144,11 +144,11 @@ class TestInputValidation:
             generate_typescript_client([])
         assert "must be a dict or JSON string" in str(excinfo.value)
 
-    def test_invalid_json_string_raises_value_error(self):
-        """Test that invalid JSON string raises ValueError."""
+    def test_invalid_json_yaml_string_raises_value_error(self):
+        """Test that string that parses to non-dict raises ValueError."""
         with pytest.raises(ValueError) as excinfo:
             generate_typescript_client("not valid json")
-        assert "Invalid JSON" in str(excinfo.value)
+        assert "expected dict" in str(excinfo.value)
 
     def test_empty_json_object_string(self):
         """Test that empty JSON object raises ValueError for missing version."""
