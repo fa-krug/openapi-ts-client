@@ -4,24 +4,16 @@ Compares the functional structure of generated code against fixtures,
 ignoring whitespace, ordering, and formatting differences.
 """
 
-import json
 from pathlib import Path
 
 import pytest
 
 from openapi_ts_client import ClientFormat, generate_typescript_client
+from tests.conftest import FIXTURES_DIR, load_spec
 from tests.ts_structure import extract_ts_structure
 
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
-
-def load_spec(fixture_name: str) -> dict:
-    """Load OpenAPI spec from fixture directory."""
-    spec_path = FIXTURES_DIR / fixture_name / "openapi.json"
-    return json.loads(spec_path.read_text())
-
-
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_fetch_structural_equivalence(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that Fetch generation produces structurally equivalent output."""
     fixture_dir = FIXTURES_DIR / fixture_name / "fetch"
@@ -68,7 +60,7 @@ def test_fetch_structural_equivalence(fixture_name: str, tmp_path: Path, ts_pars
         pytest.fail("\n\n".join(differences))
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_angular_structural_equivalence(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that Angular generation produces structurally equivalent output."""
     fixture_dir = FIXTURES_DIR / fixture_name / "angular"
@@ -111,7 +103,7 @@ def test_angular_structural_equivalence(fixture_name: str, tmp_path: Path, ts_pa
         pytest.fail("\n\n".join(differences))
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_axios_structural_equivalence(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that Axios generation produces structurally equivalent output."""
     fixture_dir = FIXTURES_DIR / fixture_name / "axios"

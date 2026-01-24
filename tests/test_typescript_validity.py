@@ -10,15 +10,8 @@ from pathlib import Path
 import pytest
 
 from openapi_ts_client import ClientFormat, generate_typescript_client
+from tests.conftest import load_spec
 from tests.ts_structure import extract_ts_structure
-
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
-
-
-def load_spec(fixture_name: str) -> dict:
-    """Load OpenAPI spec from fixture directory."""
-    spec_path = FIXTURES_DIR / fixture_name / "openapi.json"
-    return json.loads(spec_path.read_text())
 
 
 def write_tsconfig(output_path: Path) -> None:
@@ -38,7 +31,7 @@ def write_tsconfig(output_path: Path) -> None:
     (output_path / "tsconfig.json").write_text(json.dumps(tsconfig, indent=2))
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_fetch_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     """Test that generated Fetch client compiles with tsc."""
     spec = load_spec(fixture_name)
@@ -58,7 +51,7 @@ def test_fetch_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     ), f"TypeScript compilation failed:\n{result.stdout}\n{result.stderr}"
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_angular_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     """Test that generated Angular client compiles with tsc."""
     spec = load_spec(fixture_name)
@@ -110,7 +103,7 @@ def test_angular_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
             pytest.fail("TypeScript compilation errors:\n" + "\n".join(errors))
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "space_zoo", "tictactoe"])
 def test_axios_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
     """Test that generated Axios client compiles with tsc."""
     spec = load_spec(fixture_name)
@@ -198,7 +191,7 @@ def generate_runtime_test(structure: dict) -> str:
     return "\n".join(lines)
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "tictactoe"])
 def test_fetch_typescript_runtime(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that generated Fetch client runs with tsx."""
     spec = load_spec(fixture_name)
@@ -225,7 +218,7 @@ def test_fetch_typescript_runtime(fixture_name: str, tmp_path: Path, ts_parser) 
     assert "Runtime validation passed" in result.stdout
 
 
-@pytest.mark.parametrize("fixture_name", ["petstore"])
+@pytest.mark.parametrize("fixture_name", ["petstore", "tictactoe"])
 def test_axios_typescript_runtime(fixture_name: str, tmp_path: Path, ts_parser) -> None:
     """Test that generated Axios client runs with tsx."""
     spec = load_spec(fixture_name)

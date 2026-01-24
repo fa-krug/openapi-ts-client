@@ -77,15 +77,27 @@ def schema_to_type_name(schema_name: str) -> str:
     """
     Convert OpenAPI schema name to TypeScript type name.
 
-    Adds "Model" prefix to names that conflict with fetch runtime types.
+    Capitalizes the first letter and adds "Model" prefix to names that
+    conflict with fetch runtime types.
 
     Examples:
         FeedingOut -> FeedingOut (unchanged)
         ApiResponse -> ModelApiResponse (prefixed)
+        mark -> Mark (capitalized)
+        winner -> Winner (capitalized)
     """
-    if schema_name in FETCH_RESERVED_TYPE_NAMES:
-        return f"Model{schema_name}"
-    return schema_name
+    if not schema_name:
+        return schema_name
+
+    # Capitalize first letter
+    capitalized = (
+        schema_name[0].upper() + schema_name[1:] if len(schema_name) > 1 else schema_name.upper()
+    )
+
+    # Add Model prefix for reserved names
+    if capitalized in FETCH_RESERVED_TYPE_NAMES:
+        return f"Model{capitalized}"
+    return capitalized
 
 
 def schema_to_filename(schema_name: str) -> str:
@@ -153,10 +165,18 @@ def operation_id_to_method_name(operation_id: str) -> str:
     """
     Convert OpenAPI operationId to TypeScript method name.
 
+    Handles multiple naming conventions:
+    - camelCase: addPet -> addPet (preserve)
+    - kebab-case: get-board -> getBoard
+    - snake_case: list_all -> listAll
+    - dotted paths: zoo.api.endpoints.feedings_list_all -> listAll
+
     Examples:
         addPet -> addPet (preserve camelCase)
+        get-board -> getBoard (convert kebab-case)
+        put-square -> putSquare (convert kebab-case)
         zoo.api.endpoints.feedings_list_all -> listAll
-        delete -> _delete
+        delete -> _delete (escape reserved)
         list_all -> listAll
     """
     # Extract last segment if dotted path
@@ -164,12 +184,16 @@ def operation_id_to_method_name(operation_id: str) -> str:
     if from_dotted_path:
         operation_id = operation_id.split(".")[-1]
 
-    # If no underscores and not from dotted path, preserve as-is (already camelCase)
-    if "_" not in operation_id and not from_dotted_path:
+    # Check if conversion is needed (has dashes, underscores, or from dotted path)
+    needs_conversion = "-" in operation_id or "_" in operation_id or from_dotted_path
+
+    if not needs_conversion:
         method_name = operation_id
     else:
-        # Convert snake_case to camelCase
-        parts = operation_id.split("_")
+        # Split by both dash and underscore
+        # Replace dashes with underscores first, then split
+        normalized = operation_id.replace("-", "_")
+        parts = normalized.split("_")
         if not parts:
             return ""
 
@@ -177,7 +201,7 @@ def operation_id_to_method_name(operation_id: str) -> str:
         if from_dotted_path and len(parts) > 1:
             parts = parts[1:]
 
-        # First part lowercase, rest capitalized
+        # First part lowercase, rest capitalized (camelCase)
         method_name = parts[0].lower()
         for part in parts[1:]:
             if part:

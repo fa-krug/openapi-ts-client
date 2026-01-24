@@ -5,11 +5,34 @@ from typing import Any, Dict, Optional, Set, Tuple
 from openapi_ts_client.utils import schema_to_type_name
 
 
+def _is_primitive_or_array_schema(schema: Dict[str, Any]) -> bool:
+    """Check if a schema is a primitive type or array (not an object with properties)."""
+    schema_type = schema.get("type")
+
+    # Has properties - it's a complex object, not primitive
+    if schema.get("properties"):
+        return False
+
+    # Primitive types
+    if schema_type in ("string", "integer", "number", "boolean"):
+        # But if it's an enum, it's a named type, not primitive inline
+        if "enum" in schema:
+            return False
+        return True
+
+    # Array types should be resolved inline
+    if schema_type == "array":
+        return True
+
+    return False
+
+
 def map_openapi_type(
     schema: Dict[str, Any],
     registry: Optional[Dict[str, Dict[str, Any]]] = None,
     use_date_type: bool = True,
     use_model_prefix: bool = True,
+    all_schemas: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> str:
     """
     Map an OpenAPI schema to a TypeScript type string.
@@ -19,11 +42,14 @@ def map_openapi_type(
         registry: Optional extraction registry for titled anyOf schemas
         use_date_type: If True, map date/date-time to Date; if False, use string
         use_model_prefix: If True, add Model prefix for reserved names (Fetch style)
+        all_schemas: Optional dict of all schemas for resolving refs to primitives/arrays
 
     Returns:
         TypeScript type string
     """
-    result, _ = map_openapi_type_with_imports(schema, registry, use_date_type, use_model_prefix)
+    result, _ = map_openapi_type_with_imports(
+        schema, registry, use_date_type, use_model_prefix, all_schemas
+    )
     return result
 
 
@@ -32,6 +58,7 @@ def map_openapi_type_with_imports(
     registry: Optional[Dict[str, Dict[str, Any]]] = None,
     use_date_type: bool = True,
     use_model_prefix: bool = True,
+    all_schemas: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Tuple[str, Set[str]]:
     """
     Map an OpenAPI schema to a TypeScript type string, tracking imports.
@@ -41,12 +68,15 @@ def map_openapi_type_with_imports(
         registry: Optional extraction registry for titled anyOf schemas
         use_date_type: If True, map date/date-time to Date; if False, use string
         use_model_prefix: If True, add Model prefix for reserved names (Fetch style)
+        all_schemas: Optional dict of all schemas for resolving refs to primitives/arrays
 
     Returns:
         Tuple of (TypeScript type string, set of required imports)
     """
     if registry is None:
         registry = {}
+    if all_schemas is None:
+        all_schemas = {}
 
     imports: Set[str] = set()
 
@@ -58,11 +88,21 @@ def map_openapi_type_with_imports(
         ref = schema["$ref"]
         # Extract schema name from "#/components/schemas/Name"
         raw_name = ref.split("/")[-1]
+
+        # Check if the referenced schema is a primitive/array type that should be inlined
+        if all_schemas and raw_name in all_schemas:
+            referenced_schema = all_schemas[raw_name]
+            if _is_primitive_or_array_schema(referenced_schema):
+                # Resolve inline instead of returning the ref name
+                return map_openapi_type_with_imports(
+                    referenced_schema, registry, use_date_type, use_model_prefix, all_schemas
+                )
+
         # Convert to type name (handles reserved names like ApiResponse -> ModelApiResponse)
         if use_model_prefix:
             type_name = schema_to_type_name(raw_name)
         else:
-            type_name = raw_name
+            type_name = schema_to_type_name(raw_name)  # Always capitalize for consistency
         imports.add(type_name)
         return type_name, imports
 
@@ -86,7 +126,7 @@ def map_openapi_type_with_imports(
                 types.append("null")
             else:
                 sub_type, sub_imports = map_openapi_type_with_imports(
-                    sub_schema, registry, use_date_type, use_model_prefix
+                    sub_schema, registry, use_date_type, use_model_prefix, all_schemas
                 )
                 types.append(sub_type)
                 imports.update(sub_imports)
@@ -98,7 +138,7 @@ def map_openapi_type_with_imports(
     if schema_type == "array":
         items = schema.get("items", {})
         item_type, item_imports = map_openapi_type_with_imports(
-            items, registry, use_date_type, use_model_prefix
+            items, registry, use_date_type, use_model_prefix, all_schemas
         )
         imports.update(item_imports)
         return f"Array<{item_type}>", imports
@@ -108,7 +148,7 @@ def map_openapi_type_with_imports(
         additional_props = schema["additionalProperties"]
         if additional_props and isinstance(additional_props, dict):
             value_type, value_imports = map_openapi_type_with_imports(
-                additional_props, registry, use_date_type, use_model_prefix
+                additional_props, registry, use_date_type, use_model_prefix, all_schemas
             )
             imports.update(value_imports)
             return f"{{ [key: string]: {value_type}; }}", imports

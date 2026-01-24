@@ -77,6 +77,7 @@ def _get_property_info(
     required_props: List[str],
     model_name: str = "",
     registry: Optional[Dict[str, Dict[str, Any]]] = None,
+    all_schemas: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
     Extract property information for template rendering.
@@ -87,6 +88,7 @@ def _get_property_info(
         required_props: List of required property names
         model_name: The name of the model containing this property
         registry: Optional extraction registry for titled anyOf schemas
+        all_schemas: Optional dict of all schemas for resolving refs to primitives/arrays
 
     Returns:
         Dictionary with property metadata for template
@@ -108,7 +110,9 @@ def _get_property_info(
         ts_type = enum_name
         type_imports: Set[str] = set()
     else:
-        ts_type, type_imports = map_openapi_type_with_imports(prop_schema, registry)
+        ts_type, type_imports = map_openapi_type_with_imports(
+            prop_schema, registry, all_schemas=all_schemas
+        )
 
     # Determine if nullable (either explicit nullable or anyOf with null)
     is_nullable = prop_schema.get("nullable", False)
@@ -134,18 +138,37 @@ def _get_property_info(
     array_item_imports: Set[str] = set()
     if is_array:
         items_schema = prop_schema.get("items", {})
-        array_item_type, array_item_imports = map_openapi_type_with_imports(items_schema, registry)
+        array_item_type, array_item_imports = map_openapi_type_with_imports(
+            items_schema, registry, all_schemas=all_schemas
+        )
 
     # Detect if this is a nested object (non-primitive reference or extracted type)
+    # Only set nested_type for refs to complex object schemas, not primitives/arrays
     nested_type = None
     if "$ref" in prop_schema:
-        nested_type = prop_schema["$ref"].split("/")[-1]
+        ref_name = prop_schema["$ref"].split("/")[-1]
+        # Check if the referenced schema is a complex type (not primitive/array)
+        if all_schemas and ref_name in all_schemas:
+            ref_schema = all_schemas[ref_name]
+            if not _is_primitive_type_alias(ref_schema):
+                nested_type = schema_to_type_name(ref_name)
+        else:
+            # If we can't check, assume it's a complex type
+            nested_type = schema_to_type_name(ref_name)
     elif "anyOf" in prop_schema:
         # Check for non-null types in anyOf that reference schemas
         for sub_schema in prop_schema["anyOf"]:
             if sub_schema.get("type") != "null" and "$ref" in sub_schema:
-                nested_type = sub_schema["$ref"].split("/")[-1]
-                break
+                ref_name = sub_schema["$ref"].split("/")[-1]
+                # Check if the referenced schema is a complex type
+                if all_schemas and ref_name in all_schemas:
+                    ref_schema = all_schemas[ref_name]
+                    if not _is_primitive_type_alias(ref_schema):
+                        nested_type = schema_to_type_name(ref_name)
+                        break
+                else:
+                    nested_type = schema_to_type_name(ref_name)
+                    break
         # Also check if this is an extracted type (titled anyOf mapped to a type)
         if nested_type is None and type_imports and not is_array:
             # If we have imports from a titled anyOf, use that as the nested type
@@ -373,6 +396,99 @@ def _get_unique_extracted_types(registry: Dict[str, Dict[str, Any]]) -> Dict[str
     return unique_types
 
 
+def _enum_key_name(value: str) -> str:
+    """Convert an enum value to a valid TypeScript identifier.
+
+    Examples:
+        '.' -> 'Period'
+        'X' -> 'X'
+        'available' -> 'Available'
+        'in-progress' -> 'InProgress'
+    """
+    # Special case for common symbols
+    special_chars = {
+        ".": "Period",
+        "-": "Dash",
+        "_": "Underscore",
+        " ": "Space",
+        "/": "Slash",
+        "\\": "Backslash",
+        "+": "Plus",
+        "*": "Star",
+        "?": "Question",
+        "!": "Exclamation",
+        "@": "At",
+        "#": "Hash",
+        "$": "Dollar",
+        "%": "Percent",
+        "^": "Caret",
+        "&": "Ampersand",
+        "=": "Equals",
+        "<": "LessThan",
+        ">": "GreaterThan",
+        "|": "Pipe",
+        "~": "Tilde",
+        "`": "Backtick",
+    }
+
+    if value in special_chars:
+        return special_chars[value]
+
+    # If value starts with a digit, prefix with underscore
+    if value and value[0].isdigit():
+        value = "_" + value
+
+    # Convert kebab-case or snake_case to PascalCase
+    result = ""
+    capitalize_next = True
+    for char in value:
+        if char in ("-", "_", " "):
+            capitalize_next = True
+        elif char in special_chars:
+            result += special_chars[char]
+            capitalize_next = True
+        elif capitalize_next:
+            result += char.upper()
+            capitalize_next = False
+        else:
+            result += char
+
+    return result if result else value
+
+
+def _is_top_level_enum(schema: Dict[str, Any]) -> bool:
+    """Check if a schema is a top-level enum (string type with enum values)."""
+    return schema.get("type") == "string" and "enum" in schema
+
+
+def _is_primitive_type_alias(schema: Dict[str, Any]) -> bool:
+    """Check if a schema is a primitive type alias that shouldn't generate a model.
+
+    Primitive type aliases are:
+    - Simple string/integer/number/boolean types without enum
+    - Array types (these are handled inline)
+    """
+    schema_type = schema.get("type")
+
+    # Skip if it has properties (it's an object)
+    if schema.get("properties"):
+        return False
+
+    # Skip if it has enum (it's an enum type)
+    if schema.get("enum"):
+        return False
+
+    # Primitive types without properties
+    if schema_type in ("string", "integer", "number", "boolean"):
+        return True
+
+    # Array types (handled inline)
+    if schema_type == "array":
+        return True
+
+    return False
+
+
 def generate_models(
     spec: Dict[str, Any],
     output_path: Path,
@@ -399,7 +515,11 @@ def generate_models(
         keep_trailing_newline=True,
     )
 
+    # Add custom filter for enum key names
+    env.filters["enum_key_name"] = _enum_key_name
+
     model_template = env.get_template("model.ts.j2")
+    enum_template = env.get_template("enum.ts.j2")
     index_template = env.get_template("models_index.ts.j2")
 
     # Create extraction registry if not provided
@@ -418,42 +538,57 @@ def generate_models(
 
     # Generate model files for each schema
     for schema_name, model_schema in schemas.items():
-        # Convert schema name to type name (handles reserved names like ApiResponse)
+        # Skip primitive type aliases (string, integer, array without properties)
+        if _is_primitive_type_alias(model_schema):
+            continue
+
+        # Convert schema name to type name (capitalizes and handles reserved names)
         type_name = schema_to_type_name(schema_name)
 
-        # Process properties
-        properties_schema = model_schema.get("properties", {})
-        required_props = model_schema.get("required", [])
+        # Check if this is a top-level enum schema
+        if _is_top_level_enum(model_schema):
+            # Use enum template
+            context = {
+                **api_info,
+                "model_name": type_name,
+                "description": model_schema.get("description", ""),
+                "enum_values": model_schema["enum"],
+            }
+            content = enum_template.render(**context)
+        else:
+            # Use model template for object types
+            # Process properties
+            properties_schema = model_schema.get("properties", {})
+            required_props = model_schema.get("required", [])
 
-        properties = []
-        for prop_name, prop_schema in properties_schema.items():
-            prop_info = _get_property_info(
-                prop_name, prop_schema, required_props, type_name, registry
-            )
-            properties.append(prop_info)
+            properties = []
+            for prop_name, prop_schema in properties_schema.items():
+                prop_info = _get_property_info(
+                    prop_name, prop_schema, required_props, type_name, registry, schemas
+                )
+                properties.append(prop_info)
 
-        # Collect enum definitions from properties
-        enum_defs = [p["enum_info"] for p in properties if p.get("enum_info")]
+            # Collect enum definitions from properties
+            enum_defs = [p["enum_info"] for p in properties if p.get("enum_info")]
 
-        # Collect type imports
-        type_imports = _collect_type_imports(properties)
+            # Collect type imports
+            type_imports = _collect_type_imports(properties)
 
-        # Get required properties for instanceOf function
-        required_properties = [p for p in properties if p["required"]]
+            # Get required properties for instanceOf function
+            required_properties = [p for p in properties if p["required"]]
 
-        # Render template
-        context = {
-            **api_info,
-            "model_name": type_name,
-            "description": model_schema.get("description", ""),
-            "properties": properties,
-            "required_properties": required_properties,
-            "type_imports": type_imports,
-            "has_properties": len(properties) > 0,
-            "enum_defs": enum_defs,
-        }
-
-        content = model_template.render(**context)
+            # Render template
+            context = {
+                **api_info,
+                "model_name": type_name,
+                "description": model_schema.get("description", ""),
+                "properties": properties,
+                "required_properties": required_properties,
+                "type_imports": type_imports,
+                "has_properties": len(properties) > 0,
+                "enum_defs": enum_defs,
+            }
+            content = model_template.render(**context)
 
         # Write file
         model_file = models_dir / f"{type_name}.ts"

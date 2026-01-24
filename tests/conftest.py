@@ -1,8 +1,29 @@
 """Shared pytest fixtures for openapi-ts-client tests."""
 
+import json
 import shutil
+from pathlib import Path
 
 import pytest
+import yaml
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def load_spec(fixture_name: str) -> dict:
+    """Load OpenAPI spec from fixture directory (supports JSON and YAML)."""
+    json_path = FIXTURES_DIR / fixture_name / "openapi.json"
+    yaml_path = FIXTURES_DIR / fixture_name / "openapi.yml"
+
+    if json_path.exists():
+        return json.loads(json_path.read_text())
+    elif yaml_path.exists():
+        return yaml.safe_load(yaml_path.read_text())
+    else:
+        raise FileNotFoundError(
+            f"No OpenAPI spec found in {FIXTURES_DIR / fixture_name}. "
+            f"Expected openapi.json or openapi.yml"
+        )
 
 
 def pytest_configure(config):

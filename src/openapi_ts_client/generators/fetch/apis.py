@@ -279,7 +279,8 @@ def _extract_request_body_info(
 
     # Handle $ref
     if "$ref" in schema:
-        type_name = schema["$ref"].split("/")[-1]
+        raw_name = schema["$ref"].split("/")[-1]
+        type_name = schema_to_type_name(raw_name)
         param_name = type_name[0].lower() + type_name[1:]
         return (
             param_name,
@@ -295,7 +296,8 @@ def _extract_request_body_info(
     if schema.get("type") == "array":
         items = schema.get("items", {})
         if "$ref" in items:
-            item_type = items["$ref"].split("/")[-1]
+            raw_item = items["$ref"].split("/")[-1]
+            item_type = schema_to_type_name(raw_item)
             param_name = item_type[0].lower() + item_type[1:]
             return (
                 param_name,
