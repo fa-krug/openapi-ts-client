@@ -15,6 +15,7 @@ from .generators.angular.generator import generate_angular_client
 from .generators.axios.generator import generate_axios_client
 from .generators.fetch.generator import generate_fetch_client
 from .logging_config import get_logger, setup_logging
+from .utils.openapi import sanitize_spec
 
 # Lazy logger initialization - don't call setup_logging() at import time
 # This allows CLI to configure logging before we initialize
@@ -172,6 +173,12 @@ def generate_typescript_client(
             f"openapi_spec must be a dict or JSON string, got {type(openapi_spec).__name__}"
         )
 
+    # Coerce literals whose value doesn't match their declared type so every
+    # format generator receives a consistent, internally valid spec. This
+    # repairs Pydantic Decimal fields (string type with a numeric default) that
+    # would otherwise be rejected during $ref resolution.
+    sanitize_spec(parsed_spec)
+
     # Validate OpenAPI specification
     if not skip_validation:
         func_logger.info("Validating OpenAPI specification")
@@ -220,7 +227,7 @@ def generate_typescript_client(
     # Dispatch to appropriate generator based on format
     if output_format == ClientFormat.ANGULAR:
         func_logger.info("Dispatching to Angular generator")
-        generate_angular_client(parsed_spec, resolved_output_path)
+        generate_angular_client(parsed_spec, resolved_output_path, skip_validation=skip_validation)
         status_message = (
             f"TypeScript Angular client generated for '{api_title}' v{api_version} "
             f"(OpenAPI {openapi_version}). "

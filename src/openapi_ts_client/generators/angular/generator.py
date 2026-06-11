@@ -14,6 +14,7 @@ from .services import generate_all_services
 def generate_angular_client(
     spec: Dict[str, Any],
     output_path: Path,
+    skip_validation: bool = False,
 ) -> None:
     """
     Generate complete Angular TypeScript client.
@@ -21,13 +22,15 @@ def generate_angular_client(
     Args:
         spec: OpenAPI specification dictionary
         output_path: Directory to write generated files
+        skip_validation: If True, resolve $refs without running strict OpenAPI
+            validation (the resolution path validates by default otherwise).
     """
     logger = get_logger("angular.generator")
 
     logger.info("Starting Angular client generation")
 
     # Resolve all $refs
-    resolved_spec = load_and_resolve_spec(spec)
+    resolved_spec = load_and_resolve_spec(spec, skip_validation=skip_validation)
 
     # Extract metadata
     info = resolved_spec.get("info", {})
