@@ -20,7 +20,7 @@ def write_tsconfig(output_path: Path) -> None:
         "compilerOptions": {
             "target": "ES2020",
             "module": "ESNext",
-            "moduleResolution": "node",
+            "moduleResolution": "bundler",
             "strict": True,
             "noEmit": True,
             "skipLibCheck": True,
@@ -62,7 +62,7 @@ def test_angular_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
         "compilerOptions": {
             "target": "ES2020",
             "module": "ESNext",
-            "moduleResolution": "node",
+            "moduleResolution": "bundler",
             "strict": True,
             "noEmit": True,
             "skipLibCheck": True,
@@ -114,7 +114,7 @@ def test_axios_typescript_compiles(fixture_name: str, tmp_path: Path) -> None:
         "compilerOptions": {
             "target": "ES2020",
             "module": "ESNext",
-            "moduleResolution": "node",
+            "moduleResolution": "bundler",
             "strict": True,
             "noEmit": True,
             "skipLibCheck": True,
