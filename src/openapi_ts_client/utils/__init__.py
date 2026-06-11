@@ -9,7 +9,7 @@ from .naming import (
     tag_to_service_filename,
     tag_to_service_name,
 )
-from .openapi import load_and_resolve_spec
+from .openapi import load_and_resolve_spec, sanitize_spec
 
 __all__ = [
     "FETCH_RESERVED_TYPE_NAMES",
@@ -20,4 +20,5 @@ __all__ = [
     "tag_to_service_filename",
     "tag_to_service_name",
     "load_and_resolve_spec",
+    "sanitize_spec",
 ]
