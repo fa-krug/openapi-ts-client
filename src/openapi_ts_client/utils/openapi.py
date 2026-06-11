@@ -102,8 +102,15 @@ def load_and_resolve_spec(spec: Dict[str, Any], skip_validation: bool = False) -
         config = Config(spec_validator_cls=None) if skip_validation else None
         openapi = OpenAPI.from_dict(normalized_spec, config)
 
-        # Access the spec contents
-        resolved = openapi.spec.read_value()
+        # Access the spec contents. The accessor name differs across
+        # jsonschema-path versions pulled in by openapi-core: 0.4.x exposes
+        # read_value(), while 0.3.x exposes contents(). Support both so the
+        # resolution path works across the openapi-core>=0.19 range.
+        spec_path = openapi.spec
+        if hasattr(spec_path, "read_value"):
+            resolved = spec_path.read_value()
+        else:
+            resolved = spec_path.contents()
 
         return dict(resolved)
     except Exception as e:
