@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.4.1 (2026-06-11)
+
+### Bug Fixes
+
+- Sanitize string-typed numeric literals and honor skip_validation
+  ([`4b49e7c`](https://github.com/fa-krug/openapi-ts-client/commit/4b49e7c776d117ce0e8eb6ae48df6753491c63df))
+
+### Testing
+
+- Use moduleResolution=bundler in tsconfig
+  ([`4287f57`](https://github.com/fa-krug/openapi-ts-client/commit/4287f5777f9a3a53a55a4154bb5d58ea1f98a2a8))
+
+
 ## v1.4.0 (2026-01-24)
 
 ### Chores
