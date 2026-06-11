@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v1.4.2 (2026-06-11)
+
+### Bug Fixes
+
+- Support both jsonschema-path contents() and read_value() APIs
+  ([#6](https://github.com/fa-krug/openapi-ts-client/pull/6),
+  [`fe00651`](https://github.com/fa-krug/openapi-ts-client/commit/fe0065142fa3b37f1f643dd5ba0539d488a5f73f))
+
+
 ## v1.4.1 (2026-06-11)
 
 ### Bug Fixes
